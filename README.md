@@ -2,8 +2,6 @@
 
 A self-hosted, single-file cyber threat analysis platform. Ingest heterogeneous threat data (JSON / STIX-lite / CSV / raw text), visualize it as an interactive force-directed **threat constellation**, run **automatic ingest pipelines** with translation, and fire **alerts from saved searches**. **Classification markings with clearance-based redaction and custom tagging** are built in as an opt-in advanced mode — off by default for a clean view, one toggle away when you need them. Zero build step, zero dependencies — open `index.html` and it works.
 
-![Threat Constellation](docs/screenshots/constellation.png)
-
 ## Quick start
 
 ```powershell
@@ -29,12 +27,9 @@ The app boots into the fictional **Operation Nightjar** demo campaign so every f
 
 ## Screenshots
 
-Classification markings are off by default; the redacted guest view below has the advanced-mode toggle switched on to demonstrate it.
+Classification markings are off by default; this shows the redacted guest view with the advanced-mode toggle switched on.
 
-| | |
-|---|---|
-| ![Command center](docs/screenshots/command-center.png) | ![Redacted guest view](docs/screenshots/redaction-guest-view.png) |
-| ![Search & alerts](docs/screenshots/search-alerts.png) | ![Pipelines](docs/screenshots/pipelines-settings.png) |
+![Redacted guest view](docs/screenshots/redaction-guest-view.png)
 
 ## Docs
 
