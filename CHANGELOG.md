@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.0 — 2026-07-09
+- New Actors panel in the graph HUD (left side, next to the entity-type legend) — lists every `actor` entity with its connected-entity count, auto-shown once 2+ actors are present. Clicking one focuses the graph on that actor's connected component (BFS over `state.links`, undirected) via the existing hide mechanism; "Show all" clears the focus. Boot/ingest behavior is unchanged — this is opt-in decluttering, not automatic filtering.
+- "Unhide all" now also clears actor focus, so the two hide-control surfaces stay in sync.
+
 ## v0.6.0 — 2026-07-09
 - Fixed: the "+N more" row in the Relationship Lines legend was inert — clicking did nothing. It's now a real toggle (`legendRelExpanded`) that expands to the full list ("show fewer" to collapse); `.legend` gained `max-height`/`overflow-y:auto` since an expanded 40+ relation list would otherwise overflow the graph view.
 - Hover or click a graph edge to see its relationship — new `linkAt()` hit-test (point-to-segment distance, mirrors how `nodeAt()` already works) drives a floating tooltip on hover and a toast (`source — relation — target`) on click; the hovered edge also renders brighter/thicker, same treatment as a selected node's edges.

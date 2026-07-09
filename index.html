@@ -213,6 +213,7 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .legend__row{display:flex;align-items:center;gap:9px;font-size:12px;margin:6px 0;cursor:pointer;
   opacity:.95;transition:opacity .15s}
 .legend__row.off{opacity:.3}
+.legend__row.active{color:var(--signal);font-weight:600}
 .legend__dot{width:11px;height:11px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor}
 .edge-tip{position:absolute;display:none;pointer-events:none;z-index:8;background:rgba(11,16,32,.92);
   border:1px solid var(--line-strong);border-left-width:3px;border-radius:6px;padding:5px 10px;
@@ -502,6 +503,7 @@ body:not(.marked) .advonly{display:none}
         <canvas id="graph"></canvas>
         <div class="edge-tip" id="edgeTip"></div>
         <div class="graph-hud">
+          <div class="legend" id="actorsPanel" style="display:none"><h4>Actors</h4></div>
           <div class="legend" id="legend"><h4>Entity Types</h4></div>
         </div>
         <div class="graph-search">
@@ -717,6 +719,7 @@ let state = { entities:[], links:[], events:[], pipelines:[], searches:[], alert
 let hiddenTypes = new Set();
 let selectedId = null;
 let legendRelExpanded = false;
+let focusedActorId = null;
 
 /* ============================================================
    DEMO DATA — Operation Nightjar (fictional APT scenario)
@@ -1204,7 +1207,7 @@ cv.addEventListener('touchend',e=>{
 document.getElementById('gcReset').onclick=()=>{ centerView(); state.entities.forEach(e=>{e.x*=.3;e.y*=.3;}); };
 document.getElementById('gcFreeze').onclick=(e)=>{ frozen=!frozen; e.currentTarget.style.color=frozen?'#3BE8DE':''; };
 document.getElementById('gcOrganize').onclick=organizeLayout;
-document.getElementById('gcUnhide').onclick=()=>{ state.entities.forEach(e=>e.hidden=false); render(); toast('All hidden nodes restored'); };
+document.getElementById('gcUnhide').onclick=()=>{ state.entities.forEach(e=>e.hidden=false); focusedActorId=null; render(); toast('All hidden nodes restored'); };
 function updateUnhideBtn(){ document.getElementById('gcUnhide').hidden=!state.entities.some(e=>e.hidden); }
 document.getElementById('graphSearch').oninput=()=>{};
 
@@ -1341,11 +1344,40 @@ function render(){
     `<div class="toplist__item"><span style="min-width:110px;text-transform:uppercase;font-family:var(--mono);font-size:12px">${t}</span><div class="toplist__bar"><div class="toplist__fill" style="width:${n/imax*100}%;background:linear-gradient(90deg,var(--signal),var(--blue))"></div></div><span class="toplist__n">${n}</span></div>`
   ).join(''):'<div style="color:var(--muted-2);font-size:12px">No indicators</div>';
 
-  renderLegend(); renderMatrix(); renderTimeline(); updateUnhideBtn();
+  renderLegend(); renderActorsPanel(); renderMatrix(); renderTimeline(); updateUnhideBtn();
   renderBanner(); renderAlertBadge(); renderAlertsLog(); renderSearches(); renderPipelines();
   if(state.entities.length && (view.x===0&&view.y===0)) centerView();
 }
 
+function actorComponent(startId){
+  const seen=new Set([startId]); const queue=[startId];
+  while(queue.length){
+    const cur=queue.shift();
+    state.links.forEach(l=>{
+      if(l.source===cur && !seen.has(l.target)){ seen.add(l.target); queue.push(l.target); }
+      if(l.target===cur && !seen.has(l.source)){ seen.add(l.source); queue.push(l.source); }
+    });
+  }
+  return seen;
+}
+function focusActor(id){
+  focusedActorId=id;
+  if(id){ const comp=actorComponent(id); state.entities.forEach(e=>{ e.hidden=!comp.has(e.id); }); }
+  else { state.entities.forEach(e=>{ e.hidden=false; }); }
+  render();
+}
+function renderActorsPanel(){
+  const panel=document.getElementById('actorsPanel');
+  const actors=state.entities.filter(e=>e.type==='actor');
+  if(actors.length<2){ panel.style.display='none'; return; }
+  panel.style.display='block';
+  const rows=actors.map(a=>({a,count:actorComponent(a.id).size})).sort((x,y)=>y.count-x.count);
+  let html='<h4>Actors</h4>';
+  html+=`<div class="legend__row ${focusedActorId?'':'active'}" data-actor="">Show all</div>`;
+  html+=rows.map(({a,count})=>`<div class="legend__row ${focusedActorId===a.id?'active':''}" data-actor="${a.id}"><span class="legend__dot" style="color:${TYPES.actor.color};background:${TYPES.actor.color}"></span>${escapeHtml(a.label)} <span style="color:var(--muted-2);font-size:11px">(${count})</span></div>`).join('');
+  panel.innerHTML=html;
+  panel.querySelectorAll('[data-actor]').forEach(row=>row.onclick=()=>focusActor(row.dataset.actor||null));
+}
 function renderLegend(){
   const present=[...new Set(state.entities.map(e=>e.type))];
   const el=document.getElementById('legend');

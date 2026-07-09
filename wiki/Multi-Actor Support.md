@@ -17,7 +17,7 @@
 
 ## Deliberately deferred (v2+, pick up "based on need")
 
-- Transitive/cluster coloring — tinting the whole subgraph reachable from an actor (not just entities it directly touches).
+- ~~Transitive/cluster coloring — tinting the whole subgraph reachable from an actor~~ **Partially addressed differently, 2026-07-09**: rather than tinting, the new Actors panel (`#actorsPanel`, `actorComponent()`/`focusActor()` in `index.html`, see [[Architecture]]) *isolates* an actor's connected component by hiding everything else, for when you have multiple actors that are structurally disconnected (e.g. two unrelated APT groups loaded together) and want to declutter. Coloring the reachable subgraph while keeping everything visible remains a distinct, unbuilt option if that's ever preferred over hide/show.
 - Relation-type dashed/solid/arrowheads (directionality/confidence) as a second dimension alongside the color already shipped.
 - Any kind of automatic attribution inference — this is purely an analyst-declared relationship model, same as everything else in NIGHTGLASS.
 
