@@ -36,6 +36,7 @@ The app boots into the fictional **Operation Nightjar** demo campaign so every f
 
 ## Docs
 
+- [`CLAUDE.md`](CLAUDE.md) — auto-loaded operational guide for Claude Code sessions (run/test commands, code map, conventions, guardrails, next tasks).
 - [`HANDOFF.md`](HANDOFF.md) — full architecture and continuation notes for AI-assisted development sessions.
 - [`wiki/`](wiki/) — Obsidian-compatible project wiki (copy into your vault, e.g. `E:\NIGHTGLASS-Wiki`).
 
