@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.5.0 — 2026-07-09
+- Fixed: the graph legend's entity-type visibility toggles stopped working after v0.4.0's relationship-lines section was added — `renderLegend()` was using `el.innerHTML += ...`, which re-parses the whole legend and silently drops the click handlers just wired onto the entity-type rows. Now builds one HTML string and wires handlers once, after the single assignment.
+- Node pinning: drag a node more than a few pixels and it stays where you drop it (`entity.pinned`) — pinned nodes are excluded from physics integration but still push/pull everything else as fixed anchors, and get a dashed ring in the graph. Toggle from the inspector's "Pin in place" button; works for both mouse and touch drag.
+- Node hiding: "Hide node" in the inspector removes an entity (and any edge touching it) from the graph; "Unhide all" in the graph controls (only shown when something's hidden) restores everything at once.
+- New "Organize" button in the graph controls — fast-forwards the force simulation (180 synchronous steps) to settle the layout instantly instead of waiting on the ambient animation; respects pinned nodes as anchors.
+- Fixed a latent bug found while building pinning: the drag-distance check in the mouse-up handler compared against `lastMouse`, which `mousemove` had already updated to the current position — so it always measured ~0 regardless of actual drag distance. Now tracked via a separate `dragStart` captured on mouse/touch-down.
+- Pinned/hidden state is view-only (like node positions) — not written to JSON export.
+
 ## v0.4.0 — 2026-07-09
 - Graph edges now color by relationship type — `relColor()` hashes each link's `relation` string deterministically onto the existing `TYPES`/`SEV` palette, no new hard-coded colors; selected/hot edges render brighter and thicker
 - New "Relationship Lines" section in the graph legend (color swatch + relation text, capped at 20 with a "+N more" indicator)

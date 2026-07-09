@@ -508,6 +508,10 @@ body:not(.marked) .advonly{display:none}
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Recenter</button>
           <button class="gc-btn" id="gcFreeze">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>Freeze</button>
+          <button class="gc-btn" id="gcOrganize">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M6 8v4a2 2 0 0 0 2 2h1M18 8v4a2 2 0 0 0-2 2h-1"/></svg>Organize</button>
+          <button class="gc-btn" id="gcUnhide" hidden>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>Unhide all</button>
         </div>
       </div>
     </section>
@@ -948,7 +952,7 @@ async function ingestText(raw,filename,opts={},quiet=false){
 const cv = document.getElementById('graph');
 const ctx = cv.getContext('2d');
 let view = {x:0,y:0,k:1};
-let frozen=false, dragNode=null, panning=false, lastMouse={x:0,y:0};
+let frozen=false, dragNode=null, panning=false, lastMouse={x:0,y:0}, dragStart={x:0,y:0};
 let pulses=[];
 let dpr = Math.max(1, window.devicePixelRatio||1);
 
@@ -963,14 +967,13 @@ function centerView(){
   const r=cv.getBoundingClientRect();
   view={x:r.width/2, y:r.height/2, k:1};
 }
-function visibleEntities(){ return state.entities.filter(e=>!hiddenTypes.has(e.type)); }
+function visibleEntities(){ return state.entities.filter(e=>!hiddenTypes.has(e.type) && !e.hidden); }
 function linkMap(){
   const byId=Object.fromEntries(state.entities.map(e=>[e.id,e]));
   return state.links.map(l=>({...l, s:byId[l.source], t:byId[l.target]})).filter(l=>l.s&&l.t);
 }
 
-function physics(){
-  if(frozen)return;
+function physicsStep(){
   const nodes=visibleEntities();
   const N=nodes.length; if(!N)return;
   // repulsion
@@ -989,19 +992,21 @@ function physics(){
   }
   // springs
   linkMap().forEach(l=>{
-    if(hiddenTypes.has(l.s.type)||hiddenTypes.has(l.t.type))return;
+    if(hiddenTypes.has(l.s.type)||hiddenTypes.has(l.t.type)||l.s.hidden||l.t.hidden)return;
     let dx=l.t.x-l.s.x, dy=l.t.y-l.s.y; const d=Math.sqrt(dx*dx+dy*dy)||.01;
     const target=110; const f=(d-target)*0.012;
     const fx=dx/d*f, fy=dy/d*f;
     l.s.vx+=fx; l.s.vy+=fy; l.t.vx-=fx; l.t.vy-=fy;
   });
   nodes.forEach(n=>{
-    if(n===dragNode)return;
+    if(n===dragNode||n.pinned){ n.vx=0; n.vy=0; return; }
     n.vx*=0.86; n.vy*=0.86;
     n.x+=Math.max(-8,Math.min(8,n.vx));
     n.y+=Math.max(-8,Math.min(8,n.vy));
   });
 }
+function physics(){ if(frozen)return; physicsStep(); }
+function organizeLayout(){ for(let i=0;i<180;i++)physicsStep(); render(); toast('Layout organized'); }
 
 function toScreen(x,y){ return {x:x*view.k+view.x, y:y*view.k+view.y}; }
 function toWorld(sx,sy){ return {x:(sx-view.x)/view.k, y:(sy-view.y)/view.k}; }
@@ -1021,7 +1026,7 @@ function draw(){
   const links=linkMap();
   // edges
   links.forEach(l=>{
-    if(hiddenTypes.has(l.s.type)||hiddenTypes.has(l.t.type))return;
+    if(hiddenTypes.has(l.s.type)||hiddenTypes.has(l.t.type)||l.s.hidden||l.t.hidden)return;
     const a=toScreen(l.s.x,l.s.y), b=toScreen(l.t.x,l.t.y);
     const hot = selectedId && (l.source===selectedId||l.target===selectedId);
     ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
@@ -1056,6 +1061,13 @@ function draw(){
     if(!red && n.severity && SEV[n.severity]){
       ctx.beginPath(); ctx.arc(s.x,s.y,rad+3,0,7);
       ctx.strokeStyle=SEV[n.severity]; ctx.lineWidth=isSel?2.5:1.5; ctx.stroke();
+    }
+    // pinned ring — dashed, anchor color, independent of severity
+    if(n.pinned){
+      ctx.save();
+      ctx.beginPath(); ctx.setLineDash([3,3]); ctx.arc(s.x,s.y,rad+6,0,7);
+      ctx.strokeStyle='rgba(231,236,255,0.7)'; ctx.lineWidth=1.3; ctx.stroke();
+      ctx.restore();
     }
     // core
     ctx.beginPath(); ctx.arc(s.x,s.y,rad*(red?0.55:0.5),0,7); ctx.fillStyle='rgba(8,11,22,0.9)'; ctx.fill();
@@ -1100,7 +1112,7 @@ cv.addEventListener('mousedown',e=>{
   const n=nodeAt(sx,sy);
   if(n){ dragNode=n; frozenTemp=true; cv.classList.add('dragging'); }
   else { panning=true; cv.classList.add('dragging'); }
-  lastMouse={x:e.clientX,y:e.clientY};
+  lastMouse={x:e.clientX,y:e.clientY}; dragStart={x:e.clientX,y:e.clientY};
 });
 window.addEventListener('mousemove',e=>{
   if(dragNode){
@@ -1114,7 +1126,8 @@ window.addEventListener('mousemove',e=>{
 });
 window.addEventListener('mouseup',e=>{
   if(dragNode){
-    const moved=Math.hypot(e.clientX-lastMouse.x,e.clientY-lastMouse.y);
+    const moved=Math.hypot(e.clientX-dragStart.x,e.clientY-dragStart.y);
+    if(moved>4){ dragNode.pinned=true; render(); }
     dragNode=null;
   }
   cv.classList.remove('dragging'); panning=false;
@@ -1136,7 +1149,7 @@ cv.addEventListener('touchstart',e=>{
   if(e.touches.length===1){ const t=e.touches[0]; const rect=cv.getBoundingClientRect();
     const n=nodeAt(t.clientX-rect.left,t.clientY-rect.top);
     if(n){dragNode=n;} else {panning=true;}
-    lastMouse={x:t.clientX,y:t.clientY};
+    lastMouse={x:t.clientX,y:t.clientY}; dragStart={x:t.clientX,y:t.clientY};
   }
 },{passive:true});
 cv.addEventListener('touchmove',e=>{
@@ -1145,10 +1158,19 @@ cv.addEventListener('touchmove',e=>{
   else if(panning){ view.x+=t.clientX-lastMouse.x; view.y+=t.clientY-lastMouse.y; }
   lastMouse={x:t.clientX,y:t.clientY};
 },{passive:true});
-cv.addEventListener('touchend',()=>{dragNode=null;panning=false;});
+cv.addEventListener('touchend',e=>{
+  if(dragNode){
+    const t=e.changedTouches[0];
+    if(t && Math.hypot(t.clientX-dragStart.x,t.clientY-dragStart.y)>4){ dragNode.pinned=true; render(); }
+  }
+  dragNode=null;panning=false;
+});
 
 document.getElementById('gcReset').onclick=()=>{ centerView(); state.entities.forEach(e=>{e.x*=.3;e.y*=.3;}); };
 document.getElementById('gcFreeze').onclick=(e)=>{ frozen=!frozen; e.currentTarget.style.color=frozen?'#3BE8DE':''; };
+document.getElementById('gcOrganize').onclick=organizeLayout;
+document.getElementById('gcUnhide').onclick=()=>{ state.entities.forEach(e=>e.hidden=false); render(); toast('All hidden nodes restored'); };
+function updateUnhideBtn(){ document.getElementById('gcUnhide').hidden=!state.entities.some(e=>e.hidden); }
 document.getElementById('graphSearch').oninput=()=>{};
 
 /* ============================================================
@@ -1165,6 +1187,8 @@ function selectEntity(id){
   document.getElementById('inspName').innerHTML=(markingsOn()&&e.classification?classChipHtml(e.classification):'')+escapeHtml(e.label);
   const body=document.getElementById('inspBody');
   let html='';
+  // pin / hide
+  html+=`<div class="insp__section" style="display:flex;gap:8px"><button class="btn" id="inspPin" style="flex:1">${e.pinned?'📌 Unpin':'📌 Pin in place'}</button><button class="btn" id="inspHide" style="flex:1">Hide node</button></div>`;
   // severity
   if(e.severity){ html+=`<div class="insp__section"><h5>Severity</h5><span class="chip"><span class="dot" style="background:${SEV[e.severity]||'#888'}"></span>${e.severity}</span></div>`; }
   // classification editor
@@ -1194,6 +1218,8 @@ function selectEntity(id){
   }
   body.innerHTML=html;
   body.querySelectorAll('[data-goto]').forEach(el=>el.onclick=()=>selectEntity(el.dataset.goto));
+  const pinBtn=body.querySelector('#inspPin'); if(pinBtn)pinBtn.onclick=()=>{ e.pinned=!e.pinned; e.vx=0; e.vy=0; render(); selectEntity(id); };
+  const hideBtn=body.querySelector('#inspHide'); if(hideBtn)hideBtn.onclick=()=>{ e.hidden=true; closeInspector(); render(); toast('Node hidden — “Unhide all” in graph controls restores it'); };
   const cs=body.querySelector('#inspClass'); if(cs)cs.onchange=()=>{ e.classification=cs.value||null; render(); if(isRedacted(e)){closeInspector();}else{selectEntity(id);} };
   body.querySelectorAll('.tagx').forEach(x=>x.onclick=()=>{ e.tags=(e.tags||[]).filter(t=>t!==x.dataset.t); render(); selectEntity(id); });
   const ta=body.querySelector('#tagAdd'), ti=body.querySelector('#tagIn');
@@ -1280,7 +1306,7 @@ function render(){
     `<div class="toplist__item"><span style="min-width:110px;text-transform:uppercase;font-family:var(--mono);font-size:12px">${t}</span><div class="toplist__bar"><div class="toplist__fill" style="width:${n/imax*100}%;background:linear-gradient(90deg,var(--signal),var(--blue))"></div></div><span class="toplist__n">${n}</span></div>`
   ).join(''):'<div style="color:var(--muted-2);font-size:12px">No indicators</div>';
 
-  renderLegend(); renderMatrix(); renderTimeline();
+  renderLegend(); renderMatrix(); renderTimeline(); updateUnhideBtn();
   renderBanner(); renderAlertBadge(); renderAlertsLog(); renderSearches(); renderPipelines();
   if(state.entities.length && (view.x===0&&view.y===0)) centerView();
 }
@@ -1288,19 +1314,20 @@ function render(){
 function renderLegend(){
   const present=[...new Set(state.entities.map(e=>e.type))];
   const el=document.getElementById('legend');
-  el.innerHTML='<h4>Entity Types</h4>'+Object.entries(TYPES).filter(([k])=>present.includes(k)).map(([k,v])=>
+  let html='<h4>Entity Types</h4>'+Object.entries(TYPES).filter(([k])=>present.includes(k)).map(([k,v])=>
     `<div class="legend__row ${hiddenTypes.has(k)?'off':''}" data-type="${k}"><span class="legend__dot" style="color:${v.color};background:${v.color}"></span>${v.label}</div>`
   ).join('');
-  el.querySelectorAll('[data-type]').forEach(r=>r.onclick=()=>{
-    const t=r.dataset.type; hiddenTypes.has(t)?hiddenTypes.delete(t):hiddenTypes.add(t); renderLegend();
-  });
   const rels=[...new Set(state.links.map(l=>l.relation).filter(Boolean))];
   if(rels.length){
     const shown=rels.slice(0,20);
-    el.innerHTML+='<h4 style="margin-top:14px">Relationship Lines</h4>'+shown.map(r=>
+    html+='<h4 style="margin-top:14px">Relationship Lines</h4>'+shown.map(r=>
       `<div class="legend__row"><span class="legend__dot" style="color:${relColor(r)};background:${relColor(r)}"></span>${escapeHtml(r)}</div>`
     ).join('')+(rels.length>shown.length?`<div class="legend__row" style="color:var(--muted-2);font-size:11px">+${rels.length-shown.length} more</div>`:'');
   }
+  el.innerHTML=html;
+  el.querySelectorAll('[data-type]').forEach(r=>r.onclick=()=>{
+    const t=r.dataset.type; hiddenTypes.has(t)?hiddenTypes.delete(t):hiddenTypes.add(t); renderLegend();
+  });
 }
 
 const TACTICS=['Initial Access','Execution','Persistence','Privilege Escalation','Credential Access','Command & Control','Exfiltration'];
