@@ -35,11 +35,11 @@ The app boots into the fictional **Operation Nightjar** demo campaign so every f
 
 | | |
 |---|---|
-| ![Command center](docs/screenshots/command-center.webp) | ![Ingest threat data](docs/screenshots/ingest.png) |
-| ![Threat constellation](docs/screenshots/constellation.webp) | ![Constellation with inspector open](docs/screenshots/constellation-inspector.webp) |
-| ![ATT&CK matrix](docs/screenshots/attack-matrix.webp) | ![Timeline](docs/screenshots/timeline.webp) |
-| ![Search & alerts](docs/screenshots/search-alerts.webp) | ![Pipelines & settings](docs/screenshots/pipelines-settings.webp) |
-| ![Redacted guest view](docs/screenshots/redaction-guest-view.png) | |
+| <img src="docs/screenshots/command-center.webp" width="440" alt="Command center"> | <img src="docs/screenshots/ingest.png" width="440" alt="Ingest threat data"> |
+| <img src="docs/screenshots/constellation.webp" width="440" alt="Threat constellation"> | <img src="docs/screenshots/constellation-inspector.webp" width="440" alt="Constellation with inspector open"> |
+| <img src="docs/screenshots/attack-matrix.webp" width="440" alt="ATT&CK matrix"> | <img src="docs/screenshots/timeline.webp" width="440" alt="Timeline"> |
+| <img src="docs/screenshots/search-alerts.webp" width="440" alt="Search & alerts"> | <img src="docs/screenshots/pipelines-settings.webp" width="440" alt="Pipelines & settings"> |
+| <img src="docs/screenshots/redaction-guest-view.png" width="440" alt="Redacted guest view"> | |
 
 Hovering a relationship line surfaces what it is:
 
