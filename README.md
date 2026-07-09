@@ -9,7 +9,11 @@ A self-hosted, single-file cyber threat analysis platform. Ingest heterogeneous 
 start .\index.html
 # or serve it (avoids any file:// quirks)
 python -m http.server 8080
+# or containerized
+docker compose up --build
 ```
+
+Or try the [live demo](https://kingkag3.github.io/NightGlass/) — no install required.
 
 The app boots into the fictional **Operation Nightjar** demo campaign so every feature has data on first launch.
 

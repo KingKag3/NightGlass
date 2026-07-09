@@ -14,6 +14,7 @@ Operational guide for Claude Code working in this repo. Read this first; it is t
 # run
 python3 -m http.server 8080        # then open http://localhost:8080
 # or just open index.html directly
+# or: docker compose up --build     # then open http://localhost:8080
 
 # lint the script (syntax only, no DOM)
 node -e "const fs=require('fs');const h=fs.readFileSync('index.html','utf8');new Function(h.match(/<script>([\s\S]*)<\/script>/)[1]);console.log('JS OK')"

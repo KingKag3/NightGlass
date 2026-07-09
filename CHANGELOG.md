@@ -5,6 +5,8 @@
 - When off: no classification banner, no active-analyst/clearance selector, no classification/tag chips anywhere, and the inspector's Classification/Tags editors, the ingest form's classification/tag fields, and the pipeline form's classification/tag fields are hidden
 - Operation Nightjar demo data no longer ships pre-classified/pre-tagged — the constellation boots clean; classify or tag entities yourself after enabling advanced mode
 - Fixed: pipeline card classification chip now respects the markings toggle (previously always rendered)
+- Docker packaging (`Dockerfile` + `docker-compose.yml`, `python:3.12-alpine` serving `index.html` via `http.server`) — `docker compose up --build`
+- Live demo on GitHub Pages, auto-deployed on push to `main`
 
 ## v0.2.0 — 2026-07-08
 - Automatic ingest pipelines (simulator + URL polling) with per-pipeline classification, auto-tags, translation
