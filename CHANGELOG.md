@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.0 — 2026-07-09
+- Classification markings and tagging are now an opt-in "advanced" mode, off by default (`settings.markings`, toggled via the Classification & tagging checkbox in Pipelines & Settings)
+- When off: no classification banner, no classification/tag chips anywhere, and the inspector's Classification/Tags editors, the ingest form's classification/tag fields, and the pipeline form's classification/tag fields are hidden
+- Operation Nightjar demo data no longer ships pre-classified/pre-tagged — the constellation boots clean; classify or tag entities yourself after enabling advanced mode
+- Fixed: pipeline card classification chip now respects the markings toggle (previously always rendered)
+
 ## v0.2.0 — 2026-07-08
 - Automatic ingest pipelines (simulator + URL polling) with per-pipeline classification, auto-tags, translation
 - Translation providers: LibreTranslate-compatible endpoint + offline demo dictionary

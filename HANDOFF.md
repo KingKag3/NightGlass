@@ -124,3 +124,15 @@ The five wish-list features are implemented in `index.html` (repo root). Summary
 - Full details live in the repo `wiki/` (Obsidian-compatible).
 
 **Top priority for the next session**: the FastAPI backend with server-side clearance enforcement — client-side redaction is a UX control, not a security boundary.
+
+---
+
+# v0.3.0 addendum (2026-07-09)
+
+Classification markings and tagging became an opt-in "advanced" feature instead of always-on:
+
+- **Default flipped**: `settings.markings` now defaults to `false` (was `true`). The Pipelines & Settings checkbox is relabeled "Classification & tagging (advanced)".
+- **Demo data stripped**: `demoData()`'s `cls`/`tg` seed maps are gone — every entity boots with `classification:null, tags:[]`. The starter `p0` simulator pipeline lost its `CUI`/`['auto']` seed too. Operation Nightjar now loads clean; classify/tag things yourself after enabling the toggle.
+- **New CSS gate**: `.advonly` class + `body:not(.marked) .advonly{display:none}` (next to the existing `.classbanner`/`.marked` rule at the top of `<style>`). Applied to: the instance-classification select, the ingest form's classification/tag fields, the pipeline form's classification/tag fields, and the inspector's Classification + Tags `insp__section` blocks. Tag chips in search results and the pipeline list are now conditionally rendered on `markingsOn()` in JS instead (template strings, not static markup).
+- **Bug fixed in passing**: the pipeline list's classification chip (`renderPipelines`) was rendering unconditionally on `p.classification`, ignoring `markingsOn()` — now gated like every other chip.
+- Everything else about the redaction/classification system (`isRedacted`, `CLASSIF`, per-item/per-instance/per-batch scopes, JSON/Markdown export round-trip) is unchanged — only default state and UI visibility moved. See [[Classification & Redaction]] for the updated toggle behavior.

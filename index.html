@@ -341,6 +341,7 @@ button{font-family:inherit;color:inherit;cursor:pointer}
   align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.24em}
 body.marked .classbanner{display:flex}
 body.marked .app{height:calc(100vh - 22px);margin-top:22px}
+body:not(.marked) .advonly{display:none}
 .classchip{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;margin-right:7px;letter-spacing:.05em;vertical-align:2px;color:#08101c}
 .redacted{filter:blur(5px);user-select:none}
 .userbox{display:flex;align-items:center;gap:8px;border-left:1px solid var(--line);padding-left:16px}
@@ -536,8 +537,8 @@ body.marked .app{height:calc(100vh - 22px);margin-top:22px}
         </div>
 
         <div class="ingopts">
-          <label>Classification <select id="ingClass"><option value="">Unmarked</option><option value="U">UNCLASSIFIED</option><option value="CUI">CUI</option><option value="S">SECRET</option><option value="TS">TOP SECRET</option></select></label>
-          <label>Tags <input id="ingTags" class="taginput" placeholder="comma,separated" style="width:170px"></label>
+          <label class="advonly">Classification <select id="ingClass"><option value="">Unmarked</option><option value="U">UNCLASSIFIED</option><option value="CUI">CUI</option><option value="S">SECRET</option><option value="TS">TOP SECRET</option></select></label>
+          <label class="advonly">Tags <input id="ingTags" class="taginput" placeholder="comma,separated" style="width:170px"></label>
           <label class="ck"><input type="checkbox" id="ingTx"> Auto-translate</label>
           <span style="font-size:11px;color:var(--muted-2)">applied to everything ingested below</span>
         </div>
@@ -624,8 +625,8 @@ e.g.  Observed beaconing to 185.220.101.45 and evil-c2[.]xyz
         </div>
         <div class="card"><div class="card__eyebrow">Instance Settings</div>
           <div class="setrow">
-            <label class="ck"><input type="checkbox" id="setMark" checked> Classification markings enabled</label>
-            <label>Instance classification <select id="setInstClass"><option value="U">UNCLASSIFIED</option><option value="CUI">CUI</option><option value="S">SECRET</option><option value="TS">TOP SECRET</option></select></label>
+            <label class="ck"><input type="checkbox" id="setMark"> Classification &amp; tagging (advanced)</label>
+            <label class="advonly">Instance classification <select id="setInstClass"><option value="U">UNCLASSIFIED</option><option value="CUI">CUI</option><option value="S">SECRET</option><option value="TS">TOP SECRET</option></select></label>
           </div>
           <div class="setrow">
             <label>Translation <select id="setTxMode"><option value="demo">Demo dictionary (offline)</option><option value="endpoint">LibreTranslate endpoint</option></select></label>
@@ -641,8 +642,8 @@ e.g.  Observed beaconing to 185.220.101.45 and evil-c2[.]xyz
             <label>every <input class="taginput" id="pInt" value="30" style="width:56px"> s</label>
           </div>
           <div class="setrow">
-            <select id="pClass"><option value="">Unmarked</option><option value="U">U</option><option value="CUI">CUI</option><option value="S">S</option><option value="TS">TS</option></select>
-            <input class="taginput" id="pTags" placeholder="auto,tags" style="width:150px">
+            <select id="pClass" class="advonly"><option value="">Unmarked</option><option value="U">U</option><option value="CUI">CUI</option><option value="S">S</option><option value="TS">TS</option></select>
+            <input class="taginput advonly" id="pTags" placeholder="auto,tags" style="width:150px">
             <label class="ck"><input type="checkbox" id="pTx"> translate</label>
             <button class="btn btn--primary" id="pAdd">Add pipeline</button>
           </div>
@@ -693,7 +694,7 @@ const USERS = [
   {name:'guest.viewer',   clearance:'U'},
 ];
 let activeUser = USERS[0];
-let settings = { markings:true, instanceClass:'U', txMode:'demo', txUrl:'', txLang:'en' };
+let settings = { markings:false, instanceClass:'U', txMode:'demo', txUrl:'', txLang:'en' };
 let state = { entities:[], links:[], events:[], pipelines:[], searches:[], alerts:[] };
 let hiddenTypes = new Set();
 let selectedId = null;
@@ -760,9 +761,7 @@ function demoData(){
     {ts:'2024-09-05T14:55:00Z', severity:'medium',   entityId:'ioc:dom2',         text:'Data staged for exfil to <b>cdn-telemetry.io</b>'},
     {ts:'2024-09-06T09:20:00Z', severity:'critical', entityId:'actor:nightjar',   text:'Campaign attributed to <b>APT-Nightjar</b> with high confidence'},
   ];
-  const cls={'actor:nightjar':'S','campaign:harvest':'S','malware:sledgekey':'CUI','asset:dc':'S','ioc:dom2':'CUI','tech:t1003':'CUI'};
-  const tg={'actor:nightjar':['apt','priority'],'campaign:harvest':['active-op'],'ioc:ip1':['c2'],'ioc:dom1':['c2'],'malware:rookdoor':['backdoor']};
-  entities.forEach(e=>{ e.classification=cls[e.id]||null; e.tags=tg[e.id]?[...tg[e.id]]:[]; seedPos(e); });
+  entities.forEach(e=>{ e.classification=null; e.tags=[]; seedPos(e); });
   return {entities, links, events};
 }
 
@@ -1159,9 +1158,9 @@ function selectEntity(id){
   // severity
   if(e.severity){ html+=`<div class="insp__section"><h5>Severity</h5><span class="chip"><span class="dot" style="background:${SEV[e.severity]||'#888'}"></span>${e.severity}</span></div>`; }
   // classification editor
-  html+=`<div class="insp__section"><h5>Classification</h5><select id="inspClass"><option value="">Unmarked</option>${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${e.classification===k?'selected':''}>${CLASSIF[k].label}</option>`).join('')}</select></div>`;
+  html+=`<div class="insp__section advonly"><h5>Classification</h5><select id="inspClass"><option value="">Unmarked</option>${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${e.classification===k?'selected':''}>${CLASSIF[k].label}</option>`).join('')}</select></div>`;
   // tag editor
-  html+=`<div class="insp__section"><h5>Tags</h5><div class="tagrow">${(e.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}<span class="tagx" data-t="${escapeHtml(t)}">×</span></span>`).join('')||'<span style="color:var(--muted-2);font-size:12px">none</span>'}</div><div style="display:flex;gap:6px;margin-top:8px"><input class="taginput" id="tagIn" placeholder="add tag…" style="flex:1"><button class="btn" id="tagAdd" style="padding:6px 12px">Add</button></div></div>`;
+  html+=`<div class="insp__section advonly"><h5>Tags</h5><div class="tagrow">${(e.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}<span class="tagx" data-t="${escapeHtml(t)}">×</span></span>`).join('')||'<span style="color:var(--muted-2);font-size:12px">none</span>'}</div><div style="display:flex;gap:6px;margin-top:8px"><input class="taginput" id="tagIn" placeholder="add tag…" style="flex:1"><button class="btn" id="tagAdd" style="padding:6px 12px">Add</button></div></div>`;
   // attributes
   const keys=Object.keys(e.meta||{});
   if(keys.length){
@@ -1493,7 +1492,8 @@ function renderSearchResults(){
   el.innerHTML=hits.length?hits.map(e=>{
     const red=isRedacted(e); const m=TYPES[e.type]||TYPES.ioc;
     const chip=markingsOn()&&e.classification?classChipHtml(e.classification):'';
-    return `<div class="tick" ${red?'':`data-goto="${e.id}"`} style="border-left-color:${m.color}"><span class="tick__t">${e.type}</span><span class="tick__txt">${chip}${red?'<span class="redacted">■■■■■■■■■■</span>':escapeHtml(e.label)} ${(e.tags||[]).map(t=>`<span class="chip" style="font-size:10px;padding:1px 7px">${escapeHtml(t)}</span>`).join(' ')}</span></div>`;
+    const tags=markingsOn()?(e.tags||[]).map(t=>`<span class="chip advonly" style="font-size:10px;padding:1px 7px">${escapeHtml(t)}</span>`).join(' '):'';
+    return `<div class="tick" ${red?'':`data-goto="${e.id}"`} style="border-left-color:${m.color}"><span class="tick__t">${e.type}</span><span class="tick__txt">${chip}${red?'<span class="redacted">■■■■■■■■■■</span>':escapeHtml(e.label)} ${tags}</span></div>`;
   }).join(''):'<div style="color:var(--muted-2);font-size:12px;padding:8px">No matches.</div>';
   el.querySelectorAll('[data-goto]').forEach(x=>x.onclick=()=>{selectEntity(x.dataset.goto);switchView('graph');});
 }
@@ -1560,8 +1560,8 @@ function renderPipelines(){
   const el=document.getElementById('pipeList'); if(!el)return;
   el.innerHTML=state.pipelines.length?state.pipelines.map(p=>
     `<div class="card"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <b>${escapeHtml(p.name)}</b><span class="chip">${p.src==='sim'?'simulator':'url poll'}</span>${p.classification?classChipHtml(p.classification):''}
-      ${(p.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}</span>`).join('')}
+      <b>${escapeHtml(p.name)}</b><span class="chip">${p.src==='sim'?'simulator':'url poll'}</span>${markingsOn()&&p.classification?classChipHtml(p.classification):''}
+      ${markingsOn()?(p.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}</span>`).join(''):''}
       <span style="color:var(--muted);font-size:12px">every ${p.interval}s · ${p.count||0} ingested · ${escapeHtml(p.lastStatus||'idle')}</span>
       <span style="flex:1"></span>
       <button class="btn" data-run="${p.id}" style="padding:6px 12px">Run now</button>
@@ -1626,7 +1626,7 @@ function initV2(){
 
   // starter content: one alerting search + a paused simulator pipeline to demo the loop
   state.searches.push({id:'s0',name:'High-sev indicators',query:'type:ioc sev:high',alert:true});
-  state.pipelines.push({id:'p0',name:'demo-simulator',src:'sim',url:'',interval:20,classification:'CUI',tags:['auto'],translate:false,enabled:false,lastRun:0,count:0,lastStatus:'paused'});
+  state.pipelines.push({id:'p0',name:'demo-simulator',src:'sim',url:'',interval:20,classification:null,tags:[],translate:false,enabled:false,lastRun:0,count:0,lastStatus:'paused'});
   setInterval(pipeTick,5000);
 }
 
