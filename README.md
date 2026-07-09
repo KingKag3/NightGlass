@@ -35,10 +35,11 @@ The app boots into the fictional **Operation Nightjar** demo campaign so every f
 
 | | |
 |---|---|
-| ![Command center](docs/screenshots/command-center.webp) | ![Threat constellation](docs/screenshots/constellation.webp) |
-| ![Constellation with inspector open](docs/screenshots/constellation-inspector.webp) | ![ATT&CK matrix](docs/screenshots/attack-matrix.webp) |
-| ![Timeline](docs/screenshots/timeline.webp) | ![Search & alerts](docs/screenshots/search-alerts.webp) |
-| ![Pipelines & settings](docs/screenshots/pipelines-settings.webp) | ![Redacted guest view](docs/screenshots/redaction-guest-view.png) |
+| ![Command center](docs/screenshots/command-center.webp) | ![Ingest threat data](docs/screenshots/ingest.png) |
+| ![Threat constellation](docs/screenshots/constellation.webp) | ![Constellation with inspector open](docs/screenshots/constellation-inspector.webp) |
+| ![ATT&CK matrix](docs/screenshots/attack-matrix.webp) | ![Timeline](docs/screenshots/timeline.webp) |
+| ![Search & alerts](docs/screenshots/search-alerts.webp) | ![Pipelines & settings](docs/screenshots/pipelines-settings.webp) |
+| ![Redacted guest view](docs/screenshots/redaction-guest-view.png) | |
 
 Hovering a relationship line surfaces what it is:
 
