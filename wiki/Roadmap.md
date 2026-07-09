@@ -11,3 +11,4 @@
 9. **Time scrubber** — window-filter the constellation, animate campaign progression
 10. **Report polish** — PDF export, per-actor sub-reports, TLP mapping alongside classification
 11. **Tauri packaging** — desktop build once the backend lands
+12. **Custom threat-group sandbox** (backlog, captured 2026-07-09) — analysts create their own named threat-group/campaign and assign existing or new actors into it. Builds on item 3's still-unbuilt quick-add entity/relationship forms rather than needing separate creation logic.

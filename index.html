@@ -275,8 +275,11 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .profile__previewPanel{flex:1;min-width:280px;position:sticky;top:0;align-self:flex-start;
   height:calc(100vh - 200px);min-height:280px;border:1px solid var(--line);border-radius:14px;
   background:var(--panel-2);overflow:hidden;display:flex;flex-direction:column}
-.profile__previewPanel h5{margin:0;padding:12px 16px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+.profile__previewPanel #previewHead{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin:0;padding:12px 16px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
   color:var(--muted);border-bottom:1px solid var(--line);flex:none}
+.profile__previewPanel .previewBack{color:var(--signal);cursor:pointer;white-space:nowrap;letter-spacing:normal;text-transform:none;font-size:12px}
+.profile__previewPanel .previewBack:hover{text-decoration:underline}
 .profile__previewPanel canvas{flex:1;width:100%;display:block;cursor:pointer}
 .profile__header{display:flex;gap:20px;align-items:flex-start;margin-bottom:24px}
 .profile__avatar{width:96px;height:96px;border-radius:16px;flex:none;background:var(--panel-2);border:1px solid var(--line-strong);
@@ -291,6 +294,15 @@ button{font-family:inherit;color:inherit;cursor:pointer}
   font-family:var(--sans);font-size:22px;font-weight:650;width:100%;padding:2px 0}
 .profile__labelInput:hover,.profile__labelInput:focus{border-bottom-color:var(--line-strong);outline:none}
 .profile__actions{display:flex;gap:8px;margin-top:10px}
+.profile__gallery{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.profile__thumb{width:64px;height:64px;border-radius:10px;overflow:hidden;position:relative;flex:none;border:1px solid var(--line-strong)}
+.profile__thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.profile__thumb__del{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;border:none;
+  background:rgba(8,11,22,.8);color:var(--ink);font-size:12px;line-height:1;cursor:pointer}
+.profile__thumb__del:hover{background:var(--crit)}
+.profile__thumb--add{display:flex;align-items:center;justify-content:center;background:var(--panel-2);
+  color:var(--muted);font-size:22px;cursor:pointer;border-style:dashed}
+.profile__thumb--add:hover{color:var(--signal);border-color:var(--signal)}
 .profile__section{margin:22px 0;padding-top:18px;border-top:1px solid var(--line)}
 .profile__section h5{margin:0 0 10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .metarow{display:flex;gap:8px;align-items:center;margin-bottom:6px}
@@ -964,7 +976,7 @@ function parseJSON(obj){
   if(Array.isArray(obj.entities)){
     obj.entities.forEach(en=>{
       if(!en.id||state.entities.some(x=>x.id===en.id))return;
-      const ent={id:en.id,type:en.type||'ioc',label:en.label||en.id,severity:normSev(en.severity),meta:en.meta||{},classification:en.classification||null,tags:Array.isArray(en.tags)?en.tags:[],image:en.image||null};
+      const ent={id:en.id,type:en.type||'ioc',label:en.label||en.id,severity:normSev(en.severity),meta:en.meta||{},classification:en.classification||null,tags:Array.isArray(en.tags)?en.tags:[],images:Array.isArray(en.images)?en.images:(en.image?[en.image]:[])};
       seedPos(ent); state.entities.push(ent); added++;
     });
     (obj.links||[]).forEach(l=>{ if(l.source&&l.target)state.links.push({source:l.source,target:l.target,relation:l.relation||'related'}); });
@@ -1160,7 +1172,6 @@ function tick(){
   if(!frozen && Math.random()<0.08){ const lm=linkMap(); if(lm.length)pulses.push({li:Math.floor(Math.random()*lm.length),t:0}); }
   pulses.forEach(p=>p.t+=0.02); pulses=pulses.filter(p=>p.t<1);
   draw();
-  if(currentView==='actors'&&profileActorId)drawProfilePreview();
   requestAnimationFrame(tick);
 }
 
@@ -1459,84 +1470,111 @@ function selectActorProfile(id){
   const e=state.entities.find(x=>x.id===id);
   if(!e || isRedacted(e)){ if(e)toast('⛔ Insufficient clearance — item is classified '+(CLASSIF[e.classification]?CLASSIF[e.classification].label:e.classification)); return; }
   profileActorId=id;
+  previewFocusId=null;
   renderActorsView();
   renderActorProfile();
 }
 
-function handleAvatarUpload(file,e){
-  if(!file||!file.type.startsWith('image/'))return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const img=new Image();
-    img.onload=()=>{
-      const maxDim=480;
-      const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
-      const w=Math.round(img.width*scale), h=Math.round(img.height*scale);
-      const c=document.createElement('canvas'); c.width=w; c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);
-      e.image=c.toDataURL('image/jpeg',0.82);
-      renderActorProfile();
-      toast('Profile image updated');
+function handleImagesAdd(fileList,e){
+  const files=[...fileList].filter(f=>f.type.startsWith('image/'));
+  if(!files.length)return;
+  if(!e.images)e.images=[];
+  let pending=files.length;
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=new Image();
+      img.onload=()=>{
+        const maxDim=480;
+        const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
+        const w=Math.round(img.width*scale), h=Math.round(img.height*scale);
+        const c=document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        e.images.push(c.toDataURL('image/jpeg',0.82));
+        if(--pending===0){ renderActorProfile(); toast(files.length>1?`${files.length} images added`:'Image added'); }
+      };
+      img.src=ev.target.result;
     };
-    img.src=ev.target.result;
-  };
-  reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+  });
 }
 
 let profilePreviewXform=null;
+let previewFocusId=null;
 function resizeProfilePreview(){
   const c=document.getElementById('profilePreview'); if(!c)return;
   const r=c.getBoundingClientRect();
   c.width=Math.max(1,r.width*dpr); c.height=Math.max(1,r.height*dpr);
+}
+function updatePreviewHeader(){
+  const el=document.getElementById('previewHead'); if(!el)return;
+  const focusId=previewFocusId||profileActorId;
+  const ent=state.entities.find(x=>x.id===focusId);
+  const red=ent&&isRedacted(ent);
+  const count=state.links.filter(l=>l.source===focusId||l.target===focusId).length;
+  const rootLabel=state.entities.find(x=>x.id===profileActorId)?.label||'';
+  const back=focusId!==profileActorId?`<span class="previewBack" id="previewBack">« ${escapeHtml(rootLabel)}</span>`:'';
+  el.innerHTML=`<span>${ent?(red?'REDACTED':escapeHtml(ent.label)):''} — ${count} direct connection${count===1?'':'s'}</span>${back}`;
+  const backEl=document.getElementById('previewBack');
+  if(backEl)backEl.onclick=()=>{ previewFocusId=null; drawProfilePreview(); updatePreviewHeader(); };
 }
 function drawProfilePreview(){
   const c=document.getElementById('profilePreview'); if(!c||!profileActorId)return;
   const pctx=c.getContext('2d');
   const w=c.width, h=c.height;
   pctx.clearRect(0,0,w,h);
-  const component=actorComponent(profileActorId);
-  const nodes=state.entities.filter(n=>component.has(n.id));
-  if(!nodes.length)return;
-  const xs=nodes.map(n=>n.x), ys=nodes.map(n=>n.y);
-  const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
-  const pad=40*dpr;
-  const spanX=Math.max(1,maxX-minX), spanY=Math.max(1,maxY-minY);
-  const scale=Math.min((w-pad*2)/spanX,(h-pad*2)/spanY,3*dpr);
-  const ox=w/2-(minX+maxX)/2*scale, oy=h/2-(minY+maxY)/2*scale;
-  const toPx=(x,y)=>({x:x*scale+ox,y:y*scale+oy});
-  profilePreviewXform={nodes,toPx};
-  linkMap().forEach(l=>{
-    if(!component.has(l.source)||!component.has(l.target))return;
-    if(l.s.hidden||l.t.hidden)return;
-    const a=toPx(l.s.x,l.s.y), b=toPx(l.t.x,l.t.y);
+  let focusId=previewFocusId||profileActorId;
+  let center=state.entities.find(x=>x.id===focusId);
+  if(!center||isRedacted(center)){ previewFocusId=null; focusId=profileActorId; center=state.entities.find(x=>x.id===focusId); }
+  if(!center||isRedacted(center))return;
+  const neighbors=state.links.map(l=>{
+    if(l.source!==focusId&&l.target!==focusId)return null;
+    const otherId=l.source===focusId?l.target:l.source;
+    const o=state.entities.find(x=>x.id===otherId);
+    return o?{o,l}:null;
+  }).filter(Boolean);
+  const cx=w/2, cy=h/2;
+  const R=Math.min(w,h)*0.36;
+  const centerRad=9*dpr, neighRad=6*dpr;
+  const positions=new Map([[focusId,{x:cx,y:cy}]]);
+  neighbors.forEach(({o},i)=>{
+    const angle=(i/neighbors.length)*Math.PI*2-Math.PI/2;
+    positions.set(o.id,{x:cx+Math.cos(angle)*R,y:cy+Math.sin(angle)*R});
+  });
+  profilePreviewXform={focusId,positions};
+  neighbors.forEach(({o,l})=>{
+    const a=positions.get(focusId), b=positions.get(o.id);
     pctx.beginPath(); pctx.moveTo(a.x,a.y); pctx.lineTo(b.x,b.y);
-    pctx.strokeStyle=hexToRgba(relColor(l.relation),0.35); pctx.lineWidth=1*dpr; pctx.stroke();
+    pctx.strokeStyle=hexToRgba(relColor(l.relation),0.55); pctx.lineWidth=1.3*dpr; pctx.stroke();
   });
-  nodes.forEach(n=>{
-    const red=isRedacted(n);
-    const meta=TYPES[n.type]||TYPES.ioc;
-    const isSelf=n.id===profileActorId;
-    const p=toPx(n.x,n.y);
-    const rad=(isSelf?7:4)*dpr;
-    pctx.beginPath(); pctx.arc(p.x,p.y,rad,0,7);
+  neighbors.forEach(({o})=>{
+    const red=isRedacted(o);
+    const meta=TYPES[o.type]||TYPES.ioc;
+    const p=positions.get(o.id);
+    pctx.beginPath(); pctx.arc(p.x,p.y,neighRad,0,7);
     pctx.fillStyle=red?'#5a6378':meta.color; pctx.fill();
-    if(isSelf){ pctx.lineWidth=2*dpr; pctx.strokeStyle='rgba(231,236,255,0.8)'; pctx.stroke(); }
+    pctx.font=`500 ${10*dpr}px "JetBrains Mono", monospace`;
+    pctx.fillStyle=red?'#6b7490':'#c7cee6'; pctx.textAlign='center';
+    const lbl=red?'REDACTED':(o.label.length>18?o.label.slice(0,16)+'…':o.label);
+    pctx.fillText(lbl, p.x, p.y+(p.y>cy?18*dpr:-11*dpr));
   });
-  const self=nodes.find(n=>n.id===profileActorId);
-  if(self){
-    const p=toPx(self.x,self.y);
-    pctx.font=`600 ${11*dpr}px "Space Grotesk", sans-serif`; pctx.fillStyle='#E7ECFF'; pctx.textAlign='center';
-    pctx.fillText(isRedacted(self)?'REDACTED':self.label, p.x, p.y-12*dpr);
+  {
+    const red=isRedacted(center);
+    const meta=TYPES[center.type]||TYPES.ioc;
+    const p=positions.get(focusId);
+    pctx.beginPath(); pctx.arc(p.x,p.y,centerRad,0,7);
+    pctx.fillStyle=red?'#5a6378':meta.color;
+    pctx.shadowColor=pctx.fillStyle; pctx.shadowBlur=12*dpr; pctx.fill(); pctx.shadowBlur=0;
+    pctx.lineWidth=2*dpr; pctx.strokeStyle='rgba(231,236,255,0.85)'; pctx.stroke();
+    pctx.font=`700 ${11*dpr}px "Space Grotesk", sans-serif`; pctx.fillStyle='#E7ECFF'; pctx.textAlign='center';
+    pctx.fillText(red?'REDACTED':center.label, p.x, p.y-centerRad-8*dpr);
   }
 }
 function profilePreviewNodeAt(sx,sy){
   if(!profilePreviewXform)return null;
-  const dprLocal=dpr;
-  for(let i=profilePreviewXform.nodes.length-1;i>=0;i--){
-    const n=profilePreviewXform.nodes[i];
-    const p=profilePreviewXform.toPx(n.x,n.y);
-    const rad=(n.id===profileActorId?7:4)*dprLocal+3*dprLocal;
-    if((p.x-sx)**2+(p.y-sy)**2<rad*rad)return n;
+  for(const [id,p] of profilePreviewXform.positions){
+    const rad=(id===profilePreviewXform.focusId?9:6)*dpr+4*dpr;
+    if((p.x-sx)**2+(p.y-sy)**2<rad*rad)return state.entities.find(x=>x.id===id)||null;
   }
   return null;
 }
@@ -1552,22 +1590,23 @@ function renderActorProfile(){
     const o=state.entities.find(x=>x.id===otherId);
     return o&&o.type==='campaign'?{o,l}:null;
   }).filter(Boolean);
+  const images=e.images||[];
   let html='<div class="profile">';
   html+=`<div class="profile__header">
     <div class="profile__avatar" id="profileAvatar">
-      ${e.image?`<img src="${e.image}" alt="${escapeHtml(e.label)}">`:`<span class="profile__avatar__placeholder" style="color:${TYPES.actor.color}">${escapeHtml((e.label||'?').slice(0,1).toUpperCase())}</span>`}
-      <div class="profile__avatar__hint">Click to upload</div>
-      <input type="file" id="profileImgInput" accept="image/*" hidden>
+      ${images[0]?`<img src="${images[0]}" alt="${escapeHtml(e.label)}">`:`<span class="profile__avatar__placeholder" style="color:${TYPES.actor.color}">${escapeHtml((e.label||'?').slice(0,1).toUpperCase())}</span>`}
+      <div class="profile__avatar__hint">Click to add image</div>
+      <input type="file" id="profileImgInput" accept="image/*" multiple hidden>
     </div>
     <div class="profile__title">
       <input id="profileLabelInput" class="profile__labelInput" value="${escapeHtml(e.label)}">
       <div class="profile__actions">
         <select id="profileSeverity">${Object.keys(SEV).map(s=>`<option value="${s}" ${e.severity===s?'selected':''}>${s}</option>`).join('')}</select>
-        <button class="btn" id="profileViewGraph">View in constellation</button>
-        ${e.image?'<button class="btn" id="profileImgRemove">Remove image</button>':''}
+        <button class="btn" id="profileViewGraph">Show only ${escapeHtml(e.label)} in constellation</button>
       </div>
     </div>
   </div>`;
+  html+=`<div class="profile__gallery">${images.map((img,i)=>`<div class="profile__thumb"><img src="${img}"><button class="profile__thumb__del" data-idx="${i}" title="Remove image">×</button></div>`).join('')}<div class="profile__thumb profile__thumb--add" id="profileThumbAdd" title="Add image">+</div></div>`;
   if(campaignLinks.length){
     html+='<div class="profile__section"><h5>Threat Group / Campaign</h5>';
     campaignLinks.forEach(({o,l})=>{
@@ -1603,22 +1642,28 @@ function renderActorProfile(){
     html+='</div>';
   }
   html+='</div>';
-  html+=`<div class="profile__previewPanel"><h5>Constellation preview — ${actorComponent(e.id).size} connected</h5><canvas id="profilePreview"></canvas></div>`;
+  html+=`<div class="profile__previewPanel"><div id="previewHead"></div><canvas id="profilePreview"></canvas></div>`;
   panel.innerHTML=html;
   resizeProfilePreview();
   drawProfilePreview();
+  updatePreviewHeader();
   const previewCv=panel.querySelector('#profilePreview');
   if(previewCv)previewCv.onclick=(ev)=>{
     const rect=previewCv.getBoundingClientRect();
     const n=profilePreviewNodeAt((ev.clientX-rect.left)*dpr,(ev.clientY-rect.top)*dpr);
     if(!n||isRedacted(n))return;
-    if(n.type==='actor')selectActorProfile(n.id); else { switchView('graph'); selectEntity(n.id); }
+    if(profilePreviewXform&&n.id===profilePreviewXform.focusId){
+      if(n.type==='actor')selectActorProfile(n.id); else { switchView('graph'); selectEntity(n.id); }
+    } else {
+      previewFocusId=n.id; drawProfilePreview(); updatePreviewHeader();
+    }
   };
 
   const avatar=panel.querySelector('#profileAvatar'), imgInput=panel.querySelector('#profileImgInput');
   avatar.onclick=()=>imgInput.click();
-  imgInput.onchange=()=>{ if(imgInput.files[0])handleAvatarUpload(imgInput.files[0],e); };
-  const rmBtn=panel.querySelector('#profileImgRemove'); if(rmBtn)rmBtn.onclick=()=>{ e.image=null; renderActorProfile(); };
+  const thumbAdd=panel.querySelector('#profileThumbAdd'); if(thumbAdd)thumbAdd.onclick=()=>imgInput.click();
+  imgInput.onchange=()=>{ if(imgInput.files.length)handleImagesAdd(imgInput.files,e); };
+  panel.querySelectorAll('.profile__thumb__del').forEach(btn=>btn.onclick=()=>{ e.images.splice(+btn.dataset.idx,1); renderActorProfile(); });
 
   const labelInput=panel.querySelector('#profileLabelInput');
   labelInput.onchange=()=>{ e.label=labelInput.value.trim()||e.label; render(); renderActorsView(); renderActorProfile(); };
@@ -1760,7 +1805,7 @@ function download(name,content,mime){
 document.getElementById('exportJson').onclick=()=>{
   const clean={
     settings:{markings:settings.markings,instanceClass:settings.instanceClass},
-    entities:state.entities.map(({id,type,label,severity,meta,classification,tags,image})=>({id,type,label,severity,meta,classification:classification||null,tags:tags||[],image:image||null})),
+    entities:state.entities.map(({id,type,label,severity,meta,classification,tags,images})=>({id,type,label,severity,meta,classification:classification||null,tags:tags||[],images:images||[]})),
     links:state.links,
     events:state.events,
     searches:state.searches,
@@ -1987,7 +2032,11 @@ function initV2(){
     const chip=document.getElementById('userClr');
     chip.textContent=activeUser.clearance; chip.style.background=CLASSIF[activeUser.clearance].color;
     if(selectedId){ const e=state.entities.find(x=>x.id===selectedId); if(e&&isRedacted(e))closeInspector(); }
-    if(profileActorId){ const pe=state.entities.find(x=>x.id===profileActorId); if(pe&&isRedacted(pe)){ profileActorId=null; renderActorsView(); renderActorProfile(); } }
+    if(profileActorId){
+      const pe=state.entities.find(x=>x.id===profileActorId);
+      if(pe&&isRedacted(pe)){ profileActorId=null; renderActorsView(); renderActorProfile(); }
+      else if(document.getElementById('profilePreview')){ drawProfilePreview(); updatePreviewHeader(); }
+    }
     render();
   };
   us.onchange=applyUser; us.value='0'; applyUser();
