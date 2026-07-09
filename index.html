@@ -1481,6 +1481,12 @@ function renderActorProfile(){
   const e=state.entities.find(x=>x.id===profileActorId);
   if(!e){ panel.innerHTML='<div class="empty" style="margin:auto">Select a threat actor to view its profile.</div>'; return; }
   const meta=e.meta||{};
+  const rels=state.links.filter(l=>l.source===e.id||l.target===e.id);
+  const campaignLinks=rels.map(l=>{
+    const otherId=l.source===e.id?l.target:l.source;
+    const o=state.entities.find(x=>x.id===otherId);
+    return o&&o.type==='campaign'?{o,l}:null;
+  }).filter(Boolean);
   let html='<div class="profile">';
   html+=`<div class="profile__header">
     <div class="profile__avatar" id="profileAvatar">
@@ -1497,13 +1503,27 @@ function renderActorProfile(){
       </div>
     </div>
   </div>`;
+  if(campaignLinks.length){
+    html+='<div class="profile__section"><h5>Threat Group / Campaign</h5>';
+    campaignLinks.forEach(({o,l})=>{
+      const red=isRedacted(o);
+      html+=`<div class="rel" style="align-items:center">
+        <span class="rel__dot" style="background:${red?'#5a6378':TYPES.campaign.color}"></span>
+        <div style="flex:1">
+          <div>${red?'<span class="redacted">■■■■■■■■</span>':escapeHtml(o.label)}</div>
+          <div class="rel__verb" style="color:${red?'':relColor(l.relation)}">${escapeHtml(l.relation)}</div>
+        </div>
+        ${red?'':`<button class="btn" data-focus-campaign="${o.id}" style="padding:6px 10px;font-size:11px">Show only this group</button>`}
+      </div>`;
+    });
+    html+='</div>';
+  }
   html+=`<div class="profile__section advonly"><h5>Classification</h5><select id="profileClass"><option value="">Unmarked</option>${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${e.classification===k?'selected':''}>${CLASSIF[k].label}</option>`).join('')}</select></div>`;
   html+=`<div class="profile__section advonly"><h5>Tags</h5><div class="tagrow">${(e.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}<span class="tagx" data-t="${escapeHtml(t)}">×</span></span>`).join('')||'<span style="color:var(--muted-2);font-size:12px">none</span>'}</div><div style="display:flex;gap:6px;margin-top:8px"><input class="taginput" id="profileTagIn" placeholder="add tag…" style="flex:1"><button class="btn" id="profileTagAdd" style="padding:6px 12px">Add</button></div></div>`;
   html+=`<div class="profile__section"><h5>Attributes</h5><div id="profileMetaRows">${Object.entries(meta).map(([k,v])=>`
     <div class="metarow"><input class="metarow__key" value="${escapeHtml(k)}" disabled><input class="metarow__val" data-key="${escapeHtml(k)}" value="${escapeHtml(String(v))}"><button class="metarow__del" data-key="${escapeHtml(k)}">×</button></div>`).join('')}</div>
     <div class="metarow"><input class="metarow__key" id="profileMetaKeyNew" placeholder="key"><input class="metarow__val" id="profileMetaValNew" placeholder="value"><button class="btn" id="profileMetaAdd" style="padding:6px 12px">Add</button></div>
   </div>`;
-  const rels=state.links.filter(l=>l.source===e.id||l.target===e.id);
   if(rels.length){
     html+='<div class="profile__section"><h5>Relationships ('+rels.length+')</h5>';
     rels.forEach(l=>{
@@ -1530,6 +1550,7 @@ function renderActorProfile(){
   const sevSel=panel.querySelector('#profileSeverity');
   sevSel.onchange=()=>{ e.severity=sevSel.value; render(); renderActorsView(); };
   panel.querySelector('#profileViewGraph').onclick=()=>{ focusActor(e.id); switchView('graph'); };
+  panel.querySelectorAll('[data-focus-campaign]').forEach(btn=>btn.onclick=()=>{ focusActor(btn.dataset.focusCampaign); switchView('graph'); });
 
   const clsSel=panel.querySelector('#profileClass'); if(clsSel)clsSel.onchange=()=>{ e.classification=clsSel.value||null; render(); if(isRedacted(e)){profileActorId=null;renderActorsView();renderActorProfile();}else{renderActorProfile();} };
   panel.querySelectorAll('.tagx').forEach(x=>x.onclick=()=>{ e.tags=(e.tags||[]).filter(t=>t!==x.dataset.t); render(); renderActorProfile(); });

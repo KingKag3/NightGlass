@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.8.1 — 2026-07-09
+- Threat Actor profile now shows a "Threat Group / Campaign" section — every `campaign`-type entity the actor is linked to, each with a "Show only this group" button that focuses the constellation on that campaign's connected component. Reuses `focusActor()`/`actorComponent()` as-is (already entity-agnostic despite the naming) rather than adding new graph-filtering logic. Redacted campaigns blur and drop the button, same as everywhere else.
+
 ## v0.8.0 — 2026-07-09
 - New **Threat Actors** view (8th nav-rail entry) — a filterable, searchable list of every actor entity alongside a fully editable profile: label, severity, classification, tags, free-form meta attributes (add/edit/remove key-value rows), and a new profile image field.
 - Profile images: click the avatar to upload one — resized client-side to ≤480px and stored as a JPEG data URI in `entity.image`. No backend, no separate asset storage; round-trips losslessly through JSON export/import like every other field.

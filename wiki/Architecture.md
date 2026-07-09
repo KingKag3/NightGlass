@@ -43,5 +43,7 @@ Everything in the profile is editable and writes straight back to the entity, re
 
 Clicking a relationship in the profile behaves differently depending on what's on the other end: another actor swaps the profile to them (`selectActorProfile`, stays in this view); anything else jumps to the Constellation view and opens the generic inspector on it (`switchView('graph')` + `selectEntity()`).
 
+**Threat Group / Campaign section**: a profile section, shown above Classification when it applies, listing every `type:'campaign'` entity linked to the profiled actor (filtered from the same `rels` computation the Relationships section uses lower down). Each row has a "Show only this group" button — `focusActor(campaign.id)` + `switchView('graph')`. `focusActor()`/`actorComponent()` were already entity-agnostic BFS/hide logic despite the actor-centric naming, so no new graph-filtering code was needed to root the focus at a campaign instead of an actor. Redacted campaigns blur and drop the button, same pattern as everywhere else.
+
 ## Design language
 Signals-intelligence observatory: indigo void, signal cyan accent, calibrated severity ramp (blue→yellow→orange→red), Space Grotesk for UI, JetBrains Mono strictly for data. Classification colors follow convention: U green, CUI purple, S red, TS orange.
