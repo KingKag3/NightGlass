@@ -1,6 +1,6 @@
 # Architecture
 
-Single HTML file (`index.html`): CSS design tokens in `:root`, markup (shell + 7 views + inspector), ~970 lines of vanilla JS.
+Single HTML file (`index.html`): CSS design tokens in `:root`, markup (shell + 8 views + inspector), ~970 lines of vanilla JS.
 
 ## Shell
 - Left icon rail → `switchView(v)`; views are stacked `<section class="view">` toggled by `.is-active`
@@ -13,6 +13,7 @@ Single HTML file (`index.html`): CSS design tokens in `:root`, markup (shell + 7
 |---|---|---|
 | Command Center | `view-overview` | metrics, gauge, severity bars, live feed, top actors |
 | Constellation | `view-graph` | canvas force graph |
+| Threat Actors | `view-actors` | filterable actor list + editable profile (image, meta, embedded graph link) |
 | ATT&CK Matrix | `view-matrix` | observed-technique highlighting |
 | Timeline | `view-timeline` | event chronology |
 | Ingest | `view-ingest` | drop/paste/parse + per-batch options |
@@ -31,6 +32,16 @@ Edges render via `relColor(relation)` — a deterministic hash of the link's `re
 **Per-node pinning and hiding** (both view-state only, not exported — same treatment as `x`/`y`/`vx`/`vy`): dragging a node further than 4px sets `entity.pinned=true` (mouse and touch); `physicsStep()` zeroes velocity and skips integration for pinned nodes, so they act as fixed anchors that still exert repulsion/spring forces on everything else. Toggle from the inspector's "Pin in place" button; pinned nodes get a dashed ring in `draw()`. `entity.hidden=true` (inspector "Hide node") excludes an entity from `visibleEntities()` and from any edge touching it (`physicsStep()`, `draw()`); the graph controls' "Unhide all" button (auto-shown/hidden via `updateUnhideBtn()`, called from `render()`) clears every `hidden` flag at once — there's no per-node unhide UI, only clear-all.
 
 **Actor focus**: the Actors panel (`#actorsPanel`, same `.legend` styling as the entity-type/relationship legend, stacked above it in `.graph-hud`) lists every `type:'actor'` entity with its connected-entity count, auto-shown once 2+ actors exist. `actorComponent(id)` does an undirected BFS over `state.links` to find everything reachable from that actor; `focusActor(id)` sets `entity.hidden` for the whole graph based on component membership — reusing the same hide mechanism above, not a separate filter system. `focusedActorId` (null = "Show all") drives the active-row highlight; "Unhide all" also clears it so the two controls can't disagree. Boot/ingest behavior is unaffected — this is opt-in decluttering, never automatic.
+
+## Threat Actors view
+
+A dedicated view (`view-actors`, `.actorsview` — fixed-width filterable list on the left via `renderActorsView()`, profile panel filling the rest via `renderActorProfile()`), separate from both the compact Actors panel above and the generic inspector drawer. `profileActorId` tracks which actor's profile is open (distinct from `selectedId` — the generic inspector's selection — and `focusedActorId` — the graph filter); redaction is enforced the same way as the inspector (`selectActorProfile()` refuses a redacted actor with a clearance toast; `applyUser()` closes an already-open profile if a clearance switch makes it redacted).
+
+Everything in the profile is editable and writes straight back to the entity, re-rendering on each change (label, severity via `<select>`, classification, tags, and free-form `meta` key/value pairs — add/edit/remove rows, generalizing the tag-chip add/remove pattern to arbitrary attributes). "View in constellation" calls the existing `focusActor(e.id)` + `switchView('graph')` — the profile doesn't run its own graph rendering, it hands off to the real one.
+
+**Profile images**: `handleAvatarUpload(file, entity)` reads the file, draws it to an off-screen `<canvas>` capped at 480px on the long edge, and stores `entity.image` as a JPEG data URI (quality 0.82) — no server, no separate asset storage, and it round-trips through JSON export/import exactly like every other field (unlike `x`/`y`/`vx`/`vy`, which are intentionally stripped). Clicking the avatar opens a hidden file input; a placeholder (first letter of the label, in `TYPES.actor.color`) shows when no image is set.
+
+Clicking a relationship in the profile behaves differently depending on what's on the other end: another actor swaps the profile to them (`selectActorProfile`, stays in this view); anything else jumps to the Constellation view and opens the generic inspector on it (`switchView('graph')` + `selectEntity()`).
 
 ## Design language
 Signals-intelligence observatory: indigo void, signal cyan accent, calibrated severity ramp (blue→yellow→orange→red), Space Grotesk for UI, JetBrains Mono strictly for data. Classification colors follow convention: U green, CUI purple, S red, TS orange.

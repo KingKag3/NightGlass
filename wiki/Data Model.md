@@ -2,7 +2,7 @@
 
 ```js
 state = {
-  entities:  [{ id, type, label, severity, classification, tags:[], meta:{}, x,y,vx,vy }],
+  entities:  [{ id, type, label, severity, classification, tags:[], meta:{}, image, x,y,vx,vy }],
   links:     [{ source, target, relation }],
   events:    [{ ts, severity, entityId, text }],
   pipelines: [{ id, name, src:'sim'|'url', url, interval, classification, tags, translate, enabled, lastRun, count, lastStatus }],
@@ -18,6 +18,7 @@ USERS = [{ name, clearance }]   // clearance ∈ U | CUI | S | TS
 - IOC entities carry `meta.iotype` (ipv4, domain, url, sha256, sha1, md5, email)
 - Technique entities carry `meta.ttp` + `meta.tactic` → drives ATT&CK matrix
 - `classification` null = unmarked; `CLASSIF` map holds level + label + banner color
+- `image` null = no avatar; a data URI (JPEG, downscaled to ≤480px on the long edge, quality 0.82) set via the Threat Actors profile's image upload — round-trips through export/import like every other field, unlike `x`/`y`/`vx`/`vy`
 - Positions are stripped on export; `seedPos()` re-seeds on import
 - `demoData()` (Operation Nightjar) is the living example of the model
 - `docs/samples/the-americans-network.json` — a second, larger reference dataset (60 entities, 101 links, 42 distinct relation types): a fictional HUMINT network graph based on FX's *The Americans*. Not wired into `demoData()`/boot — drag it into the Ingest view to load it. Useful for testing at a scale/relation-density the built-in demo doesn't cover (e.g. relationship-line coloring with a large, varied relation vocabulary).

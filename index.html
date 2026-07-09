@@ -261,6 +261,40 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .rel__verb{font-family:var(--mono);font-size:10px;color:var(--muted-2);text-transform:uppercase}
 .rel__dot{width:9px;height:9px;border-radius:50%;flex:none}
 
+/* ---------- Threat Actors ---------- */
+.actorsview{display:flex;height:100%}
+.actorsview__list{width:280px;flex:none;border-right:1px solid var(--line);padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.actorsview__search input{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);font-size:13px;font-family:var(--sans)}
+.actorlist__item{padding:10px 12px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+.actorlist__item:hover{background:var(--panel-2)}
+.actorlist__item.is-active{background:rgba(59,232,222,.08);border-color:var(--signal)}
+.actorlist__item .name{font-weight:600;font-size:13px;color:var(--ink)}
+.actorlist__item .meta{color:var(--muted);font-size:11px;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+.actorsview__profile{flex:1;padding:32px;overflow-y:auto}
+.profile{max-width:760px}
+.profile__header{display:flex;gap:20px;align-items:flex-start;margin-bottom:24px}
+.profile__avatar{width:96px;height:96px;border-radius:16px;flex:none;background:var(--panel-2);border:1px solid var(--line-strong);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;cursor:pointer}
+.profile__avatar img{width:100%;height:100%;object-fit:cover}
+.profile__avatar__placeholder{font-family:var(--mono);font-size:28px;font-weight:700}
+.profile__avatar__hint{position:absolute;inset:0;background:rgba(8,11,22,.72);display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--ink);opacity:0;transition:opacity .15s;text-align:center;padding:6px}
+.profile__avatar:hover .profile__avatar__hint{opacity:1}
+.profile__title{flex:1;padding-top:4px}
+.profile__labelInput{background:transparent;border:none;border-bottom:1px solid transparent;color:var(--ink);
+  font-family:var(--sans);font-size:22px;font-weight:650;width:100%;padding:2px 0}
+.profile__labelInput:hover,.profile__labelInput:focus{border-bottom-color:var(--line-strong);outline:none}
+.profile__actions{display:flex;gap:8px;margin-top:10px}
+.profile__section{margin:22px 0;padding-top:18px;border-top:1px solid var(--line)}
+.profile__section h5{margin:0 0 10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.metarow{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.metarow__key{width:150px;flex:none;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:6px 9px;
+  color:var(--muted);font-family:var(--mono);font-size:12px}
+.metarow__val{flex:1;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:6px 9px;
+  color:var(--ink);font-family:var(--sans);font-size:13px}
+.metarow__del{flex:none;background:none;border:none;color:var(--muted-2);cursor:pointer;font-size:16px;padding:0 4px}
+.metarow__del:hover{color:var(--crit)}
+
 /* ---------- Matrix (ATT&CK) ---------- */
 .matrix-wrap{padding:18px;min-width:900px}
 .matrix{display:grid;gap:8px;grid-template-columns:repeat(7,1fr)}
@@ -398,6 +432,10 @@ body:not(.marked) .advonly{display:none}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="7" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="17" r="2.4"/><circle cx="18" cy="16" r="2"/><path d="M8 8l3 7M16 8l-3 7M14 16.5l2-.5"/></svg>
       <span class="navbtn__tip">Threat Constellation</span>
     </button>
+    <button class="navbtn" data-view="actors" aria-label="Threat actors">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+      <span class="navbtn__tip">Threat Actors</span>
+    </button>
     <button class="navbtn" data-view="matrix" aria-label="ATT&CK matrix">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="4" height="4" rx="1"/><rect x="10" y="3" width="4" height="4" rx="1"/><rect x="17" y="3" width="4" height="4" rx="1"/><rect x="3" y="10" width="4" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/><rect x="3" y="17" width="4" height="4" rx="1"/></svg>
       <span class="navbtn__tip">ATT&amp;CK Matrix</span>
@@ -518,6 +556,19 @@ body:not(.marked) .advonly{display:none}
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M6 8v4a2 2 0 0 0 2 2h1M18 8v4a2 2 0 0 0-2 2h-1"/></svg>Organize</button>
           <button class="gc-btn" id="gcUnhide" hidden>
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>Unhide all</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- THREAT ACTORS -->
+    <section class="view" id="view-actors">
+      <div class="actorsview">
+        <aside class="actorsview__list">
+          <div class="actorsview__search"><input id="actorSearch" placeholder="Search actors…" aria-label="Search actors"></div>
+          <div id="actorListItems"></div>
+        </aside>
+        <div class="actorsview__profile" id="actorProfile">
+          <div class="empty" style="margin:auto">Select a threat actor to view its profile.</div>
         </div>
       </div>
     </section>
@@ -720,6 +771,7 @@ let hiddenTypes = new Set();
 let selectedId = null;
 let legendRelExpanded = false;
 let focusedActorId = null;
+let profileActorId = null;
 
 /* ============================================================
    DEMO DATA — Operation Nightjar (fictional APT scenario)
@@ -906,7 +958,7 @@ function parseJSON(obj){
   if(Array.isArray(obj.entities)){
     obj.entities.forEach(en=>{
       if(!en.id||state.entities.some(x=>x.id===en.id))return;
-      const ent={id:en.id,type:en.type||'ioc',label:en.label||en.id,severity:normSev(en.severity),meta:en.meta||{},classification:en.classification||null,tags:Array.isArray(en.tags)?en.tags:[]};
+      const ent={id:en.id,type:en.type||'ioc',label:en.label||en.id,severity:normSev(en.severity),meta:en.meta||{},classification:en.classification||null,tags:Array.isArray(en.tags)?en.tags:[],image:en.image||null};
       seedPos(ent); state.entities.push(ent); added++;
     });
     (obj.links||[]).forEach(l=>{ if(l.source&&l.target)state.links.push({source:l.source,target:l.target,relation:l.relation||'related'}); });
@@ -1344,7 +1396,7 @@ function render(){
     `<div class="toplist__item"><span style="min-width:110px;text-transform:uppercase;font-family:var(--mono);font-size:12px">${t}</span><div class="toplist__bar"><div class="toplist__fill" style="width:${n/imax*100}%;background:linear-gradient(90deg,var(--signal),var(--blue))"></div></div><span class="toplist__n">${n}</span></div>`
   ).join(''):'<div style="color:var(--muted-2);font-size:12px">No indicators</div>';
 
-  renderLegend(); renderActorsPanel(); renderMatrix(); renderTimeline(); updateUnhideBtn();
+  renderLegend(); renderActorsPanel(); renderActorsView(); renderMatrix(); renderTimeline(); updateUnhideBtn();
   renderBanner(); renderAlertBadge(); renderAlertsLog(); renderSearches(); renderPipelines();
   if(state.entities.length && (view.x===0&&view.y===0)) centerView();
 }
@@ -1378,6 +1430,129 @@ function renderActorsPanel(){
   panel.innerHTML=html;
   panel.querySelectorAll('[data-actor]').forEach(row=>row.onclick=()=>focusActor(row.dataset.actor||null));
 }
+
+function renderActorsView(){
+  const listEl=document.getElementById('actorListItems'); if(!listEl)return;
+  const q=(document.getElementById('actorSearch').value||'').toLowerCase();
+  const actors=state.entities.filter(e=>e.type==='actor').filter(a=>
+    !q || a.label.toLowerCase().includes(q) || String(a.meta.aliases||'').toLowerCase().includes(q)
+  ).sort((a,b)=>a.label.localeCompare(b.label));
+  listEl.innerHTML = actors.length ? actors.map(a=>{
+    const red=isRedacted(a);
+    return `<div class="actorlist__item ${profileActorId===a.id?'is-active':''}" ${red?'':`data-actor="${a.id}"`}>
+      <div class="name">${red?'<span class="redacted">■■■■■■■■</span>':escapeHtml(a.label)}</div>
+      <div class="meta">${red?'':escapeHtml(a.severity||'')+' · '+actorComponent(a.id).size+' connected'}</div>
+    </div>`;
+  }).join('') : '<div class="empty" style="font-size:12px">No actors match.</div>';
+  listEl.querySelectorAll('[data-actor]').forEach(row=>row.onclick=()=>selectActorProfile(row.dataset.actor));
+}
+document.getElementById('actorSearch').oninput=renderActorsView;
+
+function selectActorProfile(id){
+  const e=state.entities.find(x=>x.id===id);
+  if(!e || isRedacted(e)){ if(e)toast('⛔ Insufficient clearance — item is classified '+(CLASSIF[e.classification]?CLASSIF[e.classification].label:e.classification)); return; }
+  profileActorId=id;
+  renderActorsView();
+  renderActorProfile();
+}
+
+function handleAvatarUpload(file,e){
+  if(!file||!file.type.startsWith('image/'))return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const maxDim=480;
+      const scale=Math.min(1,maxDim/Math.max(img.width,img.height));
+      const w=Math.round(img.width*scale), h=Math.round(img.height*scale);
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      e.image=c.toDataURL('image/jpeg',0.82);
+      renderActorProfile();
+      toast('Profile image updated');
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderActorProfile(){
+  const panel=document.getElementById('actorProfile'); if(!panel)return;
+  const e=state.entities.find(x=>x.id===profileActorId);
+  if(!e){ panel.innerHTML='<div class="empty" style="margin:auto">Select a threat actor to view its profile.</div>'; return; }
+  const meta=e.meta||{};
+  let html='<div class="profile">';
+  html+=`<div class="profile__header">
+    <div class="profile__avatar" id="profileAvatar">
+      ${e.image?`<img src="${e.image}" alt="${escapeHtml(e.label)}">`:`<span class="profile__avatar__placeholder" style="color:${TYPES.actor.color}">${escapeHtml((e.label||'?').slice(0,1).toUpperCase())}</span>`}
+      <div class="profile__avatar__hint">Click to upload</div>
+      <input type="file" id="profileImgInput" accept="image/*" hidden>
+    </div>
+    <div class="profile__title">
+      <input id="profileLabelInput" class="profile__labelInput" value="${escapeHtml(e.label)}">
+      <div class="profile__actions">
+        <select id="profileSeverity">${Object.keys(SEV).map(s=>`<option value="${s}" ${e.severity===s?'selected':''}>${s}</option>`).join('')}</select>
+        <button class="btn" id="profileViewGraph">View in constellation</button>
+        ${e.image?'<button class="btn" id="profileImgRemove">Remove image</button>':''}
+      </div>
+    </div>
+  </div>`;
+  html+=`<div class="profile__section advonly"><h5>Classification</h5><select id="profileClass"><option value="">Unmarked</option>${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${e.classification===k?'selected':''}>${CLASSIF[k].label}</option>`).join('')}</select></div>`;
+  html+=`<div class="profile__section advonly"><h5>Tags</h5><div class="tagrow">${(e.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}<span class="tagx" data-t="${escapeHtml(t)}">×</span></span>`).join('')||'<span style="color:var(--muted-2);font-size:12px">none</span>'}</div><div style="display:flex;gap:6px;margin-top:8px"><input class="taginput" id="profileTagIn" placeholder="add tag…" style="flex:1"><button class="btn" id="profileTagAdd" style="padding:6px 12px">Add</button></div></div>`;
+  html+=`<div class="profile__section"><h5>Attributes</h5><div id="profileMetaRows">${Object.entries(meta).map(([k,v])=>`
+    <div class="metarow"><input class="metarow__key" value="${escapeHtml(k)}" disabled><input class="metarow__val" data-key="${escapeHtml(k)}" value="${escapeHtml(String(v))}"><button class="metarow__del" data-key="${escapeHtml(k)}">×</button></div>`).join('')}</div>
+    <div class="metarow"><input class="metarow__key" id="profileMetaKeyNew" placeholder="key"><input class="metarow__val" id="profileMetaValNew" placeholder="value"><button class="btn" id="profileMetaAdd" style="padding:6px 12px">Add</button></div>
+  </div>`;
+  const rels=state.links.filter(l=>l.source===e.id||l.target===e.id);
+  if(rels.length){
+    html+='<div class="profile__section"><h5>Relationships ('+rels.length+')</h5>';
+    rels.forEach(l=>{
+      const otherId=l.source===e.id?l.target:l.source;
+      const o=state.entities.find(x=>x.id===otherId); if(!o)return;
+      const om=TYPES[o.type]||TYPES.ioc;
+      const red=isRedacted(o);
+      const dir=l.source===e.id?'→':'←';
+      const goto=o.type==='actor'?`data-goto-actor="${o.id}"`:`data-goto-entity="${o.id}"`;
+      html+=`<div class="rel" ${red?'':goto}><span class="rel__dot" style="background:${red?'#5a6378':om.color}"></span><div style="flex:1"><div>${red?'<span class="redacted">■■■■■■■■</span>':escapeHtml(o.label)}</div><div class="rel__verb" style="color:${red?'':relColor(l.relation)}">${dir} ${escapeHtml(l.relation)}</div></div></div>`;
+    });
+    html+='</div>';
+  }
+  html+='</div>';
+  panel.innerHTML=html;
+
+  const avatar=panel.querySelector('#profileAvatar'), imgInput=panel.querySelector('#profileImgInput');
+  avatar.onclick=()=>imgInput.click();
+  imgInput.onchange=()=>{ if(imgInput.files[0])handleAvatarUpload(imgInput.files[0],e); };
+  const rmBtn=panel.querySelector('#profileImgRemove'); if(rmBtn)rmBtn.onclick=()=>{ e.image=null; renderActorProfile(); };
+
+  const labelInput=panel.querySelector('#profileLabelInput');
+  labelInput.onchange=()=>{ e.label=labelInput.value.trim()||e.label; render(); renderActorsView(); renderActorProfile(); };
+  const sevSel=panel.querySelector('#profileSeverity');
+  sevSel.onchange=()=>{ e.severity=sevSel.value; render(); renderActorsView(); };
+  panel.querySelector('#profileViewGraph').onclick=()=>{ focusActor(e.id); switchView('graph'); };
+
+  const clsSel=panel.querySelector('#profileClass'); if(clsSel)clsSel.onchange=()=>{ e.classification=clsSel.value||null; render(); if(isRedacted(e)){profileActorId=null;renderActorsView();renderActorProfile();}else{renderActorProfile();} };
+  panel.querySelectorAll('.tagx').forEach(x=>x.onclick=()=>{ e.tags=(e.tags||[]).filter(t=>t!==x.dataset.t); render(); renderActorProfile(); });
+  const tagAdd=panel.querySelector('#profileTagAdd'), tagIn=panel.querySelector('#profileTagIn');
+  if(tagAdd)tagAdd.onclick=()=>{ const t=tagIn.value.trim(); if(!t)return; if(!e.tags)e.tags=[]; if(!e.tags.includes(t))e.tags.push(t); render(); renderActorProfile(); };
+  if(tagIn)tagIn.onkeydown=ev=>{ if(ev.key==='Enter')tagAdd.click(); };
+
+  panel.querySelectorAll('.metarow__val[data-key]').forEach(input=>{
+    input.onchange=()=>{ e.meta[input.dataset.key]=input.value; };
+  });
+  panel.querySelectorAll('.metarow__del').forEach(btn=>{
+    btn.onclick=()=>{ delete e.meta[btn.dataset.key]; renderActorProfile(); };
+  });
+  const metaAdd=panel.querySelector('#profileMetaAdd');
+  if(metaAdd)metaAdd.onclick=()=>{
+    const k=panel.querySelector('#profileMetaKeyNew').value.trim(), v=panel.querySelector('#profileMetaValNew').value.trim();
+    if(!k)return; if(!e.meta)e.meta={}; e.meta[k]=v; renderActorProfile();
+  };
+
+  panel.querySelectorAll('[data-goto-actor]').forEach(el=>el.onclick=()=>selectActorProfile(el.dataset.gotoActor));
+  panel.querySelectorAll('[data-goto-entity]').forEach(el=>el.onclick=()=>{ switchView('graph'); selectEntity(el.dataset.gotoEntity); });
+}
+
 function renderLegend(){
   const present=[...new Set(state.entities.map(e=>e.type))];
   const el=document.getElementById('legend');
@@ -1474,6 +1649,7 @@ function switchView(v){
   if(v==='graph'){ resizeCanvas(); if(view.x===0&&view.y===0)centerView(); }
   if(v==='alerts'){ renderSearchResults(); renderSearches(); renderAlertsLog(); }
   if(v==='pipes'){ renderPipelines(); }
+  if(v==='actors'){ renderActorsView(); renderActorProfile(); }
 }
 document.querySelectorAll('.navbtn[data-view]').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
 
@@ -1488,7 +1664,7 @@ function download(name,content,mime){
 document.getElementById('exportJson').onclick=()=>{
   const clean={
     settings:{markings:settings.markings,instanceClass:settings.instanceClass},
-    entities:state.entities.map(({id,type,label,severity,meta,classification,tags})=>({id,type,label,severity,meta,classification:classification||null,tags:tags||[]})),
+    entities:state.entities.map(({id,type,label,severity,meta,classification,tags,image})=>({id,type,label,severity,meta,classification:classification||null,tags:tags||[],image:image||null})),
     links:state.links,
     events:state.events,
     searches:state.searches,
@@ -1715,6 +1891,7 @@ function initV2(){
     const chip=document.getElementById('userClr');
     chip.textContent=activeUser.clearance; chip.style.background=CLASSIF[activeUser.clearance].color;
     if(selectedId){ const e=state.entities.find(x=>x.id===selectedId); if(e&&isRedacted(e))closeInspector(); }
+    if(profileActorId){ const pe=state.entities.find(x=>x.id===profileActorId); if(pe&&isRedacted(pe)){ profileActorId=null; renderActorsView(); renderActorProfile(); } }
     render();
   };
   us.onchange=applyUser; us.value='0'; applyUser();

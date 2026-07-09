@@ -1,10 +1,10 @@
 # Multi-Actor Support
 
-**Status: scoped, not implemented.** Agreed design for handling multiple threat actors / APT groups in one constellation, captured 2026-07-09 so it isn't lost between sessions.
+**Status: partially built.** Agreed design for handling multiple threat actors / APT groups in one constellation, captured 2026-07-09; relation-type coloring and the Threat Actors view shipped the same day.
 
 ## The gap today
 
-- The only way to add an entity (including a new actor) is JSON/CSV/text ingest. Raw-text mining only extracts IOCs (IPv4, domain, URL, hash, CVE, email) — never actors, malware, or campaigns. There is no "New Actor" form anywhere in the UI.
+- ~~The only way to add an entity (including a new actor) is JSON/CSV/text ingest~~ **Editing an existing actor is now covered, adding a new one still isn't.** The Threat Actors view (`view-actors`, [[Architecture]]) gives every actor a full editable profile — label, severity, meta attributes (add/edit/remove), classification, tags, and a profile image — but it only edits actors already in `state.entities`. There's still no "New Actor" form for creating one from scratch outside of JSON/CSV/text ingest (raw-text mining only extracts IOCs — IPv4, domain, URL, hash, CVE, email — never actors, malware, or campaigns). That gap is item 1 below.
 - `state.links` is already fully generic (`{source, target, relation}`) — actor-to-actor relationships work with **zero schema changes** today (e.g. `{source:'actor:a', target:'actor:b', relation:'rival to'}` renders correctly in graph/inspector/matrix right now). The real gap is that nothing in the UI *creates* a link between two existing entities — only demo data / JSON import populate `links[]`.
 - ~~Every edge in the graph draws in one of two flat colors regardless of type~~ **Done, 2026-07-09**: edges now render by `relColor(relation)` — a deterministic hash of the relation string onto the `TYPES`/`SEV` palette, with a "Relationship Lines" legend section. See `draw()`/`relColor()`/`hexToRgba()` in `index.html`. This covers the *relation-type* axis. Every actor node still shares one purple (`TYPES.actor.color`) — the *actor-identity* axis (item 3 below) is separate and still unbuilt.
 

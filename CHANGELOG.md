@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.8.0 — 2026-07-09
+- New **Threat Actors** view (8th nav-rail entry) — a filterable, searchable list of every actor entity alongside a fully editable profile: label, severity, classification, tags, free-form meta attributes (add/edit/remove key-value rows), and a new profile image field.
+- Profile images: click the avatar to upload one — resized client-side to ≤480px and stored as a JPEG data URI in `entity.image`. No backend, no separate asset storage; round-trips losslessly through JSON export/import like every other field.
+- "View in constellation" on a profile reuses the existing actor-focus mechanism (`focusActor()`) to jump into the graph pre-filtered to that actor's connected component.
+- Clicking a relationship in the profile swaps to that actor's profile if it's another actor, or jumps to the graph + generic inspector otherwise.
+- Redaction is enforced the same way as the main inspector: opening a redacted actor's profile is blocked with a clearance toast, and an already-open profile closes itself if a clearance switch (or an in-profile classification edit) makes it redacted.
+- Fixed in passing: the clearance-switch handler (`applyUser`) only ever checked the generic inspector's `selectedId` for newly-redacted content — now also checks the Threat Actors profile.
+
 ## v0.7.0 — 2026-07-09
 - New Actors panel in the graph HUD (left side, next to the entity-type legend) — lists every `actor` entity with its connected-entity count, auto-shown once 2+ actors are present. Clicking one focuses the graph on that actor's connected component (BFS over `state.links`, undirected) via the existing hide mechanism; "Show all" clears the focus. Boot/ingest behavior is unchanged — this is opt-in decluttering, not automatic filtering.
 - "Unhide all" now also clears actor focus, so the two hide-control surfaces stay in sync.

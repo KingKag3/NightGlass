@@ -2,7 +2,7 @@
 
 1. **FastAPI backend** (house stack: FastAPI + SQLAlchemy; `>=` pins; lifespan context manager) — persistence, real users/auth, server-side clearance enforcement, feed relay endpoint that solves CORS and normalizes formats. Full design in [[Backend Architecture]]: SQLite (desktop profile) / PostgreSQL (server profile) behind one config value, search behind a `SearchProvider` interface (Postgres/SQLite full-text now, Elasticsearch later), cache behind a `CacheBackend` interface (in-process now, Redis later).
 2. **Server-side redaction** — never send above-clearance rows to the client; JWT with clearance claim
-3. **[[Multi-Actor Support]]** — relation-type edge coloring + legend shipped 2026-07-09. Still scoped: quick-add forms for entities/relationships, attribution-colored edges by actor identity, color→actor legend. Independent of the backend, can be picked up any time.
+3. **[[Multi-Actor Support]]** — relation-type edge coloring, legend, and a full editable Threat Actors profile view shipped 2026-07-09. Still scoped: quick-add forms for *new* entities/relationships, attribution-colored edges by actor identity, color→actor legend. Independent of the backend, can be picked up any time.
 4. **[[Flexible Data Import]]** — scoped, not yet built: declarative mapping spec so custom JSON schemas ingest without a one-off script; mechanism + pipeline integration before the wizard UI.
 5. **Graph scale** — Barnes-Hut/quadtree repulsion, label decluttering, community coloring (1,000+ nodes)
 6. **Richer STIX 2.1** — SROs, actor/malware SDOs, marking definitions mapped to CLASSIF
