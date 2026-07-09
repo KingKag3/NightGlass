@@ -15,7 +15,7 @@ docker compose up --build
 
 Or try the [live demo](https://kingkag3.github.io/NightGlass/) — no install required.
 
-The app boots into the fictional **Operation Nightjar** demo campaign so every feature has data on first launch.
+The app boots into the fictional **Operation Nightjar** demo campaign so every feature has data on first launch. For a bigger, denser sample — 60 entities, 101 links, 42 relation types — drag [`docs/samples/the-americans-network.json`](docs/samples/the-americans-network.json) (a fictional HUMINT network graph based on FX's *The Americans*) into the Ingest view.
 
 ## Features
 

@@ -1,0 +1,1459 @@
+{
+  "entities": [
+    {
+      "id": "campaign:apt-jennings",
+      "type": "campaign",
+      "label": "THE AMERICANS (APT-JENNINGS)",
+      "severity": "critical",
+      "meta": {
+        "aliases": "Directorate S, The Illegals, TRAVELAGENCY, The Rezidentura Network",
+        "sponsor": "Soviet Union (KGB, Directorate S)",
+        "confidence": "high",
+        "first_observed": "1981",
+        "last_observed": "1987",
+        "status": "network dismantled / core operators repatriated",
+        "motivation": "state-sponsored espionage; ideological loyalty to sponsor state; asset recruitment, handling, and blackmail; counterintelligence disruption; late-stage internal factional conflict (reformist vs. hardliner KGB)",
+        "target_sectors": "government (FBI, State Department, Defense Department, CIA); defense and biotech contractors (stealth technology, bioweapons research); counterintelligence agencies; religious and activist organizations (used as cover targets and leverage); diplomatic and foreign intelligence services (Pakistani ISI, Afghan Mujahideen-linked assets); agricultural technology (grain/famine research)",
+        "target_geography": "United States; primarily Washington, D.C. metro area; with tasking traced to Moscow Centre",
+        "associated_tools": "forged U.S. passports, driver's licenses, and Social Security identities; concealable audio recording devices and office bugs; shortwave radio (numbers station receiver); disguise kits (wigs, makeup, dental appliances, colored contacts); dead drop signal system (chalk marks, tape); Jennings Travel Agency (cover infrastructure); bioweapon pathogen samples (Burkholderia mallei, Francisella tularensis, Lassa virus) exfiltrated via William Crandall",
+        "summary": "A deep-cover HUMINT network centered on two KGB Directorate S 'illegals' operating under long-term non-official-cover legends in the Washington, D.C. metro area. The network extends far beyond its two primary operators into a sprawling web of handlers, station officers, blackmailed and romantically compromised assets, opposing FBI/CIA counterintelligence personnel, and collateral family members. This profile maps the full relationship graph of the network and its adversaries.",
+        "fictional_disclaimer": "This is a fictional/satirical threat profile based on the FX television series 'The Americans' (2013-2018), created for entertainment purposes. Not a real intelligence assessment. Character and relationship data compiled from show canon (Wikipedia, theamericans.fandom.com, TV Tropes character pages).",
+        "source": "FX's 'The Americans', created by Joe Weisberg"
+      },
+      "classification": null,
+      "tags": [
+        "fictional",
+        "the-americans"
+      ]
+    },
+    {
+      "id": "tech:social-engineering-via-long-term-cover-legend",
+      "type": "technique",
+      "label": "Social Engineering via Long-Term Cover Legend",
+      "severity": "high",
+      "meta": {
+        "tactic": "Initial Access",
+        "ttp": "T1566-STYLE (human variant)",
+        "description": "Establishes trusted suburban or professional identity over years to gain proximity to targets."
+      },
+      "classification": null,
+      "tags": []
+    },
+    {
+      "id": "tech:deep-cover-sleeper-placement",
+      "type": "technique",
+      "label": "Deep-Cover Sleeper Placement",
+      "severity": "high",
+      "meta": {
+        "tactic": "Persistence",
+        "ttp": "",
+        "description": "Maintains illegals program presence for a decade-plus without detection; second-generation assets (Paige, Tuan, Jared Connors) raised or recruited into the program."
+      },
+      "classification": null,
+      "tags": []
+    },
+    {
+      "id": "tech:disguise-identity-masking",
+      "type": "technique",
+      "label": "Disguise / Identity Masking",
+      "severity": "high",
+      "meta": {
+        "tactic": "Defense Evasion",
+        "ttp": "",
+        "description": "Uses wigs, prosthetics, and forged documents; maintains multiple concurrent aliases per operator (Philip alone runs at least six: Clark Westerfeld, Scott Birkeland, James, Gus Alexander, Brad Eckert, Jack)."
+      },
+      "classification": null,
+      "tags": []
+    },
+    {
+      "id": "tech:asset-recruitment-honeytrap-coercion",
+      "type": "technique",
+      "label": "Asset Recruitment, Honeytrap & Coercion",
+      "severity": "high",
+      "meta": {
+        "tactic": "Credential Access",
+        "ttp": "",
+        "description": "Recruits or blackmails individuals with access via romantic entanglement (Martha, Kimmy, Deirdre, Young-Hee/Don, Erica Haskard, Benjamin Stobert, Yousaf Rana) or leverage over secrets (Pastor Tim's diary, Andrew Larrick's sexuality)."
+      },
+      "classification": null,
+      "tags": []
+    },
+    {
+      "id": "tech:physical-signals-collection",
+      "type": "technique",
+      "label": "Physical & Signals Collection",
+      "severity": "high",
+      "meta": {
+        "tactic": "Collection",
+        "ttp": "",
+        "description": "Photographs documents, plants covert listening devices (Pastor Tim's office), uses dead drops and burst-transmission radio for exfil."
+      },
+      "classification": null,
+      "tags": []
+    },
+    {
+      "id": "tech:dead-drops-numbers-station-comms",
+      "type": "technique",
+      "label": "Dead Drops / Numbers Station Comms",
+      "severity": "high",
+      "meta": {
+        "tactic": "Command and Control",
+        "ttp": "",
+        "description": "Coordinates with handlers (Claudia, Gabriel) and Moscow Centre via clandestine meetings, shortwave numbers broadcasts, and coded chalk-mark signals."
+      },
+      "classification": null,
+      "tags": []
+    },
+    {
+      "id": "tech:diplomatic-pouch-courier-forced-repatriation",
+      "type": "technique",
+      "label": "Diplomatic Pouch / Courier / Forced Repatriation",
+      "severity": "high",
+      "meta": {
+        "tactic": "Exfiltration",
+        "ttp": "",
+        "description": "Moves stolen material and compromised assets (Martha, the Morozov family) out of country via embassy channels."
+      },
+      "classification": null,
+      "tags": []
+    },
+    {
+      "id": "tech:sabotage-blackmail-elimination",
+      "type": "technique",
+      "label": "Sabotage, Blackmail & Elimination",
+      "severity": "high",
+      "meta": {
+        "tactic": "Impact",
+        "ttp": "",
+        "description": "Conducts direct action against compromised assets or witnesses, including the killings of Gregory Thomas (indirectly), Sofia and Gennadi Bystrov, Erica Haskard (mercy killing), Annelise, and Nikolai Timoshev."
+      },
+      "classification": null,
+      "tags": []
+    },
+    {
+      "id": "actor:philip_jennings",
+      "type": "actor",
+      "label": "Philip Jennings",
+      "severity": "medium",
+      "meta": {
+        "role": "Core illegal running the network's day-to-day operations",
+        "affiliation": "KGB Directorate S",
+        "real_name": "Mikhail 'Misha'",
+        "aliases": "Clark Westerfeld, Scott Birkeland, James, Gus Alexander, Brad Eckert, Jack, Peter Emery, John Rawlings",
+        "status": "defected/exfiltrated to USSR (implied), retired from active duty S5",
+        "summary": "Co-lead illegal; posed as Falls Church travel agent; runs numerous parallel honeytrap and access operations under distinct aliases; killed Nikolai Timoshev in 1981."
+      },
+      "classification": null,
+      "tags": [
+        "primary_operator"
+      ]
+    },
+    {
+      "id": "actor:elizabeth_jennings",
+      "type": "actor",
+      "label": "Elizabeth Jennings",
+      "severity": "medium",
+      "meta": {
+        "role": "Core illegal running the network's day-to-day operations",
+        "affiliation": "KGB Directorate S",
+        "real_name": "Nadezhda",
+        "aliases": "Patty, Stephanie, Brenda Neill, Dee Eckert",
+        "status": "exfiltrated to USSR",
+        "summary": "Co-lead illegal; more ideologically hardline than Philip; runs honeytrap and access operations; personally kills multiple targets including Sofia and Gennadi Bystrov and Erica Haskard."
+      },
+      "classification": null,
+      "tags": [
+        "primary_operator"
+      ]
+    },
+    {
+      "id": "actor:paige_jennings",
+      "type": "actor",
+      "label": "Paige Jennings",
+      "severity": "medium",
+      "meta": {
+        "role": "Person raised or recruited young into an illegals program",
+        "affiliation": "KGB Directorate S (in training)",
+        "status": "remained in USA, estranged from parents",
+        "summary": "Jennings' American-born daughter; discovers her parents' identities in S3; trained in tradecraft by Elizabeth and Claudia; stays behind in the US in the series finale."
+      },
+      "classification": null,
+      "tags": [
+        "second_generation_illegal"
+      ]
+    },
+    {
+      "id": "actor:henry_jennings",
+      "type": "actor",
+      "label": "Henry Jennings",
+      "severity": "medium",
+      "meta": {
+        "role": "Family member embedded in the operators' cover identity",
+        "affiliation": "none (unwitting)",
+        "status": "remained in USA, unaware of parents' true identities",
+        "summary": "Jennings' younger son; kept out of the loop entirely; informally left in Stan Beeman's care after his parents flee."
+      },
+      "classification": null,
+      "tags": [
+        "cover_family"
+      ]
+    },
+    {
+      "id": "actor:stan_beeman",
+      "type": "actor",
+      "label": "Stan Beeman",
+      "severity": "medium",
+      "meta": {
+        "role": "FBI/CIA counterintelligence personnel",
+        "affiliation": "FBI Counterintelligence",
+        "status": "active, unaware of Jennings' identities until finale",
+        "summary": "Jennings' next-door neighbor and Philip's close friend; blackmails and later has an affair with Nina Krilova; kills Vlad Kosygin in revenge for Chris Amador's murder; forms wary alliance with Oleg Burov."
+      },
+      "classification": null,
+      "tags": [
+        "opposing_officer"
+      ]
+    },
+    {
+      "id": "actor:sandra_beeman",
+      "type": "actor",
+      "label": "Sandra Beeman",
+      "severity": "medium",
+      "meta": {
+        "role": "Family of opposing officer",
+        "affiliation": "none",
+        "status": "divorced from Stan",
+        "summary": "Stan's wife; divorces him over his emotional absence and affair with Nina."
+      },
+      "classification": null,
+      "tags": [
+        "opposing_family"
+      ]
+    },
+    {
+      "id": "actor:matthew_beeman",
+      "type": "actor",
+      "label": "Matthew Beeman",
+      "severity": "medium",
+      "meta": {
+        "role": "Family of opposing officer",
+        "affiliation": "none",
+        "status": "remained in USA, unaware of Jennings' identities",
+        "summary": "Stan and Sandra's son; Paige's boyfriend for a period; relationship ended by Paige to protect the family secret."
+      },
+      "classification": null,
+      "tags": [
+        "opposing_family"
+      ]
+    },
+    {
+      "id": "actor:frank_gaad",
+      "type": "actor",
+      "label": "Frank Gaad",
+      "severity": "medium",
+      "meta": {
+        "role": "FBI/CIA counterintelligence personnel",
+        "affiliation": "FBI Counterintelligence (Director)",
+        "status": "eliminated",
+        "summary": "Stan's supervisor; unknowingly employed Martha Hanson as his secretary for a decade; forced into early retirement after the Martha leak is discovered; killed in Thailand, implicitly by Arkady's network."
+      },
+      "classification": null,
+      "tags": [
+        "opposing_officer"
+      ]
+    },
+    {
+      "id": "actor:chris_amador",
+      "type": "actor",
+      "label": "Chris Amador",
+      "severity": "medium",
+      "meta": {
+        "role": "FBI/CIA counterintelligence personnel",
+        "affiliation": "FBI Counterintelligence",
+        "status": "eliminated",
+        "summary": "Stan's first partner; ex-boyfriend of Martha Hanson; murdered by Jared Connors after capture/interrogation by the Jennings."
+      },
+      "classification": null,
+      "tags": [
+        "opposing_officer"
+      ]
+    },
+    {
+      "id": "actor:dennis_aderholt",
+      "type": "actor",
+      "label": "Dennis Aderholt",
+      "severity": "medium",
+      "meta": {
+        "role": "FBI/CIA counterintelligence personnel",
+        "affiliation": "FBI Counterintelligence",
+        "status": "active",
+        "summary": "Stan's second partner; finds KGB bugs planted via Martha; unrequitedly pursues Martha; later recruits and attempts to protect Sofia and Gennadi Bystrov."
+      },
+      "classification": null,
+      "tags": [
+        "opposing_officer"
+      ]
+    },
+    {
+      "id": "actor:walter_taffet",
+      "type": "actor",
+      "label": "Walter Taffet",
+      "severity": "medium",
+      "meta": {
+        "role": "FBI/CIA counterintelligence personnel",
+        "affiliation": "FBI Office of Professional Responsibility",
+        "status": "active",
+        "summary": "Internal-affairs investigator who uncovers the Martha Hanson leak."
+      },
+      "classification": null,
+      "tags": [
+        "opposing_officer"
+      ]
+    },
+    {
+      "id": "actor:claudia",
+      "type": "actor",
+      "label": "Claudia",
+      "severity": "medium",
+      "meta": {
+        "role": "KGB officer directing primary operators",
+        "affiliation": "KGB Directorate S",
+        "status": "active, trust with Elizabeth severed S6",
+        "summary": "Jennings' primary handler (bookending Gabriel's tenure); staged a fake kidnapping/torture loyalty test; later revealed as part of a hardline anti-Gorbachev faction; orders Elizabeth to frame/kill Nesterenko, which Elizabeth refuses."
+      },
+      "classification": null,
+      "tags": [
+        "handler"
+      ]
+    },
+    {
+      "id": "actor:gabriel",
+      "type": "actor",
+      "label": "Gabriel",
+      "severity": "medium",
+      "meta": {
+        "role": "KGB officer directing primary operators",
+        "affiliation": "KGB Directorate S",
+        "real_name": "Gabriel Petrovich Beloszoksy (né Semyon Andreyovich Petrov)",
+        "status": "recalled to Moscow",
+        "summary": "Jennings' original and later reinstated (S3-S5) handler; fatherly, manages their psychological strain; intercepts Mischa Semenov to keep him from Philip; oversees the Don Seong tech-theft operation."
+      },
+      "classification": null,
+      "tags": [
+        "handler"
+      ]
+    },
+    {
+      "id": "actor:arkady_zotov",
+      "type": "actor",
+      "label": "Arkady Ivanovich Zotov",
+      "severity": "medium",
+      "meta": {
+        "role": "Rezidentura (embassy) based KGB officer",
+        "affiliation": "KGB Rezidentura",
+        "status": "expelled from US (S4), returned S6",
+        "summary": "KGB Rezident (station chief); pragmatic reformist; 'worthy opponent' rapport with Frank Gaad; gives Nina a shot at redemption; declared persona non grata and expelled; returns in S6 to recruit Oleg against the hardliner coup plot."
+      },
+      "classification": null,
+      "tags": [
+        "station_officer"
+      ]
+    },
+    {
+      "id": "actor:oleg_burov",
+      "type": "actor",
+      "label": "Oleg Igorevich Burov",
+      "severity": "medium",
+      "meta": {
+        "role": "Rezidentura (embassy) based KGB officer",
+        "affiliation": "KGB Directorate X / later Soviet Ministry",
+        "status": "arrested by FBI, imprisoned",
+        "summary": "Science & technology officer, son of a senior Soviet official; develops deep unresolved feelings for Nina Krilova; frenemy/ally to Stan Beeman; recruits Philip as an informant on Elizabeth in S6; arrested retrieving a dead drop without diplomatic cover."
+      },
+      "classification": null,
+      "tags": [
+        "station_officer"
+      ]
+    },
+    {
+      "id": "actor:nina_krilova",
+      "type": "actor",
+      "label": "Nina Sergeevna Krilova",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "KGB Rezidentura / FBI double agent",
+        "status": "eliminated",
+        "summary": "Soviet embassy worker blackmailed by Stan into becoming his mole and mistress; confesses to Arkady and becomes a KGB double agent; protective 'morality chain' bond with imprisoned scientist Anton Baklanov leads to her execution by firing squad."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:vasili_nikolaevich",
+      "type": "actor",
+      "label": "Vasili Nikolaevich",
+      "severity": "medium",
+      "meta": {
+        "role": "Rezidentura (embassy) based KGB officer",
+        "affiliation": "KGB Rezidentura",
+        "status": "framed as mole, deported/exiled",
+        "summary": "Senior Rezidentura official; affair with Nina; framed by Stan Beeman as a mole to protect Nina, resulting in his deportation."
+      },
+      "classification": null,
+      "tags": [
+        "station_officer"
+      ]
+    },
+    {
+      "id": "actor:vlad_kosygin",
+      "type": "actor",
+      "label": "Vlad Kosygin",
+      "severity": "medium",
+      "meta": {
+        "role": "Rezidentura (embassy) based KGB officer",
+        "affiliation": "KGB Rezidentura",
+        "status": "eliminated",
+        "summary": "Junior Rezidentura staffer with unrequited feelings for Nina; murdered by Stan Beeman in revenge for Chris Amador's death."
+      },
+      "classification": null,
+      "tags": [
+        "station_officer"
+      ]
+    },
+    {
+      "id": "actor:tatiana_vyazemtseva",
+      "type": "actor",
+      "label": "Tatiana Vyazemtseva",
+      "severity": "medium",
+      "meta": {
+        "role": "Rezidentura (embassy) based KGB officer",
+        "affiliation": "KGB Rezidentura",
+        "status": "active, promoted to interim Rezident",
+        "summary": "Ambitious officer resentful of Oleg's privilege; manipulates Oleg and Evgheniya Morozova; her Baklanov operation is sabotaged by Oleg."
+      },
+      "classification": null,
+      "tags": [
+        "station_officer"
+      ]
+    },
+    {
+      "id": "actor:martha_hanson",
+      "type": "actor",
+      "label": "Martha Hanson",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "FBI (unwitting) / KGB asset",
+        "status": "extradited to USSR, living in exile",
+        "summary": "Frank Gaad's secretary; Philip's (as 'Clark Westerfeld') long-term intelligence source and bigamous cover wife; discovers Clark's true face but protects him; extradited to Moscow when the FBI closes in."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:gregory_thomas",
+      "type": "actor",
+      "label": "Gregory Thomas",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "KGB asset (civil rights activist)",
+        "status": "eliminated (suicide-by-cop)",
+        "summary": "Recruited and run by Elizabeth; her 15-year lover; framed for Chris Amador's murder; dies by suicide-by-cop rather than flee or implicate Elizabeth."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:william_crandall",
+      "type": "actor",
+      "label": "William Crandall",
+      "severity": "medium",
+      "meta": {
+        "role": "Core illegal running the network's day-to-day operations",
+        "affiliation": "KGB Directorate S",
+        "real_name": "Vitaly Sorokin",
+        "status": "eliminated (self-infection)",
+        "summary": "KGB illegal embedded ~25 years as a bioweapons scientist; supplies pathogen samples; infects himself with Lassa virus to avoid FBI capture, dying at Fort Detrick; inadvertently gives the FBI descriptive clues about the Jennings."
+      },
+      "classification": null,
+      "tags": [
+        "primary_operator"
+      ]
+    },
+    {
+      "id": "actor:kimberly_breland",
+      "type": "actor",
+      "label": "Kimberly 'Kimmy' Breland",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "CIA (unwitting, via father)",
+        "status": "released from contact by Philip",
+        "summary": "Daughter of CIA official Isaac Breland; long-term unwitting asset of Philip (as 'James') from her teens through college, used to access her father's briefcase; Philip refuses a Center order to lure her abroad and cuts contact."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:isaac_breland",
+      "type": "actor",
+      "label": "Isaac Breland",
+      "severity": "medium",
+      "meta": {
+        "role": "FBI/CIA counterintelligence personnel",
+        "affiliation": "CIA (Afghan Group, later Soviet Division head)",
+        "status": "active, unwitting target",
+        "summary": "Kimmy's father; unwitting ultimate target of the 'James' operation via his daughter."
+      },
+      "classification": null,
+      "tags": [
+        "opposing_officer"
+      ]
+    },
+    {
+      "id": "actor:young_hee_seong",
+      "type": "actor",
+      "label": "Young-Hee Seong",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "none (unwitting)",
+        "status": "marriage destroyed, relationship severed",
+        "summary": "Elizabeth's ('Patty') genuine-seeming friend, cultivated to gain access to husband Don's employer for lab access codes tied to the Crandall bioweapons operation."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:don_seong",
+      "type": "actor",
+      "label": "Don Seong",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "Foster Medical Research Group (unwitting)",
+        "status": "manipulated, marriage destroyed",
+        "summary": "Young-Hee's husband; drugged/manipulated into believing he impregnated 'Patty'; blackmailed via 'John Rawlings' (Philip) while Gabriel's team copies his work computer."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:pastor_tim_christiansen",
+      "type": "actor",
+      "label": "Pastor Tim Christiansen",
+      "severity": "medium",
+      "meta": {
+        "role": "Person drawn into the network's orbit without formal role",
+        "affiliation": "none (unwitting)",
+        "status": "maneuvered into overseas post (Buenos Aires)",
+        "summary": "Progressive church leader Paige confides her parents' identities to; tells wife Alice despite confidence; surveilled and bugged by the Jennings; maneuvered abroad using blackmail leverage from his diary."
+      },
+      "classification": null,
+      "tags": [
+        "collateral"
+      ]
+    },
+    {
+      "id": "actor:alice_christiansen",
+      "type": "actor",
+      "label": "Alice Christiansen",
+      "severity": "medium",
+      "meta": {
+        "role": "Person drawn into the network's orbit without formal role",
+        "affiliation": "none (unwitting)",
+        "status": "active, suspicious of the Jennings",
+        "summary": "Pastor Tim's wife; learns the Jennings secret from Tim; later suspects/confronts them and threatens exposure."
+      },
+      "classification": null,
+      "tags": [
+        "collateral"
+      ]
+    },
+    {
+      "id": "actor:erica_haskard",
+      "type": "actor",
+      "label": "Erica Haskard",
+      "severity": "critical",
+      "meta": {
+        "role": "Killed as a direct or indirect consequence of network activity",
+        "affiliation": "none (unwitting)",
+        "summary": "Dying painter Elizabeth (as 'Stephanie') serves as home health aide for; ultimately suffocated by Elizabeth as a mercy killing."
+      },
+      "classification": null,
+      "tags": [
+        "eliminated"
+      ]
+    },
+    {
+      "id": "actor:glenn_haskard",
+      "type": "actor",
+      "label": "Glenn Haskard",
+      "severity": "medium",
+      "meta": {
+        "role": "Person drawn into the network's orbit without formal role",
+        "affiliation": "none",
+        "status": "active, unaware",
+        "summary": "Erica Haskard's husband."
+      },
+      "classification": null,
+      "tags": [
+        "collateral"
+      ]
+    },
+    {
+      "id": "actor:sofia_bystrova",
+      "type": "actor",
+      "label": "Sofia Kovalenko Bystrova",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "TASS / FBI informant",
+        "status": "eliminated",
+        "summary": "TASS employee turned FBI informant by Stan and Aderholt; her affair/indiscretion exposes husband Gennadi; killed by Elizabeth."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:gennadi_bystrov",
+      "type": "actor",
+      "label": "Gennadi Bystrov",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "KGB courier / FBI informant",
+        "status": "eliminated",
+        "summary": "Former champion hockey player turned KGB courier, recruited as FBI informant alongside wife Sofia; killed by Elizabeth; their son Ilya spared."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:deirdre_kemp",
+      "type": "actor",
+      "label": "Deirdre Kemp",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "Agri-Corp (unwitting)",
+        "status": "relationship broken off",
+        "summary": "Agri-Corp VP; S5 honeytrap target of Philip (as 'Gus Alexander'); ends the relationship when it threatens to become serious."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:benjamin_stobert",
+      "type": "actor",
+      "label": "Benjamin Stobert",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "Agri-Corp (unwitting)",
+        "status": "active, unwitting",
+        "summary": "Agri-Corp scientist; S6 honeytrap target of Elizabeth (as 'Brenda Neill'); turns out to be developing famine-resistant wheat, subverting KGB assumptions of sabotage."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:yousaf_rana",
+      "type": "actor",
+      "label": "Yousaf Rana",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "Pakistani ISI (Covert Action Division)",
+        "status": "blackmailed into long-term cooperation",
+        "summary": "ISI deputy division head targeted via asset Annelise; strangles Annelise after her confession; blackmailed by the Jennings (who photograph the killing) into becoming a long-term informant on CIA Afghan Group operations."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:annelise",
+      "type": "actor",
+      "label": "Annelise",
+      "severity": "critical",
+      "meta": {
+        "role": "Killed as a direct or indirect consequence of network activity",
+        "affiliation": "KGB asset",
+        "summary": "Asset run by Philip (as 'Scott Birkeland') to access Yousaf Rana; falls genuinely in love with him; killed by Yousaf after confessing her espionage role."
+      },
+      "classification": null,
+      "tags": [
+        "eliminated"
+      ]
+    },
+    {
+      "id": "actor:evi_sneijder",
+      "type": "actor",
+      "label": "Evi Sneijder",
+      "severity": "critical",
+      "meta": {
+        "role": "Killed as a direct or indirect consequence of network activity",
+        "affiliation": "Belgian national",
+        "summary": "Caught on a failed dead-drop mission in the USSR; becomes Nina's Lefortovo Prison cellmate; manipulated by Nina into a confession; implied executed."
+      },
+      "classification": null,
+      "tags": [
+        "eliminated"
+      ]
+    },
+    {
+      "id": "actor:anton_baklanov",
+      "type": "actor",
+      "label": "Anton Baklanov",
+      "severity": "medium",
+      "meta": {
+        "role": "Person drawn into the network's orbit without formal role",
+        "affiliation": "Soviet scientist (refusenik)",
+        "status": "imprisoned in USSR",
+        "summary": "Jewish refusenik scientist forcibly repatriated to counter US stealth technology; betrayed by Mossad in a prisoner exchange; becomes Nina's 'morality chain,' indirectly causing her execution."
+      },
+      "classification": null,
+      "tags": [
+        "collateral"
+      ]
+    },
+    {
+      "id": "actor:andrew_larrick",
+      "type": "actor",
+      "label": "Andrew Larrick",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "US Navy SEAL (blackmailed by KGB)",
+        "status": "eliminated",
+        "summary": "Blackmailed via threat of exposing his sexuality into betraying the Martial Eagle project; becomes S2's central antagonist hunting the Jennings after they kill his unit-mates; kills handler Kate and multiple KGB operatives before being stopped."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:jared_connors",
+      "type": "actor",
+      "label": "Jared Connors",
+      "severity": "medium",
+      "meta": {
+        "role": "Person raised or recruited young into an illegals program",
+        "affiliation": "KGB Directorate S",
+        "status": "eliminated",
+        "summary": "Second-generation illegal-in-training under handler Kate; murders his own family out of fanatical devotion; kills Chris Amador; killed in turn. Direct cautionary tale behind the Jennings' reluctance to recruit Paige."
+      },
+      "classification": null,
+      "tags": [
+        "second_generation_illegal"
+      ]
+    },
+    {
+      "id": "actor:lucia_chena",
+      "type": "actor",
+      "label": "Lucia Chena",
+      "severity": "medium",
+      "meta": {
+        "role": "Individual turned into a source, witting or unwitting",
+        "affiliation": "Sandinista / KGB-aligned asset",
+        "status": "eliminated",
+        "summary": "Seduces and murders a congressional aide to protect her cover; repeatedly disobeys orders not to target Larrick; killed by Larrick with Elizabeth's tacit consent."
+      },
+      "classification": null,
+      "tags": [
+        "recruited_asset"
+      ]
+    },
+    {
+      "id": "actor:renee",
+      "type": "actor",
+      "label": "Renee",
+      "severity": "medium",
+      "meta": {
+        "role": "Person drawn into the network's orbit without formal role",
+        "affiliation": "unknown (suspected KGB)",
+        "status": "active, unresolved",
+        "summary": "Stan Beeman's late-series girlfriend; ambiguously coded as a possible Soviet plant, never confirmed on-screen; Philip surveils her and warns Stan in the finale."
+      },
+      "classification": null,
+      "tags": [
+        "collateral"
+      ]
+    },
+    {
+      "id": "actor:tuan_eckert",
+      "type": "actor",
+      "label": "Tuan Eckert",
+      "severity": "medium",
+      "meta": {
+        "role": "Person raised or recruited young into an illegals program",
+        "affiliation": "KGB Directorate S",
+        "status": "active",
+        "summary": "Teenage illegal, Vietnam War orphan, posed as the Jennings' adopted son in S4 specifically to manipulate Pasha Morozov toward an engineered suicide attempt."
+      },
+      "classification": null,
+      "tags": [
+        "second_generation_illegal"
+      ]
+    },
+    {
+      "id": "actor:alexei_morozov",
+      "type": "actor",
+      "label": "Alexei Morozov",
+      "severity": "medium",
+      "meta": {
+        "role": "Person drawn into the network's orbit without formal role",
+        "affiliation": "US Dept. of Agriculture (defector)",
+        "status": "remained in USA",
+        "summary": "Soviet defector targeted for repatriation pressure; refuses to return to Moscow out of fear of imprisonment."
+      },
+      "classification": null,
+      "tags": [
+        "collateral"
+      ]
+    },
+    {
+      "id": "actor:evgheniya_morozova",
+      "type": "actor",
+      "label": "Evgheniya Morozova",
+      "severity": "medium",
+      "meta": {
+        "role": "Person drawn into the network's orbit without formal role",
+        "affiliation": "Soviet defector family",
+        "status": "returned to Moscow",
+        "summary": "Alexei's wife; has an affair photographed by Elizabeth for blackmail leverage; returns to Moscow with son Pasha, without Alexei."
+      },
+      "classification": null,
+      "tags": [
+        "collateral"
+      ]
+    },
+    {
+      "id": "actor:pasha_morozov",
+      "type": "actor",
+      "label": "Pasha Morozov",
+      "severity": "medium",
+      "meta": {
+        "role": "Person drawn into the network's orbit without formal role",
+        "affiliation": "none",
+        "status": "returned to Moscow",
+        "summary": "Morozov son; manipulated by Tuan into an engineered suicide attempt, nearly blowing the Jennings' cover; returns to Moscow with his mother."
+      },
+      "classification": null,
+      "tags": [
+        "collateral"
+      ]
+    },
+    {
+      "id": "actor:nikolai_timoshev",
+      "type": "actor",
+      "label": "Nikolai Timoshev",
+      "severity": "critical",
+      "meta": {
+        "role": "Killed as a direct or indirect consequence of network activity",
+        "affiliation": "KGB (defected to US)",
+        "summary": "KGB trainer who raped Elizabeth during her training; later defects to the US; killed by Philip in the pilot episode."
+      },
+      "classification": null,
+      "tags": [
+        "eliminated"
+      ]
+    },
+    {
+      "id": "actor:viktor_zhukov",
+      "type": "actor",
+      "label": "General Viktor Zhukov",
+      "severity": "critical",
+      "meta": {
+        "role": "Killed as a direct or indirect consequence of network activity",
+        "affiliation": "KGB",
+        "summary": "Elizabeth's mentor/father-figure and Claudia's lover; assassinated by the CIA on Richard Patterson's orders, triggering Elizabeth's revenge plot in S1."
+      },
+      "classification": null,
+      "tags": [
+        "eliminated"
+      ]
+    },
+    {
+      "id": "actor:mischa_semenov",
+      "type": "actor",
+      "label": "Mischa (Misha) Semenov",
+      "severity": "medium",
+      "meta": {
+        "role": "Family member embedded in the operators' cover identity",
+        "affiliation": "none",
+        "status": "returned to USSR without meeting Philip",
+        "summary": "Philip's secret biological son, conceived pre-KGB; travels to the US hoping to meet Philip but is intercepted and turned back by Gabriel."
+      },
+      "classification": null,
+      "tags": [
+        "cover_family"
+      ]
+    },
+    {
+      "id": "actor:irina_semenova",
+      "type": "actor",
+      "label": "Irina Semenova",
+      "severity": "medium",
+      "meta": {
+        "role": "Family member embedded in the operators' cover identity",
+        "affiliation": "none",
+        "status": "arrested in USSR",
+        "summary": "Philip's pre-KGB girlfriend and Mischa's mother; hid the pregnancy for two decades."
+      },
+      "classification": null,
+      "tags": [
+        "cover_family"
+      ]
+    },
+    {
+      "id": "actor:elizabeths_mother",
+      "type": "actor",
+      "label": "Elizabeth's Mother",
+      "severity": "medium",
+      "meta": {
+        "role": "Family member embedded in the operators' cover identity",
+        "affiliation": "Communist Party (USSR)",
+        "status": "deceased",
+        "summary": "Devout Communist single mother who pushed Elizabeth toward KGB recruitment; visited by Elizabeth and Paige on her deathbed in Berlin."
+      },
+      "classification": null,
+      "tags": [
+        "cover_family"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "source": "campaign:apt-jennings",
+      "target": "tech:social-engineering-via-long-term-cover-legend",
+      "relation": "employs"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "tech:deep-cover-sleeper-placement",
+      "relation": "employs"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "tech:disguise-identity-masking",
+      "relation": "employs"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "tech:asset-recruitment-honeytrap-coercion",
+      "relation": "employs"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "tech:physical-signals-collection",
+      "relation": "employs"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "tech:dead-drops-numbers-station-comms",
+      "relation": "employs"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "tech:diplomatic-pouch-courier-forced-repatriation",
+      "relation": "employs"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "tech:sabotage-blackmail-elimination",
+      "relation": "employs"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "actor:philip_jennings",
+      "relation": "attributed to"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "actor:elizabeth_jennings",
+      "relation": "attributed to"
+    },
+    {
+      "source": "campaign:apt-jennings",
+      "target": "actor:william_crandall",
+      "relation": "attributed to"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:elizabeth_jennings",
+      "relation": "family_spousal"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:paige_jennings",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:paige_jennings",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:henry_jennings",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:henry_jennings",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:mischa_semenov",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:irina_semenova",
+      "target": "actor:mischa_semenov",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:irina_semenova",
+      "relation": "romantic_past"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:elizabeths_mother",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:stan_beeman",
+      "target": "actor:sandra_beeman",
+      "relation": "family_spousal"
+    },
+    {
+      "source": "actor:stan_beeman",
+      "target": "actor:matthew_beeman",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:sandra_beeman",
+      "target": "actor:matthew_beeman",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:matthew_beeman",
+      "target": "actor:paige_jennings",
+      "relation": "romantic"
+    },
+    {
+      "source": "actor:pastor_tim_christiansen",
+      "target": "actor:alice_christiansen",
+      "relation": "family_spousal"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:stan_beeman",
+      "relation": "adversarial_unwitting"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:stan_beeman",
+      "relation": "adversarial_unwitting"
+    },
+    {
+      "source": "actor:claudia",
+      "target": "actor:philip_jennings",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:claudia",
+      "target": "actor:elizabeth_jennings",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:claudia",
+      "target": "actor:paige_jennings",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:claudia",
+      "target": "actor:viktor_zhukov",
+      "relation": "romantic_past"
+    },
+    {
+      "source": "actor:gabriel",
+      "target": "actor:philip_jennings",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:gabriel",
+      "target": "actor:elizabeth_jennings",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:gabriel",
+      "target": "actor:mischa_semenov",
+      "relation": "adversarial_operational"
+    },
+    {
+      "source": "actor:gabriel",
+      "target": "actor:martha_hanson",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:arkady_zotov",
+      "target": "actor:frank_gaad",
+      "relation": "adversarial_professional_respect"
+    },
+    {
+      "source": "actor:arkady_zotov",
+      "target": "actor:nina_krilova",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:arkady_zotov",
+      "target": "actor:oleg_burov",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:arkady_zotov",
+      "target": "actor:vasili_nikolaevich",
+      "relation": "professional_succession"
+    },
+    {
+      "source": "actor:oleg_burov",
+      "target": "actor:nina_krilova",
+      "relation": "romantic_unresolved"
+    },
+    {
+      "source": "actor:oleg_burov",
+      "target": "actor:stan_beeman",
+      "relation": "frenemy_alliance"
+    },
+    {
+      "source": "actor:oleg_burov",
+      "target": "actor:tatiana_vyazemtseva",
+      "relation": "professional_rivalry"
+    },
+    {
+      "source": "actor:oleg_burov",
+      "target": "actor:philip_jennings",
+      "relation": "handler_asset_reversed"
+    },
+    {
+      "source": "actor:oleg_burov",
+      "target": "actor:stan_beeman",
+      "relation": "counterintelligence_outcome"
+    },
+    {
+      "source": "actor:nina_krilova",
+      "target": "actor:stan_beeman",
+      "relation": "coercion_then_romantic"
+    },
+    {
+      "source": "actor:nina_krilova",
+      "target": "actor:vasili_nikolaevich",
+      "relation": "romantic"
+    },
+    {
+      "source": "actor:nina_krilova",
+      "target": "actor:evi_sneijder",
+      "relation": "manipulation"
+    },
+    {
+      "source": "actor:nina_krilova",
+      "target": "actor:anton_baklanov",
+      "relation": "protective_bond"
+    },
+    {
+      "source": "actor:vlad_kosygin",
+      "target": "actor:nina_krilova",
+      "relation": "romantic_unrequited"
+    },
+    {
+      "source": "actor:stan_beeman",
+      "target": "actor:vlad_kosygin",
+      "relation": "eliminated_by"
+    },
+    {
+      "source": "actor:stan_beeman",
+      "target": "actor:vasili_nikolaevich",
+      "relation": "framed_by"
+    },
+    {
+      "source": "actor:stan_beeman",
+      "target": "actor:chris_amador",
+      "relation": "professional_partnership"
+    },
+    {
+      "source": "actor:stan_beeman",
+      "target": "actor:dennis_aderholt",
+      "relation": "professional_partnership"
+    },
+    {
+      "source": "actor:stan_beeman",
+      "target": "actor:renee",
+      "relation": "romantic"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:renee",
+      "relation": "surveillance"
+    },
+    {
+      "source": "actor:chris_amador",
+      "target": "actor:martha_hanson",
+      "relation": "romantic_past"
+    },
+    {
+      "source": "actor:jared_connors",
+      "target": "actor:chris_amador",
+      "relation": "eliminated_by"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:jared_connors",
+      "relation": "adversarial_operational"
+    },
+    {
+      "source": "actor:dennis_aderholt",
+      "target": "actor:martha_hanson",
+      "relation": "romantic_unrequited"
+    },
+    {
+      "source": "actor:walter_taffet",
+      "target": "actor:martha_hanson",
+      "relation": "investigation"
+    },
+    {
+      "source": "actor:dennis_aderholt",
+      "target": "actor:sofia_bystrova",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:dennis_aderholt",
+      "target": "actor:gennadi_bystrov",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:stan_beeman",
+      "target": "actor:sofia_bystrova",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:stan_beeman",
+      "target": "actor:gennadi_bystrov",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:sofia_bystrova",
+      "relation": "eliminated_by"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:gennadi_bystrov",
+      "relation": "eliminated_by"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:martha_hanson",
+      "relation": "handler_asset_and_cover_marriage"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:gregory_thomas",
+      "relation": "handler_asset_and_romantic"
+    },
+    {
+      "source": "actor:gregory_thomas",
+      "target": "actor:chris_amador",
+      "relation": "framed_for"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:kimberly_breland",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:kimberly_breland",
+      "target": "actor:isaac_breland",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:young_hee_seong",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:young_hee_seong",
+      "target": "actor:don_seong",
+      "relation": "family_spousal"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:don_seong",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:erica_haskard",
+      "relation": "handler_asset_then_eliminated"
+    },
+    {
+      "source": "actor:erica_haskard",
+      "target": "actor:glenn_haskard",
+      "relation": "family_spousal"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:deirdre_kemp",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:benjamin_stobert",
+      "relation": "handler_asset"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:yousaf_rana",
+      "relation": "handler_asset_via_proxy"
+    },
+    {
+      "source": "actor:yousaf_rana",
+      "target": "actor:annelise",
+      "relation": "romantic_then_eliminated_by"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:yousaf_rana",
+      "relation": "blackmail"
+    },
+    {
+      "source": "actor:pastor_tim_christiansen",
+      "target": "actor:paige_jennings",
+      "relation": "confidant"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:pastor_tim_christiansen",
+      "relation": "surveillance_and_leverage"
+    },
+    {
+      "source": "actor:alice_christiansen",
+      "target": "actor:philip_jennings",
+      "relation": "adversarial_suspicion"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:william_crandall",
+      "relation": "network_peer"
+    },
+    {
+      "source": "actor:william_crandall",
+      "target": "actor:young_hee_seong",
+      "relation": "operational_dependency"
+    },
+    {
+      "source": "actor:william_crandall",
+      "target": "actor:dennis_aderholt",
+      "relation": "adversarial_unwitting_clues"
+    },
+    {
+      "source": "actor:andrew_larrick",
+      "target": "actor:philip_jennings",
+      "relation": "adversarial_operational"
+    },
+    {
+      "source": "actor:andrew_larrick",
+      "target": "actor:elizabeth_jennings",
+      "relation": "adversarial_operational"
+    },
+    {
+      "source": "actor:andrew_larrick",
+      "target": "actor:lucia_chena",
+      "relation": "eliminated_by"
+    },
+    {
+      "source": "actor:lucia_chena",
+      "target": "actor:elizabeth_jennings",
+      "relation": "network_peer"
+    },
+    {
+      "source": "actor:tuan_eckert",
+      "target": "actor:philip_jennings",
+      "relation": "cover_family"
+    },
+    {
+      "source": "actor:tuan_eckert",
+      "target": "actor:elizabeth_jennings",
+      "relation": "cover_family"
+    },
+    {
+      "source": "actor:tuan_eckert",
+      "target": "actor:pasha_morozov",
+      "relation": "manipulation"
+    },
+    {
+      "source": "actor:alexei_morozov",
+      "target": "actor:evgheniya_morozova",
+      "relation": "family_spousal"
+    },
+    {
+      "source": "actor:evgheniya_morozova",
+      "target": "actor:pasha_morozov",
+      "relation": "family_parent_child"
+    },
+    {
+      "source": "actor:elizabeth_jennings",
+      "target": "actor:evgheniya_morozova",
+      "relation": "blackmail"
+    },
+    {
+      "source": "actor:philip_jennings",
+      "target": "actor:nikolai_timoshev",
+      "relation": "eliminated_by"
+    },
+    {
+      "source": "actor:nikolai_timoshev",
+      "target": "actor:elizabeth_jennings",
+      "relation": "adversarial_past_assault"
+    },
+    {
+      "source": "actor:viktor_zhukov",
+      "target": "actor:elizabeth_jennings",
+      "relation": "mentor"
+    },
+    {
+      "source": "actor:irina_semenova",
+      "target": "actor:mischa_semenov",
+      "relation": "family_parent_child_via_courier"
+    }
+  ],
+  "events": []
+}

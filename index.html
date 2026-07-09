@@ -680,6 +680,16 @@ const TYPES = {
   technique:{label:'Technique',    color:'#FF9AE0', r:10},
 };
 const SEV = {critical:'#FF4D6D', high:'#FF8A3D', medium:'#FFC93D', low:'#4DD4FF', info:'#7C88AB'};
+// relationship-line colors: deterministic hash of the relation string onto the
+// existing TYPES/SEV palette, so every distinct relation gets a stable color
+// with zero maintenance as new relation verbs show up in ingested data.
+const RELPALETTE = [...Object.values(TYPES).map(t=>t.color), SEV.critical, SEV.high, SEV.medium, SEV.low];
+function relColor(relation){
+  let h=0; const s=String(relation||'');
+  for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;
+  return RELPALETTE[h%RELPALETTE.length];
+}
+function hexToRgba(hex,a){ const n=parseInt(hex.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; }
 
 const CLASSIF = {
   U:  {lvl:0, label:'UNCLASSIFIED', color:'#43a047'},
@@ -1015,8 +1025,8 @@ function draw(){
     const a=toScreen(l.s.x,l.s.y), b=toScreen(l.t.x,l.t.y);
     const hot = selectedId && (l.source===selectedId||l.target===selectedId);
     ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
-    ctx.strokeStyle = hot ? 'rgba(59,232,222,0.55)' : 'rgba(120,140,200,0.14)';
-    ctx.lineWidth = hot?1.8:1; ctx.stroke();
+    ctx.strokeStyle = hexToRgba(relColor(l.relation), hot?0.85:0.38);
+    ctx.lineWidth = hot?2:1.1; ctx.stroke();
   });
   // pulses
   pulses.forEach(p=>{
@@ -1284,6 +1294,13 @@ function renderLegend(){
   el.querySelectorAll('[data-type]').forEach(r=>r.onclick=()=>{
     const t=r.dataset.type; hiddenTypes.has(t)?hiddenTypes.delete(t):hiddenTypes.add(t); renderLegend();
   });
+  const rels=[...new Set(state.links.map(l=>l.relation).filter(Boolean))];
+  if(rels.length){
+    const shown=rels.slice(0,20);
+    el.innerHTML+='<h4 style="margin-top:14px">Relationship Lines</h4>'+shown.map(r=>
+      `<div class="legend__row"><span class="legend__dot" style="color:${relColor(r)};background:${relColor(r)}"></span>${escapeHtml(r)}</div>`
+    ).join('')+(rels.length>shown.length?`<div class="legend__row" style="color:var(--muted-2);font-size:11px">+${rels.length-shown.length} more</div>`:'');
+  }
 }
 
 const TACTICS=['Initial Access','Execution','Persistence','Privilege Escalation','Credential Access','Command & Control','Exfiltration'];

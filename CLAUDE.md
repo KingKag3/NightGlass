@@ -45,6 +45,7 @@ Navigate by section-comment banners and function names, not line numbers (edits 
 | Design tokens / all styling | `:root` block + component classes in `<style>` |
 | Type/severity/classification config | `TYPES`, `SEV`, `CLASSIF`, `USERS`, `settings`, `state` (top of script) |
 | Demo data (Operation Nightjar) | `demoData()` — the living spec of the data model |
+| Second sample dataset | `docs/samples/the-americans-network.json` — 60 entities/101 links/42 relation types, fictional, drag into Ingest view (not wired into `demoData()`) |
 | Ingestion parsers | `extractIOCs` `refang` `mergeIOCs` `parseCSV` `parseJSON` `guessType` `normSev`; entry point `ingestText` (async) |
 | Force graph | `physics` `draw` `tick` `nodeAt`; camera `toScreen`/`toWorld`; `resizeCanvas`/`centerView` |
 | Inspector drawer | `selectEntity` (also hosts classification + tag editors), `closeInspector` |
@@ -76,24 +77,27 @@ Navigate by section-comment banners and function names, not line numbers (edits 
 
 ## Current state
 
-v0.3.0. Implemented: constellation graph, command center, ATT&CK matrix, timeline, multi-format ingestion, auto-ingest pipelines (simulator + URL poll), translation (endpoint + demo dict), U/CUI/S/TS markings + clearance redaction across every view, custom tagging, saved searches + alert engine, JSON + Markdown export. Boots into the Operation Nightjar demo with one alerting search and one paused simulator pipeline.
+v0.4.0. Implemented: constellation graph, command center, ATT&CK matrix, timeline, multi-format ingestion, auto-ingest pipelines (simulator + URL poll), translation (endpoint + demo dict), U/CUI/S/TS markings + clearance redaction across every view, custom tagging, saved searches + alert engine, JSON + Markdown export, relationship-type edge coloring. Boots into the Operation Nightjar demo with one alerting search and one paused simulator pipeline.
 
 Classification markings and tagging are gated behind a single opt-in "advanced" toggle (`settings.markings`, default `false` — checkbox in Pipelines & Settings, id `setMark`). Off by default: no banner, no active-analyst/clearance selector (`.userbox`), no classification/tag chips, and the inspector's Classification/Tags editors plus the ingest and pipeline forms' classification/tag fields are hidden via the `.advonly` CSS class (`body:not(.marked) .advonly{display:none}`, mirroring the existing `.classbanner`/`.marked` pattern). Operation Nightjar demo data ships with `classification:null`/`tags:[]` on every entity — nothing is pre-classified. Data model fields, export/import, and `buildMarkdown` are untouched (still lossless); only in-app *display and editing* of classification/tags is gated. When adding new classification- or tag-bearing UI, give it the `advonly` class (or gate with `markingsOn()` in JS) so it follows this pattern.
 
 ## Next tasks (prioritized)
 
-1. **FastAPI backend** — persistence + auth; JWT carries a clearance claim; **server-side redaction** (filter above-clearance rows before they leave the API). Tables map 1:1 to `entities` / `links` / `events`; `searches` / `pipelines` / `users` as config. This unblocks everything below.
-2. **Multi-actor support** — scoped, not yet built (see [[Multi-Actor Support]] for the agreed design):
+1. **FastAPI backend** — persistence + auth; JWT carries a clearance claim; **server-side redaction** (filter above-clearance rows before they leave the API). Tables map 1:1 to `entities` / `links` / `events`; `searches` / `pipelines` / `users` as config. This unblocks everything below. Full design, including the source-of-truth/cache/search plan, is scoped in [[Backend Architecture]]:
+   - Config-driven `DATABASE_URL` — SQLite for the desktop/Tauri profile, PostgreSQL for the self-hosted server profile, same SQLAlchemy models both ways
+   - Search behind a `SearchProvider` interface — Postgres `tsvector`/SQLite FTS5 by default, Elasticsearch as a later swap-in once scale actually warrants it
+   - Cache behind a `CacheBackend` interface — `InMemoryCache` by default (dashboard aggregates), `RedisCache` (cache + pub/sub) as a later swap-in triggered by adding a second worker process
+2. **Multi-actor support** — partially built (see [[Multi-Actor Support]]): relation-type edge coloring + legend shipped 2026-07-09. Still scoped, not built:
    - Quick-add form (Ingest view) for a new entity — type/label/severity/meta — pushed through the same merge path as JSON ingest, so adding a second actor/APT group doesn't require hand-writing JSON
    - Quick-add form for a relationship between two existing entities (source/target/relation) — `state.links` already supports actor-to-actor ties with zero schema changes (e.g. `relation:'rival to'`), it just has no creation UI yet
-   - Attribution-colored graph edges: deterministic per-actor color from a small fixed palette; any edge touching an actor node renders in that actor's color, non-actor edges stay neutral (current behavior)
-   - Color → actor legend (extends the existing entity-type legend panel) so colored edges stay interpretable with 3+ actors
-3. **Feed relay endpoint** on that backend to solve CORS and normalize incoming feeds for URL pipelines.
-4. **Graph scale** — replace O(n²) repulsion in `physics()` with Barnes-Hut/quadtree; label decluttering for 1,000+ nodes.
-5. **STIX 2.1** — real SROs and actor/malware SDOs in `parseJSON`; map marking-definitions to `CLASSIF`.
-6. **Enrichment providers** — WHOIS / GeoIP / hash-reputation behind a provider interface; add an "Enrichment" section to `selectEntity`.
-7. **Correlation** — flag cross-source indicator overlap; N-hop pivot queries.
-8. **Time scrubber**; **PDF report export**; **Tauri packaging** (after backend).
+   - Attribution-colored graph edges by *actor identity* (distinct from the relation-type coloring already shipped) + a color → actor legend
+3. **Flexible data import** — scoped, not yet built (see [[Flexible Data Import]]): a declarative dot-path mapping spec (`applyMapping(rawJson, spec) → {entities, links}`) so arbitrary custom JSON schemas can be ingested without a one-off conversion script. Build order confirmed: mechanism + pipeline integration first (so automated feeds in non-native shapes actually work unattended), point-and-click mapping wizard UI second.
+4. **Feed relay endpoint** on that backend to solve CORS and normalize incoming feeds for URL pipelines.
+5. **Graph scale** — replace O(n²) repulsion in `physics()` with Barnes-Hut/quadtree; label decluttering for 1,000+ nodes.
+6. **STIX 2.1** — real SROs and actor/malware SDOs in `parseJSON`; map marking-definitions to `CLASSIF`.
+7. **Enrichment providers** — WHOIS / GeoIP / hash-reputation behind a provider interface; add an "Enrichment" section to `selectEntity`.
+8. **Correlation** — flag cross-source indicator overlap; N-hop pivot queries.
+9. **Time scrubber**; **PDF report export**; **Tauri packaging** (after backend).
 
 ## Workflow expectations
 

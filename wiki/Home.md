@@ -9,6 +9,8 @@ Self-hosted, single-file cyber threat analysis platform. Start here.
 - [[Classification & Redaction]] — markings, clearances, enforcement points
 - [[Search & Alerts]] — query syntax, saved searches, alert loop
 - [[Multi-Actor Support]] — scoped design for adding actors/APT groups, linking them, attribution-colored edges (not yet built)
+- [[Backend Architecture]] — source-of-truth, cache, and search design: SQLite/Postgres dual profile, CacheBackend/SearchProvider interfaces (not yet built)
+- [[Flexible Data Import]] — declarative mapping spec for custom JSON schemas, pipeline-integrated (not yet built)
 - [[Roadmap]] — backend plan and next steps
 
 ## House conventions (carried from Temparr / MyMusicBox)

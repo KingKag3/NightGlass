@@ -20,6 +20,7 @@ USERS = [{ name, clearance }]   // clearance ∈ U | CUI | S | TS
 - `classification` null = unmarked; `CLASSIF` map holds level + label + banner color
 - Positions are stripped on export; `seedPos()` re-seeds on import
 - `demoData()` (Operation Nightjar) is the living example of the model
+- `docs/samples/the-americans-network.json` — a second, larger reference dataset (60 entities, 101 links, 42 distinct relation types): a fictional HUMINT network graph based on FX's *The Americans*. Not wired into `demoData()`/boot — drag it into the Ingest view to load it. Useful for testing at a scale/relation-density the built-in demo doesn't cover (e.g. relationship-line coloring with a large, varied relation vocabulary).
 
 ## SQLite mapping (future backend)
 `entities`, `links`, `events` tables map 1:1; `tags` as a join table or JSON column; `pipelines`/`searches`/`users` as config tables. Alerts become rows written by the ingest worker.
