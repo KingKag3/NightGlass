@@ -83,12 +83,17 @@ Classification markings and tagging are gated behind a single opt-in "advanced" 
 ## Next tasks (prioritized)
 
 1. **FastAPI backend** — persistence + auth; JWT carries a clearance claim; **server-side redaction** (filter above-clearance rows before they leave the API). Tables map 1:1 to `entities` / `links` / `events`; `searches` / `pipelines` / `users` as config. This unblocks everything below.
-2. **Feed relay endpoint** on that backend to solve CORS and normalize incoming feeds for URL pipelines.
-3. **Graph scale** — replace O(n²) repulsion in `physics()` with Barnes-Hut/quadtree; label decluttering for 1,000+ nodes.
-4. **STIX 2.1** — real SROs and actor/malware SDOs in `parseJSON`; map marking-definitions to `CLASSIF`.
-5. **Enrichment providers** — WHOIS / GeoIP / hash-reputation behind a provider interface; add an "Enrichment" section to `selectEntity`.
-6. **Correlation** — flag cross-source indicator overlap; N-hop pivot queries.
-7. **Time scrubber**; **PDF report export**; **Tauri packaging** (after backend).
+2. **Multi-actor support** — scoped, not yet built (see [[Multi-Actor Support]] for the agreed design):
+   - Quick-add form (Ingest view) for a new entity — type/label/severity/meta — pushed through the same merge path as JSON ingest, so adding a second actor/APT group doesn't require hand-writing JSON
+   - Quick-add form for a relationship between two existing entities (source/target/relation) — `state.links` already supports actor-to-actor ties with zero schema changes (e.g. `relation:'rival to'`), it just has no creation UI yet
+   - Attribution-colored graph edges: deterministic per-actor color from a small fixed palette; any edge touching an actor node renders in that actor's color, non-actor edges stay neutral (current behavior)
+   - Color → actor legend (extends the existing entity-type legend panel) so colored edges stay interpretable with 3+ actors
+3. **Feed relay endpoint** on that backend to solve CORS and normalize incoming feeds for URL pipelines.
+4. **Graph scale** — replace O(n²) repulsion in `physics()` with Barnes-Hut/quadtree; label decluttering for 1,000+ nodes.
+5. **STIX 2.1** — real SROs and actor/malware SDOs in `parseJSON`; map marking-definitions to `CLASSIF`.
+6. **Enrichment providers** — WHOIS / GeoIP / hash-reputation behind a provider interface; add an "Enrichment" section to `selectEntity`.
+7. **Correlation** — flag cross-source indicator overlap; N-hop pivot queries.
+8. **Time scrubber**; **PDF report export**; **Tauri packaging** (after backend).
 
 ## Workflow expectations
 
