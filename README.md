@@ -33,9 +33,18 @@ The app boots into the fictional **Operation Nightjar** demo campaign so every f
 
 ## Screenshots
 
-Classification markings are off by default; this shows the redacted guest view with the advanced-mode toggle switched on.
+| | |
+|---|---|
+| ![Command center](docs/screenshots/command-center.webp) | ![Threat constellation](docs/screenshots/constellation.webp) |
+| ![Constellation with inspector open](docs/screenshots/constellation-inspector.webp) | ![ATT&CK matrix](docs/screenshots/attack-matrix.webp) |
+| ![Timeline](docs/screenshots/timeline.webp) | ![Search & alerts](docs/screenshots/search-alerts.webp) |
+| ![Pipelines & settings](docs/screenshots/pipelines-settings.webp) | ![Redacted guest view](docs/screenshots/redaction-guest-view.png) |
 
-![Redacted guest view](docs/screenshots/redaction-guest-view.png)
+Hovering a relationship line surfaces what it is:
+
+<img src="docs/screenshots/edge-tooltip.png" alt="Edge hover tooltip showing the relationship type" width="420">
+
+Classification markings and redaction are off by default (bottom-right above); the guest view shows the advanced-mode toggle switched on.
 
 ## Docs
 
