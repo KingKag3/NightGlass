@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.6.0 — 2026-07-09
+- Fixed: the "+N more" row in the Relationship Lines legend was inert — clicking did nothing. It's now a real toggle (`legendRelExpanded`) that expands to the full list ("show fewer" to collapse); `.legend` gained `max-height`/`overflow-y:auto` since an expanded 40+ relation list would otherwise overflow the graph view.
+- Hover or click a graph edge to see its relationship — new `linkAt()` hit-test (point-to-segment distance, mirrors how `nodeAt()` already works) drives a floating tooltip on hover and a toast (`source — relation — target`) on click; the hovered edge also renders brighter/thicker, same treatment as a selected node's edges.
+- The inspector's Relationships section now color-codes each relation's text with `relColor()`, matching the edge color in the graph (skipped for redacted rows, which keep the neutral muted color).
+
 ## v0.5.0 — 2026-07-09
 - Fixed: the graph legend's entity-type visibility toggles stopped working after v0.4.0's relationship-lines section was added — `renderLegend()` was using `el.innerHTML += ...`, which re-parses the whole legend and silently drops the click handlers just wired onto the entity-type rows. Now builds one HTML string and wires handlers once, after the single assignment.
 - Node pinning: drag a node more than a few pixels and it stays where you drop it (`entity.pinned`) — pinned nodes are excluded from physics integration but still push/pull everything else as fixed anchors, and get a dashed ring in the graph. Toggle from the inspector's "Pin in place" button; works for both mouse and touch drag.
