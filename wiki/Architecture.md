@@ -13,7 +13,7 @@ Single HTML file (`index.html`): CSS design tokens in `:root`, markup (shell + 8
 |---|---|---|
 | Command Center | `view-overview` | metrics, gauge, severity bars, live feed, top actors |
 | Constellation | `view-graph` | canvas force graph |
-| Threat Actors | `view-actors` | filterable actor list + editable profile (image, meta, embedded graph link) |
+| Threat Actors | `view-actors` | filterable actor list + editable profile (image, meta, live constellation preview) |
 | ATT&CK Matrix | `view-matrix` | observed-technique highlighting |
 | Timeline | `view-timeline` | event chronology |
 | Ingest | `view-ingest` | drop/paste/parse + per-batch options |
@@ -44,6 +44,8 @@ Everything in the profile is editable and writes straight back to the entity, re
 Clicking a relationship in the profile behaves differently depending on what's on the other end: another actor swaps the profile to them (`selectActorProfile`, stays in this view); anything else jumps to the Constellation view and opens the generic inspector on it (`switchView('graph')` + `selectEntity()`).
 
 **Threat Group / Campaign section**: a profile section, shown above Classification when it applies, listing every `type:'campaign'` entity linked to the profiled actor (filtered from the same `rels` computation the Relationships section uses lower down). Each row has a "Show only this group" button — `focusActor(campaign.id)` + `switchView('graph')`. `focusActor()`/`actorComponent()` were already entity-agnostic BFS/hide logic despite the actor-centric naming, so no new graph-filtering code was needed to root the focus at a campaign instead of an actor. Redacted campaigns blur and drop the button, same pattern as everywhere else.
+
+**Live constellation preview**: `.profile__previewPanel` — a sticky, non-scrolling panel filling the space to the right of the (narrower, `max-width:760px`) profile fields, so the wide profile view doesn't waste horizontal space on large screens. Holds its own `<canvas id="profilePreview">`, redrawn by `drawProfilePreview()`. This works cheaply because `tick()` already runs `physics()` unconditionally every frame regardless of the active view — entity `x`/`y` are always live-simulated in the background, so the preview only needs a lightweight draw pass (auto-fit bounding box of `actorComponent(profileActorId)`, scale/center via a `toPx` closure, nodes + edges in the same `TYPES`/`relColor` colors as the main graph, no grid/pulses/camera-pan) rather than a second physics simulation. Hooked into the existing `tick()` loop, gated on `currentView==='actors' && profileActorId` so it costs nothing on other views. The profiled actor's own node is enlarged with a ring and labeled ("you are here"); redacted nodes render in the same grey as the main graph. Click-to-navigate mirrors the Relationships list (`profilePreviewNodeAt()` hit-tests against the last-drawn transform; another actor swaps the profile in place, anything else jumps to the graph + generic inspector; redacted nodes are inert).
 
 ## Design language
 Signals-intelligence observatory: indigo void, signal cyan accent, calibrated severity ramp (blue→yellow→orange→red), Space Grotesk for UI, JetBrains Mono strictly for data. Classification colors follow convention: U green, CUI purple, S red, TS orange.

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.2 — 2026-07-09
+- The actor profile's right-hand side was empty space on wide screens — added a live embedded constellation preview filling it. Cheap by construction: the force simulation (`tick()`/`physics()`) already runs every frame regardless of the active view, so the preview just draws the current (already-live) positions of `actorComponent(profileActorId)`, auto-fit to the panel — no second physics simulation.
+- The preview updates continuously while the profile is open, matches the main graph's node/edge coloring, enlarges and labels the profiled actor's own node, and is clickable — another actor's node swaps the profile in place, anything else jumps to the graph + inspector. Redacted nodes render grey and are inert to clicks, same as everywhere else.
+
 ## v0.8.1 — 2026-07-09
 - Threat Actor profile now shows a "Threat Group / Campaign" section — every `campaign`-type entity the actor is linked to, each with a "Show only this group" button that focuses the constellation on that campaign's connected component. Reuses `focusActor()`/`actorComponent()` as-is (already entity-agnostic despite the naming) rather than adding new graph-filtering logic. Redacted campaigns blur and drop the button, same as everywhere else.
 
