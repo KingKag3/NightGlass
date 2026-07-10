@@ -21,6 +21,10 @@ The app boots into the fictional **Operation Nightjar** demo campaign so every f
 
 There's also [`docs/samples/the-wire-network.json`](docs/samples/the-wire-network.json) — a Baltimore narcotics-trafficking network based on HBO's *The Wire* (48 entities, 84 links, 39 threat actors organized under **The Barksdale Organization** campaign), covering a full organizational hierarchy, a rival stick-up crew, the Major Crimes Unit investigating them, and a rising rival organization. Good for exercising the Threat Actors view's Groups/Actors split and group-filtered constellation focus on a dataset with real depth.
 
+[`docs/samples/the-sopranos-network.json`](docs/samples/the-sopranos-network.json) is the same idea for HBO's *The Sopranos* (43 entities, 77 links) — the DiMeo crime family's internal succession disputes, FBI informants, and a full-blown war with the rival Lupertazzi family.
+
+And [`docs/samples/solarwinds-network.json`](docs/samples/solarwinds-network.json) is the odd one out: **real-world, not fictional.** It models the actual SUNBURST/SolarWinds Orion supply chain compromise (APT29/Cozy Bear, attributed by the U.S. Government to Russia's SVR), compiled from public FireEye/Mandiant, Microsoft MSTIC, CrowdStrike, Volexity, and CISA reporting — 41 entities, 67 links, and the only sample that touches every entity type (campaign, actor, malware, technique, CVE, and target asset) in one dataset.
+
 ## Features
 
 - **Threat constellation** — custom canvas force-directed graph: type-colored nodes, severity rings, traveling signal pulses, drag/pan/zoom, query filtering, per-type legend toggles, and an inspector drawer for pivoting relationship-by-relationship.
@@ -37,11 +41,11 @@ There's also [`docs/samples/the-wire-network.json`](docs/samples/the-wire-networ
 
 | | |
 |---|---|
-| <img src="docs/screenshots/command-center.webp" width="440" alt="Command center"> | <img src="docs/screenshots/ingest.png" width="440" alt="Ingest threat data"> |
-| <img src="docs/screenshots/constellation.webp" width="440" alt="Threat constellation"> | <img src="docs/screenshots/constellation-inspector.webp" width="440" alt="Constellation with inspector open"> |
-| <img src="docs/screenshots/attack-matrix.webp" width="440" alt="ATT&CK matrix"> | <img src="docs/screenshots/timeline.webp" width="440" alt="Timeline"> |
-| <img src="docs/screenshots/search-alerts.webp" width="440" alt="Search & alerts"> | <img src="docs/screenshots/pipelines-settings.webp" width="440" alt="Pipelines & settings"> |
-| <img src="docs/screenshots/redaction-guest-view.png" width="440" alt="Redacted guest view"> | |
+| <img src="docs/screenshots/command-center.png" width="440" alt="Command center, with the Critical Attention watchlist"> | <img src="docs/screenshots/ingest.png" width="440" alt="Ingest threat data"> |
+| <img src="docs/screenshots/constellation.webp" width="440" alt="Threat constellation"> | <img src="docs/screenshots/constellation-inspector.png" width="440" alt="Constellation with inspector open, showing color-coded attributes"> |
+| <img src="docs/screenshots/threat-actor-profile.png" width="440" alt="Threat Actors profile view"> | <img src="docs/screenshots/attack-matrix.webp" width="440" alt="ATT&CK matrix"> |
+| <img src="docs/screenshots/timeline.webp" width="440" alt="Timeline"> | <img src="docs/screenshots/search-alerts.webp" width="440" alt="Search & alerts"> |
+| <img src="docs/screenshots/pipelines-settings.webp" width="440" alt="Pipelines & settings"> | <img src="docs/screenshots/redaction-guest-view.png" width="440" alt="Redacted guest view"> |
 
 Hovering a relationship line surfaces what it is:
 
