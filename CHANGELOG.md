@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.2 — 2026-07-09
+- The actor profile's constellation preview now has the same animation and edge-hover feel as the main Constellation view. Traveling pulse particles (`previewPulses`, same spawn/advance/expire cadence as the main graph's `pulses`) drift along the local-neighborhood edges, driven by `tick()` calling `drawProfilePreview(true)` every frame while the profile is open. Hovering an edge shows a tooltip with the relationship name (`profilePreviewLinkAt()`, mirrors `linkAt()`'s point-to-segment hit-testing) and renders it brighter/thicker; nodes still win when both are under the cursor, same priority as the main graph.
+- Pulses are cleared on every re-center (click a neighbor, click a breadcrumb, click the campaign crumb, open a different actor) — otherwise a pulse's neighbor index would point at the wrong edge once the neighborhood changes underneath it.
+
 ## v0.9.1 — 2026-07-09
 - The preview's single "« back to root" link wasn't enough once you'd drilled several hops deep — replaced with a **full breadcrumb trail** (`previewTrail` array, was a single `previewFocusId`). Every hop you've taken is shown and clickable to jump back to that point; the actor's home campaign is prepended as a fixed first crumb ("the overall group this belongs to"), computed once against the profile's root actor so it stays constant as you explore.
 - Fixed: the inspector drawer stayed open showing stale content when navigating away from the Constellation view to an unrelated view (e.g. ATT&CK Matrix) — it's a global overlay, not scoped per-view, and nothing was closing it. `switchView()` now force-closes it whenever leaving the graph view.
