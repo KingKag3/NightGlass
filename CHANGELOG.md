@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.9.4 — 2026-07-09
+- The graph HUD's group dropdown (added earlier today) only narrowed the Actors panel's list — selecting a group didn't change what the constellation itself showed. Now it does both: `focusActor(campaignId)` filters the graph to that group's connected component at the same time the list narrows.
+
 ## v0.9.3 — 2026-07-09
 - The Threat Actors sidebar was a flat, unsorted list of every actor — with a large single-network dataset (e.g. the Americans sample, one 60-entity connected component) every actor showed an identical "60 connected," making it impossible to tell who actually mattered. Restructured into **Groups then Actors**: a "Groups" section lists every campaign with a member count; clicking one opens the campaign's own profile *and* narrows the Actors section below to just that group's members ("Show all groups" clears it). Actor rows now sort by **direct** connection count (a plain link count, not the whole connected component's size) descending, so Philip Jennings (24 direct ties) actually reads as more central than a one-scene character (1) — previously indistinguishable.
 - Campaign entities now profile through the exact same `selectActorProfile()`/`renderActorProfile()` path as actors — turns out nothing there ever actually required `type==='actor'`, it just hadn't been reachable for other types. Fixed the one place that assumed it (the avatar placeholder's hard-coded actor-purple, now uses the entity's own `TYPES` color). Relationship-row and preview center-node navigation both broadened from "actor only" to "actor or campaign."

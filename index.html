@@ -1471,7 +1471,7 @@ function renderActorsPanel(){
   panel.innerHTML=html;
   panel.querySelectorAll('[data-actor]').forEach(row=>row.onclick=()=>focusActor(row.dataset.actor||null));
   const groupSel=panel.querySelector('#actorsPanelGroupSel');
-  if(groupSel)groupSel.onchange=()=>{ actorsPanelGroupFilter=groupSel.value||null; renderActorsPanel(); };
+  if(groupSel)groupSel.onchange=()=>{ actorsPanelGroupFilter=groupSel.value||null; focusActor(actorsPanelGroupFilter); };
 }
 
 function directConnectionCount(id){ return state.links.filter(l=>l.source===id||l.target===id).length; }
