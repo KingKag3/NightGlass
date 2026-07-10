@@ -1327,7 +1327,7 @@ function selectEntity(id){
   const keys=Object.keys(e.meta||{});
   if(keys.length){
     html+='<div class="insp__section"><h5>Attributes</h5>';
-    keys.forEach(k=>{ html+=`<div class="kv"><span class="k"><span class="attrdot" style="background:${attrColor(k)}"></span><span style="color:${attrColor(k)}">${escapeHtml(k)}</span></span><span class="v">${escapeHtml(String(e.meta[k]))}</span></div>`; });
+    keys.forEach(k=>{ const c=attrColor(k); html+=`<div class="kv" style="border-left:3px solid ${c};padding-left:8px"><span class="k"><span class="attrdot" style="background:${c}"></span><span style="color:${c}">${escapeHtml(k)}</span></span><span class="v">${escapeHtml(String(e.meta[k]))}</span></div>`; });
     html+='</div>';
   }
   // relationships
@@ -1747,9 +1747,9 @@ function renderActorProfile(){
   }
   html+=`<div class="profile__section advonly"><h5>Classification</h5><select id="profileClass"><option value="">Unmarked</option>${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${e.classification===k?'selected':''}>${CLASSIF[k].label}</option>`).join('')}</select></div>`;
   html+=`<div class="profile__section advonly"><h5>Tags</h5><div class="tagrow">${(e.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}<span class="tagx" data-t="${escapeHtml(t)}">×</span></span>`).join('')||'<span style="color:var(--muted-2);font-size:12px">none</span>'}</div><div style="display:flex;gap:6px;margin-top:8px"><input class="taginput" id="profileTagIn" placeholder="add tag…" style="flex:1"><button class="btn" id="profileTagAdd" style="padding:6px 12px">Add</button></div></div>`;
-  html+=`<div class="profile__section"><h5>Attributes</h5><div id="profileMetaRows">${Object.entries(meta).map(([k,v])=>`
-    <div class="metarow"><span class="attrdot" style="background:${attrColor(k)}"></span><input class="metarow__key" style="color:${attrColor(k)}" value="${escapeHtml(k)}" disabled><input class="metarow__val" data-key="${escapeHtml(k)}" value="${escapeHtml(String(v))}"><button class="metarow__del" data-key="${escapeHtml(k)}">×</button></div>`).join('')}</div>
-    <div class="metarow"><span class="attrdot" style="background:transparent"></span><input class="metarow__key" id="profileMetaKeyNew" placeholder="key"><input class="metarow__val" id="profileMetaValNew" placeholder="value"><button class="btn" id="profileMetaAdd" style="padding:6px 12px">Add</button></div>
+  html+=`<div class="profile__section"><h5>Attributes</h5><div id="profileMetaRows">${Object.entries(meta).map(([k,v])=>{ const c=attrColor(k); return `
+    <div class="metarow"><input class="metarow__key" style="color:${c};border-left:4px solid ${c};background:${hexToRgba(c,.12)}" value="${escapeHtml(k)}" disabled><input class="metarow__val" data-key="${escapeHtml(k)}" value="${escapeHtml(String(v))}"><button class="metarow__del" data-key="${escapeHtml(k)}">×</button></div>`; }).join('')}</div>
+    <div class="metarow"><input class="metarow__key" id="profileMetaKeyNew" placeholder="key"><input class="metarow__val" id="profileMetaValNew" placeholder="value"><button class="btn" id="profileMetaAdd" style="padding:6px 12px">Add</button></div>
   </div>`;
   if(rels.length){
     html+='<div class="profile__section"><h5>Relationships ('+rels.length+')</h5>';
