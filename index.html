@@ -215,6 +215,8 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .legend__row.off{opacity:.3}
 .legend__row.active{color:var(--signal);font-weight:600}
 .legend__dot{width:11px;height:11px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor}
+.legend__groupSel{width:100%;margin-bottom:8px;background:var(--panel-2);border:1px solid var(--line);
+  border-radius:6px;padding:5px 8px;color:var(--ink);font-size:12px;font-family:var(--sans)}
 .edge-tip{position:absolute;display:none;pointer-events:none;z-index:8;background:rgba(11,16,32,.92);
   border:1px solid var(--line-strong);border-left-width:3px;border-radius:6px;padding:5px 10px;
   font-family:var(--mono);font-size:11px;color:var(--ink);white-space:nowrap;backdrop-filter:blur(6px)}
@@ -275,11 +277,13 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .profile__previewPanel{flex:1;min-width:280px;position:sticky;top:0;align-self:flex-start;
   height:calc(100vh - 200px);min-height:280px;border:1px solid var(--line);border-radius:14px;
   background:var(--panel-2);overflow:hidden;display:flex;flex-direction:column}
-.profile__previewPanel #previewHead{display:flex;align-items:center;justify-content:space-between;gap:8px;
-  margin:0;padding:12px 16px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--muted);border-bottom:1px solid var(--line);flex:none}
-.profile__previewPanel .previewBack{color:var(--signal);cursor:pointer;white-space:nowrap;letter-spacing:normal;text-transform:none;font-size:12px}
-.profile__previewPanel .previewBack:hover{text-decoration:underline}
+.profile__previewPanel #previewHead{margin:0;padding:10px 16px;border-bottom:1px solid var(--line);flex:none}
+.profile__previewPanel .previewTrail{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px}
+.profile__previewPanel .previewCrumb{color:var(--signal);cursor:pointer}
+.profile__previewPanel .previewCrumb:hover{text-decoration:underline}
+.profile__previewPanel .previewCrumbCurrent{color:var(--ink);font-weight:600}
+.profile__previewPanel .previewSep{color:var(--muted-2)}
+.profile__previewPanel .previewCount{margin-top:3px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .profile__previewPanel canvas{flex:1;width:100%;display:block;cursor:pointer}
 .profile__header{display:flex;gap:20px;align-items:flex-start;margin-bottom:24px}
 .profile__avatar{width:96px;height:96px;border-radius:16px;flex:none;background:var(--panel-2);border:1px solid var(--line-strong);
@@ -789,6 +793,7 @@ let hiddenTypes = new Set();
 let selectedId = null;
 let legendRelExpanded = false;
 let focusedActorId = null;
+let actorsPanelGroupFilter = null;
 let profileActorId = null;
 
 /* ============================================================
@@ -1441,12 +1446,28 @@ function renderActorsPanel(){
   const actors=state.entities.filter(e=>e.type==='actor');
   if(actors.length<2){ panel.style.display='none'; return; }
   panel.style.display='block';
-  const rows=actors.map(a=>({a,count:actorComponent(a.id).size})).sort((x,y)=>y.count-x.count);
+  const campaignsPresent=[...new Map(state.links.map(l=>{
+    const s=state.entities.find(x=>x.id===l.source), t=state.entities.find(x=>x.id===l.target);
+    const camp=s&&s.type==='campaign'&&t&&t.type==='actor'?s:(t&&t.type==='campaign'&&s&&s.type==='actor'?t:null);
+    return camp?[camp.id,camp]:null;
+  }).filter(Boolean)).values()];
+  if(actorsPanelGroupFilter&&!campaignsPresent.some(c=>c.id===actorsPanelGroupFilter))actorsPanelGroupFilter=null;
+  let shownActors=actors;
+  if(actorsPanelGroupFilter){
+    const memberIds=new Set(state.links.filter(l=>l.source===actorsPanelGroupFilter||l.target===actorsPanelGroupFilter).map(l=>l.source===actorsPanelGroupFilter?l.target:l.source));
+    shownActors=actors.filter(a=>memberIds.has(a.id));
+  }
+  const rows=shownActors.map(a=>({a,count:actorComponent(a.id).size})).sort((x,y)=>y.count-x.count);
   let html='<h4>Actors</h4>';
+  if(campaignsPresent.length>1){
+    html+=`<select id="actorsPanelGroupSel" class="legend__groupSel"><option value="">All groups</option>${campaignsPresent.map(c=>`<option value="${c.id}" ${actorsPanelGroupFilter===c.id?'selected':''}>${escapeHtml(c.label)}</option>`).join('')}</select>`;
+  }
   html+=`<div class="legend__row ${focusedActorId?'':'active'}" data-actor="">Show all</div>`;
   html+=rows.map(({a,count})=>`<div class="legend__row ${focusedActorId===a.id?'active':''}" data-actor="${a.id}"><span class="legend__dot" style="color:${TYPES.actor.color};background:${TYPES.actor.color}"></span>${escapeHtml(a.label)} <span style="color:var(--muted-2);font-size:11px">(${count})</span></div>`).join('');
   panel.innerHTML=html;
   panel.querySelectorAll('[data-actor]').forEach(row=>row.onclick=()=>focusActor(row.dataset.actor||null));
+  const groupSel=panel.querySelector('#actorsPanelGroupSel');
+  if(groupSel)groupSel.onchange=()=>{ actorsPanelGroupFilter=groupSel.value||null; renderActorsPanel(); };
 }
 
 function renderActorsView(){
@@ -1470,7 +1491,7 @@ function selectActorProfile(id){
   const e=state.entities.find(x=>x.id===id);
   if(!e || isRedacted(e)){ if(e)toast('⛔ Insufficient clearance — item is classified '+(CLASSIF[e.classification]?CLASSIF[e.classification].label:e.classification)); return; }
   profileActorId=id;
-  previewFocusId=null;
+  previewTrail=[id];
   renderActorsView();
   renderActorProfile();
 }
@@ -1500,32 +1521,55 @@ function handleImagesAdd(fileList,e){
 }
 
 let profilePreviewXform=null;
-let previewFocusId=null;
+let previewTrail=[];
 function resizeProfilePreview(){
   const c=document.getElementById('profilePreview'); if(!c)return;
   const r=c.getBoundingClientRect();
   c.width=Math.max(1,r.width*dpr); c.height=Math.max(1,r.height*dpr);
 }
+function rootCampaignFor(actorId){
+  const links=state.links.filter(l=>l.source===actorId||l.target===actorId);
+  for(const l of links){
+    const otherId=l.source===actorId?l.target:l.source;
+    const o=state.entities.find(x=>x.id===otherId);
+    if(o&&o.type==='campaign')return o;
+  }
+  return null;
+}
 function updatePreviewHeader(){
   const el=document.getElementById('previewHead'); if(!el)return;
-  const focusId=previewFocusId||profileActorId;
-  const ent=state.entities.find(x=>x.id===focusId);
-  const red=ent&&isRedacted(ent);
+  const focusId=previewTrail[previewTrail.length-1];
+  const focusEnt=state.entities.find(x=>x.id===focusId);
   const count=state.links.filter(l=>l.source===focusId||l.target===focusId).length;
-  const rootLabel=state.entities.find(x=>x.id===profileActorId)?.label||'';
-  const back=focusId!==profileActorId?`<span class="previewBack" id="previewBack">« ${escapeHtml(rootLabel)}</span>`:'';
-  el.innerHTML=`<span>${ent?(red?'REDACTED':escapeHtml(ent.label)):''} — ${count} direct connection${count===1?'':'s'}</span>${back}`;
-  const backEl=document.getElementById('previewBack');
-  if(backEl)backEl.onclick=()=>{ previewFocusId=null; drawProfilePreview(); updatePreviewHeader(); };
+  const crumbs=[];
+  const campaign=profileActorId?rootCampaignFor(profileActorId):null;
+  if(campaign&&!isRedacted(campaign)&&campaign.id!==focusId){
+    crumbs.push(`<span class="previewCrumb" data-jump-campaign="${campaign.id}">${escapeHtml(campaign.label)}</span>`);
+  }
+  previewTrail.forEach((id,i)=>{
+    const ent=state.entities.find(x=>x.id===id);
+    const label=ent?(isRedacted(ent)?'REDACTED':escapeHtml(ent.label)):'?';
+    const isLast=i===previewTrail.length-1;
+    crumbs.push(isLast?`<span class="previewCrumbCurrent">${label}</span>`:`<span class="previewCrumb" data-jump-idx="${i}">${label}</span>`);
+  });
+  el.innerHTML=`<div class="previewTrail">${crumbs.join('<span class="previewSep">›</span>')}</div><div class="previewCount">${count} direct connection${count===1?'':'s'}</div>`;
+  el.querySelectorAll('[data-jump-idx]').forEach(c=>c.onclick=()=>{ previewTrail=previewTrail.slice(0,+c.dataset.jumpIdx+1); drawProfilePreview(); updatePreviewHeader(); });
+  const campaignCrumb=el.querySelector('[data-jump-campaign]');
+  if(campaignCrumb)campaignCrumb.onclick=()=>{ previewTrail=[campaignCrumb.dataset.jumpCampaign]; drawProfilePreview(); updatePreviewHeader(); };
 }
 function drawProfilePreview(){
   const c=document.getElementById('profilePreview'); if(!c||!profileActorId)return;
   const pctx=c.getContext('2d');
   const w=c.width, h=c.height;
   pctx.clearRect(0,0,w,h);
-  let focusId=previewFocusId||profileActorId;
+  if(!previewTrail||!previewTrail.length)previewTrail=[profileActorId];
+  let focusId=previewTrail[previewTrail.length-1];
   let center=state.entities.find(x=>x.id===focusId);
-  if(!center||isRedacted(center)){ previewFocusId=null; focusId=profileActorId; center=state.entities.find(x=>x.id===focusId); }
+  while((!center||isRedacted(center))&&previewTrail.length>1){
+    previewTrail.pop();
+    focusId=previewTrail[previewTrail.length-1];
+    center=state.entities.find(x=>x.id===focusId);
+  }
   if(!center||isRedacted(center))return;
   const neighbors=state.links.map(l=>{
     if(l.source!==focusId&&l.target!==focusId)return null;
@@ -1655,7 +1699,7 @@ function renderActorProfile(){
     if(profilePreviewXform&&n.id===profilePreviewXform.focusId){
       if(n.type==='actor')selectActorProfile(n.id); else { switchView('graph'); selectEntity(n.id); }
     } else {
-      previewFocusId=n.id; drawProfilePreview(); updatePreviewHeader();
+      previewTrail.push(n.id); drawProfilePreview(); updatePreviewHeader();
     }
   };
 
@@ -1787,6 +1831,7 @@ function switchView(v){
   currentView=v;
   document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('is-active',b.dataset.view===v));
   document.querySelectorAll('.view').forEach(s=>s.classList.toggle('is-active',s.id==='view-'+v));
+  if(v!=='graph'&&selectedId)closeInspector();
   if(v==='graph'){ resizeCanvas(); if(view.x===0&&view.y===0)centerView(); }
   if(v==='alerts'){ renderSearchResults(); renderSearches(); renderAlertsLog(); }
   if(v==='pipes'){ renderPipelines(); }
