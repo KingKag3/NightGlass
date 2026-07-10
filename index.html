@@ -267,6 +267,8 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .actorsview{display:flex;height:100%}
 .actorsview__list{width:280px;flex:none;border-right:1px solid var(--line);padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
 .actorsview__search input{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);font-size:13px;font-family:var(--sans)}
+.actorlist__sectionHead{margin:14px 0 4px;padding:0 12px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2)}
+.actorlist__sectionHead:first-child{margin-top:0}
 .actorlist__item{padding:10px 12px;border-radius:10px;cursor:pointer;border:1px solid transparent}
 .actorlist__item:hover{background:var(--panel-2)}
 .actorlist__item.is-active{background:rgba(59,232,222,.08);border-color:var(--signal)}
@@ -794,6 +796,7 @@ let selectedId = null;
 let legendRelExpanded = false;
 let focusedActorId = null;
 let actorsPanelGroupFilter = null;
+let actorsViewGroupFilter = null;
 let profileActorId = null;
 
 /* ============================================================
@@ -1471,20 +1474,52 @@ function renderActorsPanel(){
   if(groupSel)groupSel.onchange=()=>{ actorsPanelGroupFilter=groupSel.value||null; renderActorsPanel(); };
 }
 
+function directConnectionCount(id){ return state.links.filter(l=>l.source===id||l.target===id).length; }
 function renderActorsView(){
   const listEl=document.getElementById('actorListItems'); if(!listEl)return;
   const q=(document.getElementById('actorSearch').value||'').toLowerCase();
-  const actors=state.entities.filter(e=>e.type==='actor').filter(a=>
+
+  const campaigns=state.entities.filter(e=>e.type==='campaign').filter(c=>!q||c.label.toLowerCase().includes(q));
+  if(actorsViewGroupFilter&&!state.entities.some(e=>e.id===actorsViewGroupFilter&&e.type==='campaign'))actorsViewGroupFilter=null;
+
+  let actors=state.entities.filter(e=>e.type==='actor').filter(a=>
     !q || a.label.toLowerCase().includes(q) || String(a.meta.aliases||'').toLowerCase().includes(q)
-  ).sort((a,b)=>a.label.localeCompare(b.label));
-  listEl.innerHTML = actors.length ? actors.map(a=>{
+  );
+  if(actorsViewGroupFilter){
+    const memberIds=new Set(state.links.filter(l=>l.source===actorsViewGroupFilter||l.target===actorsViewGroupFilter).map(l=>l.source===actorsViewGroupFilter?l.target:l.source));
+    actors=actors.filter(a=>memberIds.has(a.id));
+  }
+  actors=actors.sort((a,b)=>directConnectionCount(b.id)-directConnectionCount(a.id));
+
+  let html='';
+  if(campaigns.length){
+    html+='<h4 class="actorlist__sectionHead">Groups</h4>';
+    html+=campaigns.map(c=>{
+      const red=isRedacted(c);
+      const memberCount=state.entities.filter(e=>e.type==='actor').filter(a=>{
+        return state.links.some(l=>(l.source===c.id&&l.target===a.id)||(l.target===c.id&&l.source===a.id));
+      }).length;
+      return `<div class="actorlist__item ${actorsViewGroupFilter===c.id?'is-active':''}" ${red?'':`data-group="${c.id}"`}>
+        <div class="name">${red?'<span class="redacted">■■■■■■■■</span>':escapeHtml(c.label)}</div>
+        <div class="meta">${red?'':escapeHtml(c.severity||'')+' · '+memberCount+' actor'+(memberCount===1?'':'s')}</div>
+      </div>`;
+    }).join('');
+    if(actorsViewGroupFilter)html+=`<div class="actorlist__item" data-group="">Show all groups</div>`;
+    html+='<h4 class="actorlist__sectionHead">Actors</h4>';
+  }
+  html+= actors.length ? actors.map(a=>{
     const red=isRedacted(a);
     return `<div class="actorlist__item ${profileActorId===a.id?'is-active':''}" ${red?'':`data-actor="${a.id}"`}>
       <div class="name">${red?'<span class="redacted">■■■■■■■■</span>':escapeHtml(a.label)}</div>
-      <div class="meta">${red?'':escapeHtml(a.severity||'')+' · '+actorComponent(a.id).size+' connected'}</div>
+      <div class="meta">${red?'':escapeHtml(a.severity||'')+' · '+directConnectionCount(a.id)+' direct connection'+(directConnectionCount(a.id)===1?'':'s')}</div>
     </div>`;
   }).join('') : '<div class="empty" style="font-size:12px">No actors match.</div>';
+  listEl.innerHTML=html;
   listEl.querySelectorAll('[data-actor]').forEach(row=>row.onclick=()=>selectActorProfile(row.dataset.actor));
+  listEl.querySelectorAll('[data-group]').forEach(row=>row.onclick=()=>{
+    actorsViewGroupFilter=row.dataset.group||null;
+    if(actorsViewGroupFilter)selectActorProfile(actorsViewGroupFilter); else renderActorsView();
+  });
 }
 document.getElementById('actorSearch').oninput=renderActorsView;
 
@@ -1671,7 +1706,7 @@ function renderActorProfile(){
   let html='<div class="profile">';
   html+=`<div class="profile__header">
     <div class="profile__avatar" id="profileAvatar">
-      ${images[0]?`<img src="${images[0]}" alt="${escapeHtml(e.label)}">`:`<span class="profile__avatar__placeholder" style="color:${TYPES.actor.color}">${escapeHtml((e.label||'?').slice(0,1).toUpperCase())}</span>`}
+      ${images[0]?`<img src="${images[0]}" alt="${escapeHtml(e.label)}">`:`<span class="profile__avatar__placeholder" style="color:${(TYPES[e.type]||TYPES.ioc).color}">${escapeHtml((e.label||'?').slice(0,1).toUpperCase())}</span>`}
       <div class="profile__avatar__hint">Click to add image</div>
       <input type="file" id="profileImgInput" accept="image/*" multiple hidden>
     </div>
@@ -1688,7 +1723,7 @@ function renderActorProfile(){
     html+='<div class="profile__section"><h5>Threat Group / Campaign</h5>';
     campaignLinks.forEach(({o,l})=>{
       const red=isRedacted(o);
-      html+=`<div class="rel" style="align-items:center">
+      html+=`<div class="rel" style="align-items:center" ${red?'':`data-goto-actor="${o.id}"`}>
         <span class="rel__dot" style="background:${red?'#5a6378':TYPES.campaign.color}"></span>
         <div style="flex:1">
           <div>${red?'<span class="redacted">■■■■■■■■</span>':escapeHtml(o.label)}</div>
@@ -1713,7 +1748,7 @@ function renderActorProfile(){
       const om=TYPES[o.type]||TYPES.ioc;
       const red=isRedacted(o);
       const dir=l.source===e.id?'→':'←';
-      const goto=o.type==='actor'?`data-goto-actor="${o.id}"`:`data-goto-entity="${o.id}"`;
+      const goto=(o.type==='actor'||o.type==='campaign')?`data-goto-actor="${o.id}"`:`data-goto-entity="${o.id}"`;
       html+=`<div class="rel" ${red?'':goto}><span class="rel__dot" style="background:${red?'#5a6378':om.color}"></span><div style="flex:1"><div>${red?'<span class="redacted">■■■■■■■■</span>':escapeHtml(o.label)}</div><div class="rel__verb" style="color:${red?'':relColor(l.relation)}">${dir} ${escapeHtml(l.relation)}</div></div></div>`;
     });
     html+='</div>';
@@ -1730,7 +1765,7 @@ function renderActorProfile(){
     const n=profilePreviewNodeAt((ev.clientX-rect.left)*dpr,(ev.clientY-rect.top)*dpr);
     if(!n||isRedacted(n))return;
     if(profilePreviewXform&&n.id===profilePreviewXform.focusId){
-      if(n.type==='actor')selectActorProfile(n.id); else { switchView('graph'); selectEntity(n.id); }
+      if(n.type==='actor'||n.type==='campaign')selectActorProfile(n.id); else { switchView('graph'); selectEntity(n.id); }
     } else {
       previewTrail.push(n.id); previewPulses=[]; previewHoverLink=null; drawProfilePreview(); updatePreviewHeader();
     }
@@ -1766,7 +1801,7 @@ function renderActorProfile(){
   const sevSel=panel.querySelector('#profileSeverity');
   sevSel.onchange=()=>{ e.severity=sevSel.value; render(); renderActorsView(); };
   panel.querySelector('#profileViewGraph').onclick=()=>{ focusActor(e.id); switchView('graph'); };
-  panel.querySelectorAll('[data-focus-campaign]').forEach(btn=>btn.onclick=()=>{ focusActor(btn.dataset.focusCampaign); switchView('graph'); });
+  panel.querySelectorAll('[data-focus-campaign]').forEach(btn=>btn.onclick=(ev)=>{ ev.stopPropagation(); focusActor(btn.dataset.focusCampaign); switchView('graph'); });
 
   const clsSel=panel.querySelector('#profileClass'); if(clsSel)clsSel.onchange=()=>{ e.classification=clsSel.value||null; render(); if(isRedacted(e)){profileActorId=null;renderActorsView();renderActorProfile();}else{renderActorProfile();} };
   panel.querySelectorAll('.tagx').forEach(x=>x.onclick=()=>{ e.tags=(e.tags||[]).filter(t=>t!==x.dataset.t); render(); renderActorProfile(); });
