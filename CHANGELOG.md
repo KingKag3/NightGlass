@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.9.5 — 2026-07-10
+- Third sample dataset: `docs/samples/the-wire-network.json` — a Baltimore narcotics-trafficking network based on HBO's *The Wire* (48 entities, 84 links). 39 threat actors spanning the Barksdale organization's full chain of command, Omar Little's independent stick-up crew, the BPD Major Crimes Unit investigating them, supplier/connector actors (Proposition Joe, The Greek), and Marlo Stanfield's rising rival organization, plus 8 fictional MITRE-ATT&CK-style techniques (street recruitment, cell structure, burner pagers, wiretap countermeasures, corner lookouts, payphone relay, money laundering, witness intimidation) all attributed to a single `campaign:barksdale-organization` entity. A good stress test for the Threat Actors view's Groups/Actors split and group-filtered constellation focus on a dataset with real organizational depth rather than a flat cast.
+
 ## v0.9.4 — 2026-07-09
 - The graph HUD's group dropdown (added earlier today) only narrowed the Actors panel's list — selecting a group didn't change what the constellation itself showed. Now it does both: `focusActor(campaignId)` filters the graph to that group's connected component at the same time the list narrows.
 

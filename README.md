@@ -19,6 +19,8 @@ The app boots into the fictional **Operation Nightjar** demo campaign so every f
 
 **Want a bigger example to explore?** Download [`docs/samples/the-americans-network.json`](docs/samples/the-americans-network.json) — a denser fictional dataset (60 entities, 101 links, 42 relation types: a HUMINT network graph based on FX's *The Americans*) — and drag it into the Ingest view. Works the same way on the [live demo](https://kingkag3.github.io/NightGlass/) as it does locally; nothing is uploaded anywhere, the file is read entirely in your browser. It's also a good showcase for relationship-line coloring and the multi-actor focus panel, since it loads alongside Operation Nightjar as a second, unconnected actor network.
 
+There's also [`docs/samples/the-wire-network.json`](docs/samples/the-wire-network.json) — a Baltimore narcotics-trafficking network based on HBO's *The Wire* (48 entities, 84 links, 39 threat actors organized under **The Barksdale Organization** campaign), covering a full organizational hierarchy, a rival stick-up crew, the Major Crimes Unit investigating them, and a rising rival organization. Good for exercising the Threat Actors view's Groups/Actors split and group-filtered constellation focus on a dataset with real depth.
+
 ## Features
 
 - **Threat constellation** — custom canvas force-directed graph: type-colored nodes, severity rings, traveling signal pulses, drag/pan/zoom, query filtering, per-type legend toggles, and an inspector drawer for pivoting relationship-by-relationship.
