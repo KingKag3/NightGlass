@@ -169,6 +169,29 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .span-4{grid-column:span 4}
 .row-2{grid-row:span 2}
 
+/* critical attention watchlist */
+.critwatch--alert{animation:critBorderPulse 1.8s ease-in-out infinite}
+@keyframes critBorderPulse{
+  0%,100%{box-shadow:0 0 0 rgba(255,77,109,0);border-color:var(--line)}
+  50%{box-shadow:0 0 26px rgba(255,77,109,.4);border-color:rgba(255,77,109,.75)}
+}
+.critwatch__count{color:var(--crit);font-weight:700;letter-spacing:0;text-transform:none;font-size:11px}
+.critwatch__grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:2px}
+.critwatch__item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:10px;
+  background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.28);cursor:pointer;
+  font-size:12px;transition:background .15s}
+.critwatch__item:hover{background:rgba(255,77,109,.16)}
+.critwatch__item .critwatch__dot{width:8px;height:8px;border-radius:50%;background:var(--crit);flex:none;
+  animation:critDotPulse 1.4s ease-in-out infinite}
+@keyframes critDotPulse{0%,100%{opacity:1}50%{opacity:.2}}
+.critwatch__item .critwatch__type{font-family:var(--mono);font-size:9px;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--muted-2);margin-top:2px}
+.critwatch__empty{color:var(--muted-2);font-size:12px;padding:4px 0}
+@media (prefers-reduced-motion: reduce){
+  .critwatch--alert{animation:none;border-color:rgba(255,77,109,.6);box-shadow:0 0 16px rgba(255,77,109,.25)}
+  .critwatch__item .critwatch__dot{animation:none}
+}
+
 /* severity bars */
 .sev-row{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:12px}
 .sev-row .lbl{width:64px;color:var(--muted);text-transform:capitalize}
@@ -409,6 +432,8 @@ body:not(.marked) .advonly{display:none}
 .redacted{filter:blur(5px);user-select:none}
 .userbox{display:flex;align-items:center;gap:8px;border-left:1px solid var(--line);padding-left:16px}
 .userbox select, .ingest select, .insp__body select{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 10px;font-family:var(--mono);font-size:12px}
+.sevSelect{background:var(--panel-2);border:2px solid var(--line);border-radius:8px;padding:6px 10px;font-family:var(--mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+.sevSelect option{background:#0e1626}
 .userbox .classchip{margin:0}
 .tagrow{display:flex;flex-wrap:wrap;gap:6px}
 .tagchip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:16px;background:rgba(59,232,222,.08);border:1px solid rgba(59,232,222,.3);color:var(--signal)}
@@ -556,6 +581,11 @@ body:not(.marked) .advonly{display:none}
         <div class="card span-2">
           <div class="card__eyebrow">Indicator Types</div>
           <div class="toplist" id="iocTypes"></div>
+        </div>
+
+        <div class="card span-4 critwatch" id="critWatchCard">
+          <div class="card__eyebrow">Critical Attention <span class="critwatch__count" id="critWatchCount"></span></div>
+          <div class="critwatch__grid" id="critWatchList"></div>
         </div>
       </div>
     </section>
@@ -776,15 +806,37 @@ function relColor(relation){
   return RELPALETTE[h%RELPALETTE.length];
 }
 function hexToRgba(hex,a){ const n=parseInt(hex.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; }
-// attribute-key colors: same deterministic-hash trick as relColor, but a different
-// mix constant so a key and a same-named relation don't suspiciously share a color.
-// Any meta key (sponsor, target_geography, associated_tools, a custom field a user
-// adds later, ...) gets one stable color for free, with zero maintenance.
-const ATTRPALETTE = [...Object.values(TYPES).map(t=>t.color), SEV.low, SEV.medium, SEV.high, SEV.critical].reverse();
-function attrColor(key){
+// attribute-key colors: a small fixed palette (like relColor's) only has ~11 colors,
+// which collide constantly once an entity has a dozen-plus meta keys. Instead, hash
+// each key to a hue on the full 360° wheel (effectively unlimited distinct colors,
+// zero maintenance for new keys), then for any one rendered list of keys, nudge hues
+// that land too close together so every key in that list is visibly distinguishable.
+function hslToHex(h,s,l){
+  s/=100; l/=100;
+  const k=n=>(n+h/30)%12;
+  const a=s*Math.min(l,1-l);
+  const f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
+  const toHex=x=>Math.round(255*x).toString(16).padStart(2,'0');
+  return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
+}
+function attrHue(key){
   let h=0; const s=String(key||'');
   for(let i=0;i<s.length;i++)h=(h*17+s.charCodeAt(i)+7)>>>0;
-  return ATTRPALETTE[h%ATTRPALETTE.length];
+  return h%360;
+}
+function attrColor(key){ return hslToHex(attrHue(key),68,66); }
+// Returns {key: hexColor} for a specific list of keys, guaranteeing every color in
+// THAT list is at least ~18° apart on the hue wheel (up to 20 keys before it has to
+// start packing tighter) — the actual "no two attributes look the same" guarantee.
+function attrColorsForKeys(keys){
+  const used=[]; const map={};
+  keys.forEach(k=>{
+    let hue=attrHue(k), guard=0;
+    while(guard<60 && used.some(u=>{ const d=Math.abs(u-hue)%360; return Math.min(d,360-d)<18; })){ hue=(hue+41)%360; guard++; }
+    used.push(hue);
+    map[k]=hslToHex(hue,68,66);
+  });
+  return map;
 }
 
 const CLASSIF = {
@@ -1326,8 +1378,9 @@ function selectEntity(id){
   // attributes
   const keys=Object.keys(e.meta||{});
   if(keys.length){
+    const attrColors=attrColorsForKeys(keys);
     html+='<div class="insp__section"><h5>Attributes</h5>';
-    keys.forEach(k=>{ const c=attrColor(k); html+=`<div class="kv" style="border-left:3px solid ${c};padding-left:8px"><span class="k"><span class="attrdot" style="background:${c}"></span><span style="color:${c}">${escapeHtml(k)}</span></span><span class="v">${escapeHtml(String(e.meta[k]))}</span></div>`; });
+    keys.forEach(k=>{ const c=attrColors[k]; html+=`<div class="kv" style="border-left:3px solid ${c};padding-left:8px"><span class="k"><span class="attrdot" style="background:${c}"></span><span style="color:${c}">${escapeHtml(k)}</span></span><span class="v">${escapeHtml(String(e.meta[k]))}</span></div>`; });
     html+='</div>';
   }
   // relationships
@@ -1435,8 +1488,33 @@ function render(){
   ).join(''):'<div style="color:var(--muted-2);font-size:12px">No indicators</div>';
 
   renderLegend(); renderActorsPanel(); renderActorsView(); renderMatrix(); renderTimeline(); updateUnhideBtn();
-  renderBanner(); renderAlertBadge(); renderAlertsLog(); renderSearches(); renderPipelines();
+  renderBanner(); renderAlertBadge(); renderAlertsLog(); renderSearches(); renderPipelines(); renderCritWatch();
   if(state.entities.length && (view.x===0&&view.y===0)) centerView();
+}
+function renderCritWatch(){
+  const listEl=document.getElementById('critWatchList');
+  const countEl=document.getElementById('critWatchCount');
+  const card=document.getElementById('critWatchCard');
+  if(!listEl)return;
+  const crit=state.entities.filter(e=>e.severity==='critical'&&!isRedacted(e))
+    .map(e=>({e,n:state.links.filter(l=>l.source===e.id||l.target===e.id).length}))
+    .sort((a,b)=>b.n-a.n);
+  card.classList.toggle('critwatch--alert',crit.length>0);
+  countEl.textContent=crit.length?`${crit.length} open`:'';
+  const CAP=12, shown=crit.slice(0,CAP);
+  listEl.innerHTML = shown.length ? shown.map(({e,n})=>{
+    const meta=TYPES[e.type]||TYPES.ioc;
+    return `<div class="critwatch__item" data-goto-crit="${e.id}" data-goto-type="${e.type}">
+      <span class="critwatch__dot"></span>
+      <div><div style="font-weight:600">${escapeHtml(e.label)}</div><div class="critwatch__type">${meta.label}${n?` · ${n} linked`:''}</div></div>
+    </div>`;
+  }).join('') + (crit.length>CAP?`<div class="critwatch__item" style="opacity:.6;cursor:default;animation:none"><div class="critwatch__type">+${crit.length-CAP} more — filter severity:critical in search</div></div>`:'')
+    : '<div class="critwatch__empty">No critical-severity entities right now.</div>';
+  listEl.querySelectorAll('[data-goto-crit]').forEach(el=>el.onclick=()=>{
+    const id=el.dataset.gotoCrit, type=el.dataset.gotoType;
+    if(type==='actor'||type==='campaign'){ switchView('actors'); selectActorProfile(id); }
+    else { switchView('graph'); render(); selectEntity(id); }
+  });
 }
 
 function actorComponent(startId){
@@ -1724,7 +1802,7 @@ function renderActorProfile(){
     <div class="profile__title">
       <input id="profileLabelInput" class="profile__labelInput" value="${escapeHtml(e.label)}">
       <div class="profile__actions">
-        <select id="profileSeverity">${Object.keys(SEV).map(s=>`<option value="${s}" ${e.severity===s?'selected':''}>${s}</option>`).join('')}</select>
+        <select id="profileSeverity" class="sevSelect" style="border-color:${SEV[e.severity]||SEV.info};color:${SEV[e.severity]||SEV.info}">${Object.keys(SEV).map(s=>`<option value="${s}" style="color:${SEV[s]}" ${e.severity===s?'selected':''}>${s}</option>`).join('')}</select>
         <button class="btn" id="profileViewGraph">Show only ${escapeHtml(e.label)} in constellation</button>
       </div>
     </div>
@@ -1747,7 +1825,8 @@ function renderActorProfile(){
   }
   html+=`<div class="profile__section advonly"><h5>Classification</h5><select id="profileClass"><option value="">Unmarked</option>${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${e.classification===k?'selected':''}>${CLASSIF[k].label}</option>`).join('')}</select></div>`;
   html+=`<div class="profile__section advonly"><h5>Tags</h5><div class="tagrow">${(e.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}<span class="tagx" data-t="${escapeHtml(t)}">×</span></span>`).join('')||'<span style="color:var(--muted-2);font-size:12px">none</span>'}</div><div style="display:flex;gap:6px;margin-top:8px"><input class="taginput" id="profileTagIn" placeholder="add tag…" style="flex:1"><button class="btn" id="profileTagAdd" style="padding:6px 12px">Add</button></div></div>`;
-  html+=`<div class="profile__section"><h5>Attributes</h5><div id="profileMetaRows">${Object.entries(meta).map(([k,v])=>{ const c=attrColor(k); return `
+  const profileAttrColors=attrColorsForKeys(Object.keys(meta));
+  html+=`<div class="profile__section"><h5>Attributes</h5><div id="profileMetaRows">${Object.entries(meta).map(([k,v])=>{ const c=profileAttrColors[k]; return `
     <div class="metarow"><input class="metarow__key" style="color:${c};border-left:4px solid ${c};background:${hexToRgba(c,.12)}" value="${escapeHtml(k)}" disabled><input class="metarow__val" data-key="${escapeHtml(k)}" value="${escapeHtml(String(v))}"><button class="metarow__del" data-key="${escapeHtml(k)}">×</button></div>`; }).join('')}</div>
     <div class="metarow"><input class="metarow__key" id="profileMetaKeyNew" placeholder="key"><input class="metarow__val" id="profileMetaValNew" placeholder="value"><button class="btn" id="profileMetaAdd" style="padding:6px 12px">Add</button></div>
   </div>`;
@@ -1810,7 +1889,7 @@ function renderActorProfile(){
   const labelInput=panel.querySelector('#profileLabelInput');
   labelInput.onchange=()=>{ e.label=labelInput.value.trim()||e.label; render(); renderActorsView(); renderActorProfile(); };
   const sevSel=panel.querySelector('#profileSeverity');
-  sevSel.onchange=()=>{ e.severity=sevSel.value; render(); renderActorsView(); };
+  sevSel.onchange=()=>{ e.severity=sevSel.value; render(); renderActorsView(); renderActorProfile(); };
   panel.querySelector('#profileViewGraph').onclick=()=>{ focusActor(e.id); switchView('graph'); };
   panel.querySelectorAll('[data-focus-campaign]').forEach(btn=>btn.onclick=(ev)=>{ ev.stopPropagation(); focusActor(btn.dataset.focusCampaign); switchView('graph'); });
 
