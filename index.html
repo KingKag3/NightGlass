@@ -255,13 +255,14 @@ button{font-family:inherit;color:inherit;cursor:pointer}
   color:var(--muted);margin:0 0 10px}
 .kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;
   border-bottom:1px solid var(--line);font-size:13px}
-.kv .k{color:var(--muted)}
+.kv .k{display:flex;align-items:center;gap:7px}
 .kv .v{font-family:var(--mono);text-align:right;word-break:break-all}
 .rel{display:flex;align-items:center;gap:9px;padding:8px;border-radius:9px;
   font-size:12px;cursor:pointer;transition:background .15s}
 .rel:hover{background:rgba(120,140,200,.08)}
 .rel__verb{font-family:var(--mono);font-size:10px;color:var(--muted-2);text-transform:uppercase}
 .rel__dot{width:9px;height:9px;border-radius:50%;flex:none}
+.attrdot{width:8px;height:8px;border-radius:50%;flex:none}
 
 /* ---------- Threat Actors ---------- */
 .actorsview{display:flex;height:100%}
@@ -775,6 +776,16 @@ function relColor(relation){
   return RELPALETTE[h%RELPALETTE.length];
 }
 function hexToRgba(hex,a){ const n=parseInt(hex.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; }
+// attribute-key colors: same deterministic-hash trick as relColor, but a different
+// mix constant so a key and a same-named relation don't suspiciously share a color.
+// Any meta key (sponsor, target_geography, associated_tools, a custom field a user
+// adds later, ...) gets one stable color for free, with zero maintenance.
+const ATTRPALETTE = [...Object.values(TYPES).map(t=>t.color), SEV.low, SEV.medium, SEV.high, SEV.critical].reverse();
+function attrColor(key){
+  let h=0; const s=String(key||'');
+  for(let i=0;i<s.length;i++)h=(h*17+s.charCodeAt(i)+7)>>>0;
+  return ATTRPALETTE[h%ATTRPALETTE.length];
+}
 
 const CLASSIF = {
   U:  {lvl:0, label:'UNCLASSIFIED', color:'#43a047'},
@@ -1316,7 +1327,7 @@ function selectEntity(id){
   const keys=Object.keys(e.meta||{});
   if(keys.length){
     html+='<div class="insp__section"><h5>Attributes</h5>';
-    keys.forEach(k=>{ html+=`<div class="kv"><span class="k">${escapeHtml(k)}</span><span class="v">${escapeHtml(String(e.meta[k]))}</span></div>`; });
+    keys.forEach(k=>{ html+=`<div class="kv"><span class="k"><span class="attrdot" style="background:${attrColor(k)}"></span><span style="color:${attrColor(k)}">${escapeHtml(k)}</span></span><span class="v">${escapeHtml(String(e.meta[k]))}</span></div>`; });
     html+='</div>';
   }
   // relationships
@@ -1737,8 +1748,8 @@ function renderActorProfile(){
   html+=`<div class="profile__section advonly"><h5>Classification</h5><select id="profileClass"><option value="">Unmarked</option>${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${e.classification===k?'selected':''}>${CLASSIF[k].label}</option>`).join('')}</select></div>`;
   html+=`<div class="profile__section advonly"><h5>Tags</h5><div class="tagrow">${(e.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}<span class="tagx" data-t="${escapeHtml(t)}">×</span></span>`).join('')||'<span style="color:var(--muted-2);font-size:12px">none</span>'}</div><div style="display:flex;gap:6px;margin-top:8px"><input class="taginput" id="profileTagIn" placeholder="add tag…" style="flex:1"><button class="btn" id="profileTagAdd" style="padding:6px 12px">Add</button></div></div>`;
   html+=`<div class="profile__section"><h5>Attributes</h5><div id="profileMetaRows">${Object.entries(meta).map(([k,v])=>`
-    <div class="metarow"><input class="metarow__key" value="${escapeHtml(k)}" disabled><input class="metarow__val" data-key="${escapeHtml(k)}" value="${escapeHtml(String(v))}"><button class="metarow__del" data-key="${escapeHtml(k)}">×</button></div>`).join('')}</div>
-    <div class="metarow"><input class="metarow__key" id="profileMetaKeyNew" placeholder="key"><input class="metarow__val" id="profileMetaValNew" placeholder="value"><button class="btn" id="profileMetaAdd" style="padding:6px 12px">Add</button></div>
+    <div class="metarow"><span class="attrdot" style="background:${attrColor(k)}"></span><input class="metarow__key" style="color:${attrColor(k)}" value="${escapeHtml(k)}" disabled><input class="metarow__val" data-key="${escapeHtml(k)}" value="${escapeHtml(String(v))}"><button class="metarow__del" data-key="${escapeHtml(k)}">×</button></div>`).join('')}</div>
+    <div class="metarow"><span class="attrdot" style="background:transparent"></span><input class="metarow__key" id="profileMetaKeyNew" placeholder="key"><input class="metarow__val" id="profileMetaValNew" placeholder="value"><button class="btn" id="profileMetaAdd" style="padding:6px 12px">Add</button></div>
   </div>`;
   if(rels.length){
     html+='<div class="profile__section"><h5>Relationships ('+rels.length+')</h5>';

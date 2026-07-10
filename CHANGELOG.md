@@ -1,6 +1,7 @@
 # Changelog
 
-## v0.9.5 — 2026-07-10
+## v0.9.6 — 2026-07-10
+- Attribute keys (the inspector drawer's Attributes section, and the Threat Actors profile's editable Attributes rows) are now color-coded per key — `target_geography` is always the same color, `associated_tools` is always a different one, etc. Deterministic hash of the key string (`attrColor()`, same trick as the existing `relColor()` for relationship-line coloring), so it works out of the box for every dataset's meta fields, including custom keys a user adds later, with zero configuration.
 - Third sample dataset: `docs/samples/the-wire-network.json` — a Baltimore narcotics-trafficking network based on HBO's *The Wire* (48 entities, 84 links). 39 threat actors spanning the Barksdale organization's full chain of command, Omar Little's independent stick-up crew, the BPD Major Crimes Unit investigating them, supplier/connector actors (Proposition Joe, The Greek), and Marlo Stanfield's rising rival organization, plus 8 fictional MITRE-ATT&CK-style techniques (street recruitment, cell structure, burner pagers, wiretap countermeasures, corner lookouts, payphone relay, money laundering, witness intimidation) all attributed to a single `campaign:barksdale-organization` entity. A good stress test for the Threat Actors view's Groups/Actors split and group-filtered constellation focus on a dataset with real organizational depth rather than a flat cast.
 
 ## v0.9.4 — 2026-07-09
