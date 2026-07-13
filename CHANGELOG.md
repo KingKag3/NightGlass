@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.10.1 — 2026-07-10
+- Graph HUD (top-left overlay on the constellation) — Actors / Entity Types / Relationship Lines used to be up to two separately-scrolling boxes stacked vertically, so on a dataset with many actors and many relation types you could scroll past "Relationship Lines" entirely before noticing it existed. Replaced with a single tabbed panel (`renderGraphHud`) — one box, one scroll region, switch sections with a tab instead of hunting through stacked scroll areas.
+- Threat Actors profile's Attributes section now lays out in a responsive multi-column grid (`column-width:300px`) instead of one long single column — kicks in automatically once the panel is wide enough (e.g. a wide window), stays single-column otherwise so it never cramps.
+- Both the inspector drawer's and the Threat Actors profile's Relationships lists get a live filter box once there are more than 6 relationships — type to filter by the other entity's name or the relation verb, no page reload, with an explicit "no matching relationships" state instead of just an empty list.
+
 ## v0.10.0 — 2026-07-10
 - Fixed a long-standing rendering bug: traveling signal-pulse particles kept animating along edges that had just been hidden (by type-toggle, node-hide, or the actor/campaign focus filter), producing unlabeled dots that appeared to drift through empty space with no visible line attached. Pulses now check the same hidden-node/hidden-type condition the edge-drawing loop already used, both when spawning a new pulse and every frame while drawing existing ones.
 - Fixed attribute values wrapping with `word-break:break-all` in the inspector drawer, which split words mid-letter (e.g. "Departmen" / "t"). Now wraps only at whitespace, falling back to a mid-word break solely for genuinely unbreakable tokens (long hashes/URLs).
