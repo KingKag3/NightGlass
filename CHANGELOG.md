@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.10.6 — 2026-07-10
+- Gave the "Back to [entity]" control a bit more personality: a diagonal cyan-to-blue gradient fill, a soft ambient glow, a hover lift, and the back-arrow icon nudges left on hover — a small tactile cue reinforcing the "go back" direction instead of a flat, static tint.
+
 ## v0.10.5 — 2026-07-10
 - "Back to [entity]" graph control was styled identically to the neutral utility buttons next to it (Recenter/Freeze/Organize/Unhide all) — all muted gray, so it didn't read as a distinct, more important action. Gave it the app's signal-cyan accent color so it actually stands out from the "just adjust the view" buttons around it.
 
