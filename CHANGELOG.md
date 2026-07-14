@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.3 — 2026-07-10
+- Graph HUD didn't default to the Actors tab like intended — the built-in demo data only has 1 actor, so the very first render fell back to "Types" (the Actors tab requires 2+ actors to even appear) and then got stuck there for the rest of the session, even after loading a dataset with dozens of actors. Now it keeps auto-following "prefer Actors whenever it's available" right up until the analyst manually picks a tab themselves — after that, their choice sticks.
+- Tightened-up spacing was actually too tight: panel widened (210px → 260px) so all three tabs fit on one row instead of "Relationships" wrapping to its own line, tab button padding increased, and row/dropdown spacing loosened a notch. Shortened "Entity Types"/"Relationships" tab labels to "Types"/"Relations" to help them fit comfortably.
+
 ## v0.10.2 — 2026-07-10
 - Graph HUD panel was hard-capped at `min(60vh,480px)` with its own internal scrollbar regardless of screen size — felt like a small iframe boxed into the corner. Now stretches to fill the actual available height (top of the graph view down to 14px above the bottom), so long actor/relationship lists get real room before needing to scroll internally, and taller windows get a taller panel instead of the same fixed cap.
 
