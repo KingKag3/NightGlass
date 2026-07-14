@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.10.7 — 2026-07-10
+- The other graph controls (Recenter, Freeze, Organize, Unhide all) got the same gradient+glow+hover-lift treatment as "Back to profile" — each its own accent pulled from the existing palette (blue, ice-cyan, violet, green) so they're distinguishable from each other at a glance instead of four identical gray buttons, plus a shared icon scale/rotate on hover for a snappier feel across the whole control bar.
+
 ## v0.10.6 — 2026-07-10
 - Gave the "Back to [entity]" control a bit more personality: a diagonal cyan-to-blue gradient fill, a soft ambient glow, a hover lift, and the back-arrow icon nudges left on hover — a small tactile cue reinforcing the "go back" direction instead of a flat, static tint.
 
