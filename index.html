@@ -229,11 +229,11 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .graphwrap{position:absolute;inset:0}
 #graph{display:block;width:100%;height:100%;cursor:grab}
 #graph.dragging{cursor:grabbing}
-.graph-hud{position:absolute;top:14px;left:14px;display:flex;flex-direction:column;gap:10px;z-index:5}
+.graph-hud{position:absolute;top:14px;left:14px;bottom:14px;display:flex;flex-direction:column;gap:10px;z-index:5}
 .legend{background:rgba(11,16,32,.78);border:1px solid var(--line);border-radius:14px;
   padding:12px 14px;backdrop-filter:blur(8px);max-width:210px;max-height:min(60vh,520px);overflow-y:auto}
 .legend h4{margin:0 0 10px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-.hudpanel{display:flex;flex-direction:column;max-height:min(60vh,480px);overflow:hidden;padding:8px}
+.hudpanel{display:flex;flex-direction:column;flex:1;min-height:0;max-height:none;overflow:hidden;padding:8px}
 .hudtabs{display:flex;gap:4px;flex:none;margin-bottom:8px;border-bottom:1px solid var(--line);padding-bottom:8px}
 .hudtab{background:transparent;border:none;color:var(--muted);font-size:10px;letter-spacing:.06em;
   text-transform:uppercase;padding:6px 8px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s}

@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.10.2 — 2026-07-10
+- Graph HUD panel was hard-capped at `min(60vh,480px)` with its own internal scrollbar regardless of screen size — felt like a small iframe boxed into the corner. Now stretches to fill the actual available height (top of the graph view down to 14px above the bottom), so long actor/relationship lists get real room before needing to scroll internally, and taller windows get a taller panel instead of the same fixed cap.
+
 ## v0.10.1 — 2026-07-10
 - Graph HUD (top-left overlay on the constellation) — Actors / Entity Types / Relationship Lines used to be up to two separately-scrolling boxes stacked vertically, so on a dataset with many actors and many relation types you could scroll past "Relationship Lines" entirely before noticing it existed. Replaced with a single tabbed panel (`renderGraphHud`) — one box, one scroll region, switch sections with a tab instead of hunting through stacked scroll areas.
 - Threat Actors profile's Attributes section now lays out in a responsive multi-column grid (`column-width:300px`) instead of one long single column — kicks in automatically once the panel is wide enough (e.g. a wide window), stays single-column otherwise so it never cramps.
