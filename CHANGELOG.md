@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.11.1 — 2026-07-10
+Follow-up polish on the Investigators segment, based on first-look feedback:
+- **Case ID is now editable** (was a read-only auto-generated display) — duplicate/empty IDs are rejected, and renaming a case correctly migrates any flags pointing at its old ID.
+- **Case Agents is now a search-to-add lookup** instead of showing every analyst in the roster as a toggle pill (which doesn't scale once there are more than a handful) — type a name, click to add, click a chip to remove.
+- **Analysts tab and Cases list both got a search/filter box** for the same reason — neither scales as a flat unfiltered list once the roster or case count grows.
+- **Responsive layout fixes** — the Sandbox's two-column layout, the analyst roster rows, and the Investigators view generally didn't collapse gracefully at narrower widths; added breakpoints matching the app's existing `900px`/`560px` convention.
+- **Drag-and-drop in the Sandbox** — search results are now draggable: drop one onto the mind-map preview to add it to the group unconnected, or drop it directly onto a specific member to add it *and* get prompted for the relationship connecting the two. Dragging an already-added member onto another just creates the relationship without duplicating. Cancelling the relationship prompt is a true no-op (an earlier version of this left the member added even when you cancelled — fixed by asking for the relationship label before mutating any state, not after).
+
 ## v0.11.0 — 2026-07-10
 - **New "Investigators" segment** — a case-management layer wrapping the constellation, with its own top-level nav item and five sub-tabs:
   - **Cases** — Case ID, title, status (open/pending/closed), organization, one or more Case Agents, classification, notes, and a set of linked entities pulled straight from the graph. Full create/edit/delete.
