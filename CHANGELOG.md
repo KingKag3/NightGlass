@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.11.3 — 2026-07-10
+- The sandbox relationship builder's label field (what to call the connection — "reports_to", "exploits", etc.) was the last plain free-text input with no suggestions, right next to two fields that now both autocomplete. It now suggests relation labels already used anywhere in the loaded data (plus anything already added in this sandbox session) as you type — still completely free text, the suggestions are a convenience, not a restriction, so a brand-new relation label works exactly as before.
+
 ## v0.11.2 — 2026-07-10
 - The Investigators view's tab content (case detail, bulk search, advanced search, the sandbox) was capped at arbitrary widths (700-1100px) regardless of how wide the actual window was, leaving a lot of unused space on anything wider than a laptop screen. Removed those caps — content now genuinely fills the available width, and bulk/advanced search results now tile into a responsive multi-column grid instead of a single narrow list.
 - The sandbox's relationship builder was the one remaining "pick something" control on the page still using a plain `<select>` dropdown instead of a type-ahead search — replaced both member pickers with the same search-as-you-type pattern used everywhere else (entity search, case linking, agent lookup): type to filter, click a result to select, with the "+ Link" button only enabling once both sides are picked.

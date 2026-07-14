@@ -2601,6 +2601,26 @@ function wireSandboxPicker(body,id,onSelect){
   input.oninput=()=>{ onSelect(null); showList(input.value); };
   input.onblur=()=>{ setTimeout(()=>{ resultsEl.style.display='none'; },150); };
 }
+// suggests relation labels already used anywhere in the loaded data (plus whatever's
+// already in this sandbox) — free text either way, this is a convenience, not an enum.
+function wireRelationAutocomplete(body,id){
+  const input=body.querySelector('#'+id), resultsEl=body.querySelector('#'+id+'Results');
+  if(!input||!resultsEl)return;
+  const known=[...new Set([...state.links.map(l=>l.relation),...sandbox.rels.map(r=>r.relation)].filter(Boolean))].sort();
+  const showList=(q)=>{
+    const ql=(q||'').toLowerCase().trim();
+    const matches=(ql?known.filter(r=>r.toLowerCase().includes(ql)):known).slice(0,10);
+    if(!matches.length){ resultsEl.style.display='none'; return; }
+    resultsEl.innerHTML=matches.map(r=>`<div class="rel" data-pickrel="${escapeHtml(r)}"><span class="rel__dot" style="background:${relColor(r)}"></span><div style="flex:1">${escapeHtml(r)}</div></div>`).join('');
+    resultsEl.style.display='block';
+    resultsEl.querySelectorAll('[data-pickrel]').forEach(row=>row.onclick=()=>{
+      input.value=row.dataset.pickrel; resultsEl.style.display='none'; input.focus();
+    });
+  };
+  input.onfocus=()=>showList(input.value);
+  input.oninput=()=>showList(input.value);
+  input.onblur=()=>{ setTimeout(()=>{ resultsEl.style.display='none'; },150); };
+}
 function sandboxSlug(s){ return String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'group'; }
 function addSandboxMember(entityId){
   if(sandbox.members.some(m=>m.key===entityId))return false;
@@ -2646,7 +2666,10 @@ function renderSandboxTab(body){
               <input class="taginput" id="sandboxRelASearch" placeholder="Search member…" autocomplete="off" style="width:100%">
               <div class="sandbox-picker__results" id="sandboxRelAResults"></div>
             </div>
-            <input class="taginput" id="sandboxRelVerb" placeholder="relation, e.g. reports_to" style="flex:1;min-width:140px">
+            <div class="sandbox-picker" style="flex:1;min-width:140px">
+              <input class="taginput" id="sandboxRelVerb" placeholder="relation, e.g. reports_to" autocomplete="off" style="width:100%">
+              <div class="sandbox-picker__results" id="sandboxRelVerbResults"></div>
+            </div>
             <div class="sandbox-picker">
               <input class="taginput" id="sandboxRelBSearch" placeholder="Search member…" autocomplete="off" style="width:100%">
               <div class="sandbox-picker__results" id="sandboxRelBResults"></div>
@@ -2724,6 +2747,7 @@ function renderSandboxTab(body){
   const updateRelBtnState=()=>{ if(addRelBtn)addRelBtn.disabled=!sandboxRelASelected||!sandboxRelBSelected||sandboxRelASelected===sandboxRelBSelected; };
   wireSandboxPicker(body,'sandboxRelA',(key)=>{ sandboxRelASelected=key; updateRelBtnState(); });
   wireSandboxPicker(body,'sandboxRelB',(key)=>{ sandboxRelBSelected=key; updateRelBtnState(); });
+  wireRelationAutocomplete(body,'sandboxRelVerb');
   if(addRelBtn)addRelBtn.onclick=()=>{
     const verb=body.querySelector('#sandboxRelVerb').value.trim();
     if(!sandboxRelASelected||!sandboxRelBSelected){toast('Pick both members first');return;}
