@@ -327,6 +327,64 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .actorlist__item .name{font-weight:600;font-size:13px;color:var(--ink)}
 .actorlist__item .meta{color:var(--muted);font-size:11px;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
 .actorsview__profile{flex:1;padding:32px;overflow-y:auto;display:flex;gap:28px;align-items:flex-start}
+
+/* ---------- Investigators ---------- */
+.investigators{height:100%;display:flex;flex-direction:column;padding:24px 32px;overflow:hidden}
+.investigators__tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px;flex:none}
+.investigators__tabbtn{background:transparent;border:1px solid transparent;color:var(--muted);font-size:13px;
+  padding:9px 16px;border-radius:10px;cursor:pointer;font-weight:500;transition:background .15s,color .15s,border-color .15s}
+.investigators__tabbtn:hover{color:var(--ink);background:rgba(120,140,200,.08)}
+.investigators__tabbtn.is-active{color:var(--signal);background:rgba(59,232,222,.1);border-color:rgba(59,232,222,.3)}
+.investigators__body{flex:1;min-height:0;overflow-y:auto}
+.inv-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.inv-toolbar input[type="text"],.inv-toolbar input[type="search"]{background:var(--panel-2);border:1px solid var(--line);
+  border-radius:8px;padding:8px 12px;color:var(--ink);font-size:13px;font-family:var(--sans);min-width:220px}
+.case-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.case-card{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;
+  transition:border-color .15s,transform .15s}
+.case-card:hover{border-color:var(--line-strong);transform:translateY(-1px)}
+.case-card__id{font-family:var(--mono);font-size:10px;color:var(--muted-2);letter-spacing:.06em}
+.case-card__title{font-weight:600;font-size:14px;margin:4px 0 8px;color:var(--ink)}
+.case-card__meta{display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:var(--muted);align-items:center}
+.case-status{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;
+  padding:2px 8px;border-radius:10px;letter-spacing:.05em}
+.case-status--open{background:rgba(59,232,222,.15);color:var(--signal)}
+.case-status--pending{background:rgba(255,201,61,.15);color:var(--med)}
+.case-status--closed{background:rgba(124,136,171,.15);color:var(--muted)}
+.case-detail{max-width:820px}
+.case-detail__back{color:var(--signal);cursor:pointer;font-size:12px;margin-bottom:16px;display:inline-block}
+.case-detail__back:hover{text-decoration:underline}
+.case-detail__head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px}
+.case-detail__titleInput{background:transparent;border:none;color:var(--ink);font-family:var(--sans);font-size:22px;
+  font-weight:650;width:100%;padding:2px 0;border-bottom:1px solid transparent}
+.case-detail__titleInput:hover,.case-detail__titleInput:focus{border-bottom-color:var(--line-strong);outline:none}
+.case-field-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.case-field{flex:1;min-width:160px}
+.case-field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px}
+.case-field select,.case-field input{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+  padding:8px 10px;color:var(--ink);font-size:13px;font-family:var(--sans)}
+.case-agents{display:flex;flex-wrap:wrap;gap:6px}
+.case-agent-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:14px;font-size:11px;
+  cursor:pointer;border:1px solid var(--line);color:var(--muted)}
+.case-agent-pill.is-on{background:rgba(59,232,222,.1);border-color:var(--signal);color:var(--signal)}
+.case-notes textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+  padding:10px;color:var(--ink);font-family:var(--sans);font-size:13px;resize:vertical}
+.case-linked-list{display:flex;flex-direction:column;gap:6px}
+.flag-row{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
+.flag-row__resolved{opacity:.45;text-decoration:line-through}
+.flag-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--crit);font-family:var(--mono)}
+.analyst-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.analyst-row input,.analyst-row select{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
+  padding:6px 9px;color:var(--ink);font-family:var(--sans);font-size:12px}
+.bulk-results,.adv-results{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+.bulk-result-group{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.bulk-result-group__query{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:6px}
+.sandbox-layout{display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+.sandbox-panel{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px}
+.sandbox-member{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px}
+.sandbox-rel-row{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.sandbox-svg-wrap{border:1px solid var(--line);border-radius:14px;background:rgba(11,16,32,.5);min-height:360px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
 .profile{max-width:760px;flex:1;min-width:0}
 .profile__previewPanel{flex:1;min-width:280px;position:sticky;top:0;align-self:flex-start;
   height:calc(100vh - 200px);min-height:280px;border:1px solid var(--line);border-radius:14px;
@@ -552,6 +610,11 @@ body:not(.marked) .advonly{display:none}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
       <span class="navbtn__tip">Threat Actors</span>
     </button>
+    <button class="navbtn" data-view="investigators" aria-label="Investigators">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/><path d="M8 12h8M8 15h5"/></svg>
+      <span class="alertdot" id="flagDot" hidden></span>
+      <span class="navbtn__tip">Investigators</span>
+    </button>
     <button class="navbtn" data-view="matrix" aria-label="ATT&CK matrix">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="4" height="4" rx="1"/><rect x="10" y="3" width="4" height="4" rx="1"/><rect x="17" y="3" width="4" height="4" rx="1"/><rect x="3" y="10" width="4" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/><rect x="3" y="17" width="4" height="4" rx="1"/></svg>
       <span class="navbtn__tip">ATT&amp;CK Matrix</span>
@@ -695,6 +758,14 @@ body:not(.marked) .advonly{display:none}
         <div class="actorsview__profile" id="actorProfile">
           <div class="empty" style="margin:auto">Select a threat actor to view its profile.</div>
         </div>
+      </div>
+    </section>
+
+    <!-- INVESTIGATORS -->
+    <section class="view" id="view-investigators">
+      <div class="investigators">
+        <div class="investigators__tabs" id="invTabs"></div>
+        <div class="investigators__body" id="invBody"></div>
       </div>
     </section>
 
@@ -921,14 +992,14 @@ const CLASSIF = {
   TS: {lvl:3, label:'TOP SECRET',   color:'#ef6c00'},
 };
 const USERS = [
-  {name:'kamjohn',        clearance:'TS'},
-  {name:'analyst.rivera', clearance:'S'},
-  {name:'analyst.chen',   clearance:'CUI'},
-  {name:'guest.viewer',   clearance:'U'},
+  {id:'AN-001', name:'kamjohn',        org:'NIGHTGLASS HQ', clearance:'TS', tags:['lead-analyst']},
+  {id:'AN-002', name:'analyst.rivera', org:'NIGHTGLASS HQ', clearance:'S',  tags:['malware-focus']},
+  {id:'AN-003', name:'analyst.chen',   org:'NIGHTGLASS HQ', clearance:'CUI',tags:['SOC-tier2']},
+  {id:'AN-004', name:'guest.viewer',   org:'External',      clearance:'U',  tags:['guest']},
 ];
 let activeUser = USERS[0];
 let settings = { markings:false, instanceClass:'U', txMode:'demo', txUrl:'', txLang:'en' };
-let state = { entities:[], links:[], events:[], pipelines:[], searches:[], alerts:[] };
+let state = { entities:[], links:[], events:[], pipelines:[], searches:[], alerts:[], cases:[], flags:[], analysts:USERS };
 let hiddenTypes = new Set();
 let selectedId = null;
 let legendRelExpanded = false;
@@ -1131,6 +1202,9 @@ function parseJSON(obj){
     (obj.links||[]).forEach(l=>{ if(l.source&&l.target)state.links.push({source:l.source,target:l.target,relation:l.relation||'related'}); });
     (obj.events||[]).forEach(ev=>state.events.push(ev));
     if(Array.isArray(obj.searches))obj.searches.forEach(s=>{ if(!state.searches.some(x=>x.id===s.id))state.searches.push(s); });
+    if(Array.isArray(obj.cases))obj.cases.forEach(c=>{ if(c.id&&!state.cases.some(x=>x.id===c.id))state.cases.push(c); });
+    if(Array.isArray(obj.flags))obj.flags.forEach(fl=>{ if(fl.id&&!state.flags.some(x=>x.id===fl.id))state.flags.push(fl); });
+    if(Array.isArray(obj.analysts)){ obj.analysts.forEach(a=>{ if(a.id&&!state.analysts.some(x=>x.id===a.id))state.analysts.push(a); }); renderUserSelect(); }
     if(obj.settings)Object.assign(settings,obj.settings);
     return added;
   }
@@ -1457,8 +1531,14 @@ function selectEntity(id){
   document.getElementById('inspName').innerHTML=(markingsOn()&&e.classification?classChipHtml(e.classification):'')+escapeHtml(e.label);
   const body=document.getElementById('inspBody');
   let html='';
-  // pin / hide
-  html+=`<div class="insp__section" style="display:flex;gap:8px"><button class="btn" id="inspPin" style="flex:1">${e.pinned?'📌 Unpin':'📌 Pin in place'}</button><button class="btn" id="inspHide" style="flex:1">Hide node</button></div>`;
+  // pin / hide / flag
+  html+=`<div class="insp__section" style="display:flex;gap:8px"><button class="btn" id="inspPin" style="flex:1">${e.pinned?'📌 Unpin':'📌 Pin in place'}</button><button class="btn" id="inspHide" style="flex:1">Hide node</button><button class="btn" id="inspFlag" style="flex:1">⚑ Flag</button></div>`;
+  // flags
+  const eFlags=state.flags.filter(fl=>fl.targetType==='entity'&&fl.targetId===id&&!fl.resolved);
+  if(eFlags.length){ html+=`<div class="insp__section"><h5>Flags (${eFlags.length})</h5>${eFlags.map(fl=>{
+    const a=state.analysts.find(x=>x.id===fl.analystId);
+    return `<div class="flag-row"><span class="flag-badge">⚑</span><div style="flex:1">${escapeHtml(fl.reason)}<div style="color:var(--muted-2);font-size:10px;margin-top:2px">${a?escapeHtml(a.name):escapeHtml(fl.analystId)}</div></div></div>`;
+  }).join('')}</div>`; }
   // severity
   if(e.severity){ html+=`<div class="insp__section"><h5>Severity</h5><span class="chip"><span class="dot" style="background:${SEV[e.severity]||'#888'}"></span>${e.severity}</span></div>`; }
   // classification editor
@@ -1503,6 +1583,7 @@ function selectEntity(id){
   };
   const pinBtn=body.querySelector('#inspPin'); if(pinBtn)pinBtn.onclick=()=>{ e.pinned=!e.pinned; e.vx=0; e.vy=0; render(); selectEntity(id); };
   const hideBtn=body.querySelector('#inspHide'); if(hideBtn)hideBtn.onclick=()=>{ e.hidden=true; closeInspector(); render(); toast('Node hidden — “Unhide all” in graph controls restores it'); };
+  const flagBtn=body.querySelector('#inspFlag'); if(flagBtn)flagBtn.onclick=()=>flagEntity('entity',id);
   const cs=body.querySelector('#inspClass'); if(cs)cs.onchange=()=>{ e.classification=cs.value||null; render(); if(isRedacted(e)){closeInspector();}else{selectEntity(id);} };
   body.querySelectorAll('.tagx').forEach(x=>x.onclick=()=>{ e.tags=(e.tags||[]).filter(t=>t!==x.dataset.t); render(); selectEntity(id); });
   const ta=body.querySelector('#tagAdd'), ti=body.querySelector('#tagIn');
@@ -1589,7 +1670,7 @@ function render(){
     `<div class="toplist__item"><span style="min-width:110px;text-transform:uppercase;font-family:var(--mono);font-size:12px">${t}</span><div class="toplist__bar"><div class="toplist__fill" style="width:${n/imax*100}%;background:linear-gradient(90deg,var(--signal),var(--blue))"></div></div><span class="toplist__n">${n}</span></div>`
   ).join(''):'<div style="color:var(--muted-2);font-size:12px">No indicators</div>';
 
-  renderGraphHud(); renderActorsView(); renderMatrix(); renderTimeline(); updateUnhideBtn(); updateBackToProfileBtn();
+  renderGraphHud(); renderActorsView(); renderMatrix(); renderTimeline(); updateUnhideBtn(); updateBackToProfileBtn(); updateFlagDot();
   renderBanner(); renderAlertBadge(); renderAlertsLog(); renderSearches(); renderPipelines(); renderCritWatch();
   if(state.entities.length && (view.x===0&&view.y===0)) centerView();
 }
@@ -1975,6 +2056,7 @@ function renderActorProfile(){
         <select id="profileSeverity" class="sevSelect" style="border-color:${SEV[e.severity]||SEV.info};color:${SEV[e.severity]||SEV.info}">${Object.keys(SEV).map(s=>`<option value="${s}" style="color:${SEV[s]}" ${e.severity===s?'selected':''}>${s}</option>`).join('')}</select>
         <button class="btn" id="profileViewGraph">Show only ${escapeHtml(e.label)} in constellation</button>
         <button class="btn" id="profileExportPdf">Export PDF</button>
+        <button class="btn" id="profileFlag">⚑ Flag</button>
         ${e.type==='campaign'?`<button class="btn btn--danger" id="profileDeleteCampaign">Delete this constellation</button>`:''}
       </div>
     </div>
@@ -2068,6 +2150,7 @@ function renderActorProfile(){
   sevSel.onchange=()=>{ e.severity=sevSel.value; render(); renderActorsView(); renderActorProfile(); };
   panel.querySelector('#profileViewGraph').onclick=()=>{ focusActor(e.id); switchView('graph'); };
   panel.querySelector('#profileExportPdf').onclick=()=>openPrintReport('profile',e.id);
+  panel.querySelector('#profileFlag').onclick=()=>flagEntity('entity',e.id);
   const profileRelSearch=panel.querySelector('#profileRelSearch');
   if(profileRelSearch)profileRelSearch.oninput=()=>{
     const q=profileRelSearch.value.toLowerCase().trim();
@@ -2111,6 +2194,448 @@ function renderActorProfile(){
 
   panel.querySelectorAll('[data-goto-actor]').forEach(el=>el.onclick=()=>selectActorProfile(el.dataset.gotoActor));
   panel.querySelectorAll('[data-goto-entity]').forEach(el=>el.onclick=()=>{ switchView('graph'); selectEntity(el.dataset.gotoEntity); });
+}
+
+/* ============================================================
+   INVESTIGATORS — cases, analysts, bulk/advanced search, sandbox
+   ============================================================ */
+let invTab='cases';
+let selectedCaseId=null;
+function genCaseId(){ const n=(state.cases.length+1+Math.floor(Math.random()*90)); return `CASE-${new Date().getFullYear()}-${String(n).padStart(4,'0')}`; }
+function genFlagId(){ return 'flag-'+Date.now()+'-'+Math.floor(Math.random()*1000); }
+function flagEntity(targetType,targetId){
+  const reason=prompt(`Flag ${targetType} "${targetId}" for follow-up — reason?`);
+  if(reason===null)return;
+  state.flags.push({id:genFlagId(),targetType,targetId,analystId:activeUser.id,reason:reason.trim()||'(no reason given)',createdAt:new Date().toISOString(),resolved:false});
+  updateFlagDot(); toast('Flagged for follow-up');
+  if(targetType==='entity'){ if(selectedId===targetId)selectEntity(targetId); if(profileActorId===targetId)renderActorProfile(); }
+}
+function updateFlagDot(){
+  const dot=document.getElementById('flagDot'); if(!dot)return;
+  const n=state.flags.filter(f=>!f.resolved).length;
+  dot.hidden=n===0; dot.textContent=n>9?'9+':n;
+}
+function renderInvestigators(){
+  const tabs=[
+    {key:'cases',label:'Cases'},
+    {key:'analysts',label:'Analysts'},
+    {key:'bulk',label:'Bulk Search'},
+    {key:'advanced',label:'Advanced Search'},
+    {key:'sandbox',label:'Sandbox'},
+  ];
+  const tabsEl=document.getElementById('invTabs'), body=document.getElementById('invBody');
+  if(!tabsEl||!body)return;
+  tabsEl.innerHTML=tabs.map(t=>`<button class="investigators__tabbtn ${invTab===t.key?'is-active':''}" data-invtab="${t.key}">${t.label}</button>`).join('');
+  tabsEl.querySelectorAll('[data-invtab]').forEach(b=>b.onclick=()=>{ invTab=b.dataset.invtab; renderInvestigators(); });
+  if(invTab==='cases')renderCasesTab(body);
+  else if(invTab==='analysts')renderAnalystsTab(body);
+  else if(invTab==='bulk')renderBulkSearchTab(body);
+  else if(invTab==='advanced')renderAdvancedSearchTab(body);
+  else if(invTab==='sandbox')renderSandboxTab(body);
+  updateFlagDot();
+}
+
+function renderCasesTab(body){
+  if(selectedCaseId){
+    const c=state.cases.find(x=>x.id===selectedCaseId);
+    if(c){ renderCaseDetail(body,c); return; }
+    selectedCaseId=null;
+  }
+  const cases=[...state.cases].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  let html=`<div class="inv-toolbar"><div style="font-size:13px;color:var(--muted)">${cases.length} case${cases.length===1?'':'s'}</div>
+    <button class="btn btn--primary" id="newCaseBtn">+ New Case</button></div>`;
+  html+= cases.length ? `<div class="case-grid">${cases.map(c=>{
+    const flagCount=state.flags.filter(f=>f.targetType==='case'&&f.targetId===c.id&&!f.resolved).length;
+    const agentNames=(c.agents||[]).map(aid=>{const a=state.analysts.find(x=>x.id===aid);return a?a.name:aid;}).join(', ')||'unassigned';
+    return `<div class="case-card" data-case="${c.id}">
+      <div class="case-card__id">${escapeHtml(c.id)}${flagCount?` <span class="flag-badge">⚑ ${flagCount}</span>`:''}</div>
+      <div class="case-card__title">${escapeHtml(c.title)}</div>
+      <div class="case-card__meta">
+        <span class="case-status case-status--${c.status}">${c.status}</span>
+        <span>${escapeHtml(c.org||'—')}</span>
+        <span>${(c.linkedEntityIds||[]).length} linked</span>
+      </div>
+      <div class="case-card__meta" style="margin-top:6px;color:var(--muted-2)">${escapeHtml(agentNames)}</div>
+    </div>`;
+  }).join('')}</div>` : `<div class="empty" style="height:200px">No cases yet. Create one to start tracking an investigation.</div>`;
+  body.innerHTML=html;
+  body.querySelectorAll('[data-case]').forEach(el=>el.onclick=()=>{ selectedCaseId=el.dataset.case; renderCasesTab(body); });
+  const newBtn=body.querySelector('#newCaseBtn');
+  if(newBtn)newBtn.onclick=()=>{
+    const c={id:genCaseId(),title:'Untitled Case',status:'open',org:'',agents:[activeUser.id],classification:null,tags:[],notes:'',linkedEntityIds:[],createdAt:new Date().toISOString()};
+    state.cases.push(c); selectedCaseId=c.id; renderCasesTab(body);
+  };
+}
+function renderCaseDetail(body,c){
+  const linked=(c.linkedEntityIds||[]).map(id=>state.entities.find(e=>e.id===id)).filter(Boolean);
+  const flags=state.flags.filter(f=>f.targetType==='case'&&f.targetId===c.id);
+  let html=`<div class="case-detail">
+    <span class="case-detail__back" id="caseBack">← Back to cases</span>
+    <div class="case-detail__head">
+      <div style="flex:1">
+        <input class="case-detail__titleInput" id="caseTitleInput" value="${escapeHtml(c.title)}">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:4px">${escapeHtml(c.id)} · created ${new Date(c.createdAt).toLocaleDateString()}</div>
+      </div>
+      <button class="btn btn--danger" id="caseDeleteBtn">Delete case</button>
+    </div>
+    <div class="case-field-row">
+      <div class="case-field"><label>Status</label><select id="caseStatusSel">
+        <option value="open" ${c.status==='open'?'selected':''}>Open</option>
+        <option value="pending" ${c.status==='pending'?'selected':''}>Pending</option>
+        <option value="closed" ${c.status==='closed'?'selected':''}>Closed</option>
+      </select></div>
+      <div class="case-field"><label>Organization</label><input id="caseOrgInput" value="${escapeHtml(c.org||'')}" placeholder="e.g. NIGHTGLASS HQ"></div>
+      <div class="case-field advonly"><label>Classification</label><select id="caseClassSel"><option value="">Unmarked</option>${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${c.classification===k?'selected':''}>${CLASSIF[k].label}</option>`).join('')}</select></div>
+    </div>
+    <div class="case-field" style="margin-bottom:16px">
+      <label>Case Agents</label>
+      <div class="case-agents">${state.analysts.map(a=>`<span class="case-agent-pill ${(c.agents||[]).includes(a.id)?'is-on':''}" data-agent="${a.id}">${escapeHtml(a.name)}</span>`).join('')}</div>
+    </div>
+    <div class="case-field case-notes" style="margin-bottom:20px"><label>Notes</label><textarea id="caseNotesInput" placeholder="Investigation notes…">${escapeHtml(c.notes||'')}</textarea></div>
+    <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px">Linked Entities (${linked.length})</h2>
+    <div class="case-linked-list" id="caseLinkedList">${linked.length?linked.map(e=>{
+      const m=TYPES[e.type]||TYPES.ioc;
+      return `<div class="rel" data-goto="${e.id}"><span class="rel__dot" style="background:${m.color}"></span><div style="flex:1"><div>${escapeHtml(e.label)}</div><div class="rel__verb">${m.label}</div></div><button class="metarow__del" data-unlink="${e.id}" title="Unlink">×</button></div>`;
+    }).join(''):'<div class="empty" style="font-size:12px">No entities linked yet.</div>'}</div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <input class="taginput" id="caseLinkSearch" placeholder="Search entities to link…" style="flex:1">
+    </div>
+    <div id="caseLinkResults" style="margin-top:8px"></div>
+    <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:8px;margin:24px 0 10px">Flags (${flags.length})</h2>
+    <div id="caseFlagsList">${flags.length?flags.map(f=>{
+      const a=state.analysts.find(x=>x.id===f.analystId);
+      return `<div class="flag-row ${f.resolved?'flag-row__resolved':''}"><input type="checkbox" data-resolveflag="${f.id}" ${f.resolved?'checked':''}><div style="flex:1"><div>${escapeHtml(f.reason)}</div><div style="color:var(--muted-2);font-size:10px;margin-top:2px">${a?escapeHtml(a.name):escapeHtml(f.analystId)} · ${new Date(f.createdAt).toLocaleString()}</div></div></div>`;
+    }).join(''):'<div class="empty" style="font-size:12px">No flags on this case.</div>'}</div>
+    <button class="btn" id="caseFlagBtn" style="margin-top:10px">Flag this case</button>
+  </div>`;
+  body.innerHTML=html;
+
+  body.querySelector('#caseBack').onclick=()=>{ selectedCaseId=null; renderCasesTab(body); };
+  body.querySelector('#caseTitleInput').onchange=(ev)=>{ c.title=ev.target.value.trim()||c.title; renderCasesTab(body); };
+  body.querySelector('#caseStatusSel').onchange=(ev)=>{ c.status=ev.target.value; };
+  body.querySelector('#caseOrgInput').onchange=(ev)=>{ c.org=ev.target.value.trim(); };
+  const clsSel=body.querySelector('#caseClassSel'); if(clsSel)clsSel.onchange=(ev)=>{ c.classification=ev.target.value||null; };
+  body.querySelector('#caseNotesInput').onchange=(ev)=>{ c.notes=ev.target.value; };
+  body.querySelectorAll('[data-agent]').forEach(pill=>pill.onclick=()=>{
+    const aid=pill.dataset.agent; c.agents=c.agents||[];
+    if(c.agents.includes(aid))c.agents=c.agents.filter(x=>x!==aid); else c.agents.push(aid);
+    renderCaseDetail(body,c);
+  });
+  body.querySelectorAll('[data-goto]').forEach(el=>el.onclick=()=>{ switchView('graph'); selectEntity(el.dataset.goto); });
+  body.querySelectorAll('[data-unlink]').forEach(btn=>btn.onclick=(ev)=>{ ev.stopPropagation(); c.linkedEntityIds=(c.linkedEntityIds||[]).filter(id=>id!==btn.dataset.unlink); renderCaseDetail(body,c); });
+  body.querySelector('#caseDeleteBtn').onclick=()=>{
+    if(!confirm(`Delete case "${c.title}"? This cannot be undone.`))return;
+    state.cases=state.cases.filter(x=>x.id!==c.id);
+    state.flags=state.flags.filter(f=>!(f.targetType==='case'&&f.targetId===c.id));
+    selectedCaseId=null; renderCasesTab(body); toast('Case deleted');
+  };
+  const linkSearch=body.querySelector('#caseLinkSearch');
+  linkSearch.oninput=()=>{
+    const q=linkSearch.value.toLowerCase().trim();
+    const resultsEl=body.querySelector('#caseLinkResults');
+    if(!q){ resultsEl.innerHTML=''; return; }
+    const matches=state.entities.filter(e=>!isRedacted(e)&&!(c.linkedEntityIds||[]).includes(e.id)&&e.label.toLowerCase().includes(q)).slice(0,8);
+    resultsEl.innerHTML=matches.map(e=>{
+      const m=TYPES[e.type]||TYPES.ioc;
+      return `<div class="rel" data-linkadd="${e.id}"><span class="rel__dot" style="background:${m.color}"></span><div style="flex:1">${escapeHtml(e.label)}</div><span style="color:var(--muted-2);font-size:11px">+ link</span></div>`;
+    }).join('') || '<div class="empty" style="font-size:12px">No matches.</div>';
+    resultsEl.querySelectorAll('[data-linkadd]').forEach(row=>row.onclick=()=>{
+      c.linkedEntityIds=c.linkedEntityIds||[]; c.linkedEntityIds.push(row.dataset.linkadd);
+      linkSearch.value=''; renderCaseDetail(body,c);
+    });
+  };
+  const flagBtn=body.querySelector('#caseFlagBtn');
+  flagBtn.onclick=()=>{ flagEntity('case',c.id); renderCaseDetail(body,c); };
+  body.querySelectorAll('[data-resolveflag]').forEach(cb=>cb.onchange=()=>{
+    const f=state.flags.find(x=>x.id===cb.dataset.resolveflag); if(f)f.resolved=cb.checked;
+    updateFlagDot(); renderCaseDetail(body,c);
+  });
+}
+function setActiveUserByIndex(idx){
+  activeUser=state.analysts[idx]||state.analysts[0];
+  const us=document.getElementById('userSel'); if(us)us.value=String(state.analysts.indexOf(activeUser));
+  const chip=document.getElementById('userClr');
+  if(chip){ chip.textContent=activeUser.clearance; chip.style.background=CLASSIF[activeUser.clearance].color; }
+  render();
+}
+function renderAnalystsTab(body){
+  let html=`<div class="inv-toolbar"><div style="font-size:13px;color:var(--muted)">${state.analysts.length} analyst${state.analysts.length===1?'':'s'} · active: ${escapeHtml(activeUser.name)}</div>
+    <button class="btn btn--primary" id="newAnalystBtn">+ New Analyst</button></div>`;
+  html+=state.analysts.map((a,i)=>`
+    <div class="analyst-row" data-idx="${i}">
+      <input class="metarow__key" style="width:90px" data-field="id" value="${escapeHtml(a.id)}">
+      <input class="metarow__val" style="flex:1" data-field="name" value="${escapeHtml(a.name)}" placeholder="name">
+      <input class="metarow__val" style="flex:1" data-field="org" value="${escapeHtml(a.org||'')}" placeholder="organization">
+      <select data-field="clearance">${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${a.clearance===k?'selected':''}>${k}</option>`).join('')}</select>
+      <input class="metarow__val" style="flex:1" data-field="tags" value="${escapeHtml((a.tags||[]).join(', '))}" placeholder="tags, comma-separated">
+      <button class="metarow__del" data-delanalyst="${i}" title="Remove">×</button>
+    </div>`).join('');
+  body.innerHTML=html;
+  body.querySelectorAll('.analyst-row').forEach(row=>{
+    const idx=+row.dataset.idx;
+    row.querySelectorAll('[data-field]').forEach(input=>{
+      input.onchange=()=>{
+        const f=input.dataset.field, a=state.analysts[idx];
+        if(f==='tags')a.tags=input.value.split(',').map(t=>t.trim()).filter(Boolean);
+        else a[f]=input.value.trim();
+        renderUserSelect();
+        if(a===activeUser)setActiveUserByIndex(idx);
+      };
+    });
+  });
+  body.querySelectorAll('[data-delanalyst]').forEach(btn=>btn.onclick=()=>{
+    const idx=+btn.dataset.delanalyst;
+    if(state.analysts.length<=1){ toast('At least one analyst must remain'); return; }
+    if(!confirm(`Remove analyst "${state.analysts[idx].name}"?`))return;
+    state.analysts.splice(idx,1);
+    renderUserSelect(); setActiveUserByIndex(0); renderAnalystsTab(body);
+  });
+  const newBtn=body.querySelector('#newAnalystBtn');
+  newBtn.onclick=()=>{
+    const n=state.analysts.length+1;
+    state.analysts.push({id:'AN-'+String(n).padStart(3,'0'),name:'new.analyst',org:'',clearance:'U',tags:[]});
+    renderUserSelect(); renderAnalystsTab(body);
+  };
+}
+
+function renderBulkSearchTab(body){
+  body.innerHTML=`
+    <div style="max-width:700px">
+      <p style="color:var(--muted);font-size:13px;margin-bottom:10px">Paste a list of IOCs, entity IDs/labels, or case IDs/titles — one per line. Each line is matched independently against the whole constellation and case roster.</p>
+      <textarea class="paste" id="bulkSearchInput" style="min-height:160px" placeholder="185.220.101.45&#10;update-sync.net&#10;CASE-2026-0001&#10;APT-Nightjar"></textarea>
+      <button class="btn btn--primary" id="bulkSearchBtn" style="margin-top:10px">Search</button>
+      <div class="bulk-results" id="bulkResults"></div>
+    </div>`;
+  body.querySelector('#bulkSearchBtn').onclick=()=>{
+    const lines=body.querySelector('#bulkSearchInput').value.split('\n').map(l=>l.trim()).filter(Boolean);
+    const resultsEl=body.querySelector('#bulkResults');
+    if(!lines.length){ resultsEl.innerHTML='<div class="empty" style="font-size:12px">Paste at least one line first.</div>'; return; }
+    resultsEl.innerHTML=lines.map(line=>{
+      const q=line.toLowerCase();
+      const entMatches=state.entities.filter(e=>!isRedacted(e)&&(e.id.toLowerCase().includes(q)||e.label.toLowerCase().includes(q)||JSON.stringify(e.meta).toLowerCase().includes(q))).slice(0,15);
+      const caseMatches=state.cases.filter(c=>c.id.toLowerCase().includes(q)||c.title.toLowerCase().includes(q));
+      const total=entMatches.length+caseMatches.length;
+      const rows=[
+        ...entMatches.map(e=>{ const m=TYPES[e.type]||TYPES.ioc; return `<div class="rel" data-goto="${e.id}"><span class="rel__dot" style="background:${m.color}"></span><div style="flex:1">${escapeHtml(e.label)}</div><span class="rel__verb">${m.label}</span></div>`; }),
+        ...caseMatches.map(c=>`<div class="rel" data-gocase="${c.id}"><span class="rel__dot" style="background:${SEV.info}"></span><div style="flex:1">${escapeHtml(c.title)}</div><span class="rel__verb">${escapeHtml(c.id)}</span></div>`),
+      ].join('') || '<div class="empty" style="font-size:12px;padding:4px 0">No matches.</div>';
+      return `<div class="bulk-result-group"><div class="bulk-result-group__query">"${escapeHtml(line)}" — ${total} match${total===1?'':'es'}</div>${rows}</div>`;
+    }).join('');
+    resultsEl.querySelectorAll('[data-goto]').forEach(el=>el.onclick=()=>{ switchView('graph'); selectEntity(el.dataset.goto); });
+    resultsEl.querySelectorAll('[data-gocase]').forEach(el=>el.onclick=()=>{ invTab='cases'; selectedCaseId=el.dataset.gocase; renderInvestigators(); });
+  };
+}
+
+const ADV_FIELDS=[
+  {key:'type',label:'Entity type'},{key:'sev',label:'Severity'},{key:'tag',label:'Tag'},
+  {key:'class',label:'Classification'},{key:'iotype',label:'IOC type'},{key:'case',label:'Case ID/title'},
+  {key:'agent',label:'Case agent'},{key:'org',label:'Organization'},{key:'flagged',label:'Flagged (true/false)'},
+];
+let advRows=[{field:'type',value:''}];
+function renderAdvancedSearchTab(body){
+  body.innerHTML=`
+    <div style="max-width:760px">
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Build a query from fields, all combined with AND, plus optional free text.</p>
+      <div id="advRowsWrap"></div>
+      <button class="btn" id="advAddRow" style="margin-top:6px">+ Add condition</button>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:14px">
+        <input class="taginput" id="advFreeText" placeholder="…and free text" style="flex:1">
+        <button class="btn btn--primary" id="advRunBtn">Run search</button>
+      </div>
+      <div id="advQueryPreview" style="font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:8px"></div>
+      <div class="adv-results" id="advResults"></div>
+    </div>`;
+  renderAdvRows(body);
+  body.querySelector('#advAddRow').onclick=()=>{ advRows.push({field:'type',value:''}); renderAdvRows(body); };
+  body.querySelector('#advFreeText').oninput=()=>runAdvancedSearch(body);
+  body.querySelector('#advRunBtn').onclick=()=>runAdvancedSearch(body);
+  runAdvancedSearch(body);
+}
+function renderAdvRows(body){
+  const wrap=body.querySelector('#advRowsWrap');
+  wrap.innerHTML=advRows.map((r,i)=>`
+    <div class="sandbox-rel-row" data-advrow="${i}">
+      <select data-advfield>${ADV_FIELDS.map(f=>`<option value="${f.key}" ${r.field===f.key?'selected':''}>${f.label}</option>`).join('')}</select>
+      <input class="taginput" data-advvalue value="${escapeHtml(r.value)}" placeholder="value" style="flex:1">
+      ${advRows.length>1?`<button class="metarow__del" data-advdel="${i}">×</button>`:''}
+    </div>`).join('');
+  wrap.querySelectorAll('[data-advrow]').forEach(row=>{
+    const i=+row.dataset.advrow;
+    row.querySelector('[data-advfield]').onchange=(ev)=>{ advRows[i].field=ev.target.value; runAdvancedSearch(body); };
+    row.querySelector('[data-advvalue]').oninput=(ev)=>{ advRows[i].value=ev.target.value; runAdvancedSearch(body); };
+  });
+  wrap.querySelectorAll('[data-advdel]').forEach(btn=>btn.onclick=()=>{ advRows.splice(+btn.dataset.advdel,1); renderAdvRows(body); runAdvancedSearch(body); });
+}
+function buildFilterFromAdvRows(body){
+  const f={text:[],type:null,sev:null,tag:null,cls:null,iotype:null,caseq:null,agent:null,org:null,flagged:null};
+  advRows.forEach(r=>{
+    const v=r.value.trim(); if(!v)return; const vl=v.toLowerCase();
+    if(r.field==='type')f.type=vl; else if(r.field==='sev')f.sev=vl; else if(r.field==='tag')f.tag=vl;
+    else if(r.field==='class')f.cls=v.toUpperCase(); else if(r.field==='iotype')f.iotype=vl;
+    else if(r.field==='case')f.caseq=vl; else if(r.field==='agent')f.agent=vl; else if(r.field==='org')f.org=vl;
+    else if(r.field==='flagged')f.flagged=(vl==='true'||vl==='yes'||vl==='1');
+  });
+  const freeText=body.querySelector('#advFreeText').value||'';
+  f.text=freeText.trim().split(/\s+/).filter(Boolean).map(t=>t.toLowerCase());
+  return f;
+}
+function runAdvancedSearch(body){
+  const f=buildFilterFromAdvRows(body);
+  const previewParts=advRows.filter(r=>r.value.trim()).map(r=>`${r.field}:"${r.value.trim()}"`);
+  if(f.text.length)previewParts.push(...f.text);
+  body.querySelector('#advQueryPreview').textContent=previewParts.length?`Matching: ${previewParts.join(' AND ')}`:'No conditions set — showing everything.';
+  const hits=state.entities.filter(e=>!isRedacted(e)&&matchesQuery(e,f));
+  const resultsEl=body.querySelector('#advResults');
+  resultsEl.innerHTML=hits.length?hits.slice(0,100).map(e=>{
+    const m=TYPES[e.type]||TYPES.ioc;
+    const flagged=isFlagged('entity',e.id);
+    return `<div class="rel" data-goto="${e.id}"><span class="rel__dot" style="background:${m.color}"></span><div style="flex:1">${escapeHtml(e.label)}${flagged?' <span class="flag-badge">⚑</span>':''}</div><span class="rel__verb">${m.label}</span></div>`;
+  }).join(''):'<div class="empty" style="font-size:12px">No matches.</div>';
+  if(hits.length>100)resultsEl.innerHTML+=`<div style="color:var(--muted-2);font-size:11px;padding:6px 0">+${hits.length-100} more not shown</div>`;
+  resultsEl.querySelectorAll('[data-goto]').forEach(el=>el.onclick=()=>{ switchView('graph'); selectEntity(el.dataset.goto); });
+}
+
+/* ---- Sandbox / Threat Group Builder ----
+   Deliberately kept OUTSIDE `state` — nothing here is exported, imported, or
+   touches the live constellation until "Commit as new campaign" is clicked.
+   Members are either `ref:true` (a pointer to an existing entity, added by
+   reference — never duplicated) or `ref:false` (a brand-new draft actor that
+   only becomes a real entity on commit). */
+let sandbox={name:'',members:[],rels:[]};
+let sandboxDraftCounter=0;
+function sandboxSlug(s){ return String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'group'; }
+function renderSandboxTab(body){
+  const hasContent=sandbox.members.length>0;
+  body.innerHTML=`
+    <div style="max-width:1100px">
+      <div class="inv-toolbar">
+        <input class="taginput" id="sandboxName" placeholder="Name this group (becomes the campaign name)…" value="${escapeHtml(sandbox.name)}" style="flex:1;max-width:400px">
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="sandboxDiscardBtn" ${hasContent?'':'disabled'}>Discard</button>
+          <button class="btn btn--primary" id="sandboxCommitBtn" ${hasContent?'':'disabled'}>Commit as new campaign</button>
+        </div>
+      </div>
+      <div class="sandbox-layout">
+        <div class="sandbox-panel">
+          <h5 style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px">Add existing entity</h5>
+          <input class="taginput" id="sandboxAddSearch" placeholder="Search entities…" style="width:100%;margin-bottom:6px">
+          <div id="sandboxAddResults" style="margin-bottom:16px"></div>
+          <h5 style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px">Create a new actor</h5>
+          <input class="taginput" id="sandboxNewLabel" placeholder="Actor name…" style="width:100%;margin-bottom:6px">
+          <select id="sandboxNewSev" style="width:100%;margin-bottom:6px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);font-family:var(--sans);font-size:13px">
+            ${Object.keys(SEV).map(k=>`<option value="${k}" ${k==='medium'?'selected':''}>${k}</option>`).join('')}
+          </select>
+          <button class="btn" id="sandboxNewBtn" style="width:100%">+ Add new actor</button>
+          <h5 style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:20px 0 10px">Members (${sandbox.members.length})</h5>
+          <div id="sandboxMembersList">${sandbox.members.length?sandbox.members.map(m=>{
+            const tm=TYPES[m.type]||TYPES.ioc;
+            return `<div class="sandbox-member"><span><span class="rel__dot" style="background:${tm.color};display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px"></span>${escapeHtml(m.label)}${m.ref?'':' <span style="color:var(--muted-2);font-size:10px">(new)</span>'}</span><button class="metarow__del" data-rmmember="${m.key}">×</button></div>`;
+          }).join(''):'<div class="empty" style="font-size:12px">No members yet.</div>'}</div>
+        </div>
+        <div>
+          <div class="sandbox-svg-wrap">${sandbox.members.length?buildSandboxSVG():'<div class="empty" style="font-size:12px">Add members to see a preview.</div>'}</div>
+          <h5 style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 10px">Relationships (${sandbox.rels.length})</h5>
+          <div class="sandbox-rel-row">
+            <select id="sandboxRelA">${sandbox.members.map(m=>`<option value="${m.key}">${escapeHtml(m.label)}</option>`).join('')}</select>
+            <input class="taginput" id="sandboxRelVerb" placeholder="relation, e.g. reports_to" style="flex:1;min-width:140px">
+            <select id="sandboxRelB">${sandbox.members.map(m=>`<option value="${m.key}">${escapeHtml(m.label)}</option>`).join('')}</select>
+            <button class="btn" id="sandboxAddRelBtn" ${sandbox.members.length<2?'disabled':''}>+ Link</button>
+          </div>
+          <div id="sandboxRelsList">${sandbox.rels.length?sandbox.rels.map((r,i)=>{
+            const a=sandbox.members.find(m=>m.key===r.source), b=sandbox.members.find(m=>m.key===r.target);
+            return `<div class="rel" style="cursor:default"><span class="rel__dot" style="background:${relColor(r.relation)}"></span><div style="flex:1">${escapeHtml(a?a.label:'?')} → ${escapeHtml(b?b.label:'?')}<div class="rel__verb">${escapeHtml(r.relation)}</div></div><button class="metarow__del" data-rmrel="${i}">×</button></div>`;
+          }).join(''):'<div class="empty" style="font-size:12px">No relationships yet.</div>'}</div>
+        </div>
+      </div>
+    </div>`;
+  body.querySelector('#sandboxName').oninput=(ev)=>{ sandbox.name=ev.target.value; };
+  const addSearch=body.querySelector('#sandboxAddSearch');
+  addSearch.oninput=()=>{
+    const q=addSearch.value.toLowerCase().trim();
+    const resultsEl=body.querySelector('#sandboxAddResults');
+    if(!q){ resultsEl.innerHTML=''; return; }
+    const already=new Set(sandbox.members.map(m=>m.key));
+    const matches=state.entities.filter(e=>!isRedacted(e)&&!already.has(e.id)&&e.label.toLowerCase().includes(q)).slice(0,8);
+    resultsEl.innerHTML=matches.map(e=>{
+      const m=TYPES[e.type]||TYPES.ioc;
+      return `<div class="rel" data-addexisting="${e.id}"><span class="rel__dot" style="background:${m.color}"></span><div style="flex:1">${escapeHtml(e.label)}</div><span style="color:var(--muted-2);font-size:11px">+ add</span></div>`;
+    }).join('') || '<div class="empty" style="font-size:12px">No matches.</div>';
+    resultsEl.querySelectorAll('[data-addexisting]').forEach(row=>row.onclick=()=>{
+      const e=state.entities.find(x=>x.id===row.dataset.addexisting); if(!e)return;
+      sandbox.members.push({key:e.id,ref:true,type:e.type,label:e.label,severity:e.severity});
+      addSearch.value=''; renderSandboxTab(body);
+    });
+  };
+  body.querySelector('#sandboxNewBtn').onclick=()=>{
+    const label=body.querySelector('#sandboxNewLabel').value.trim(); if(!label){toast('Enter a name first');return;}
+    const sev=body.querySelector('#sandboxNewSev').value;
+    sandbox.members.push({key:'draft:'+(++sandboxDraftCounter),ref:false,type:'actor',label,severity:sev,meta:{}});
+    renderSandboxTab(body);
+  };
+  body.querySelectorAll('[data-rmmember]').forEach(btn=>btn.onclick=()=>{
+    const key=btn.dataset.rmmember;
+    sandbox.members=sandbox.members.filter(m=>m.key!==key);
+    sandbox.rels=sandbox.rels.filter(r=>r.source!==key&&r.target!==key);
+    renderSandboxTab(body);
+  });
+  const addRelBtn=body.querySelector('#sandboxAddRelBtn');
+  if(addRelBtn)addRelBtn.onclick=()=>{
+    const source=body.querySelector('#sandboxRelA').value, target=body.querySelector('#sandboxRelB').value;
+    const verb=body.querySelector('#sandboxRelVerb').value.trim();
+    if(!verb){toast('Enter a relation label first');return;}
+    if(source===target){toast('Pick two different members');return;}
+    sandbox.rels.push({source,target,relation:verb});
+    renderSandboxTab(body);
+  };
+  body.querySelectorAll('[data-rmrel]').forEach(btn=>btn.onclick=()=>{ sandbox.rels.splice(+btn.dataset.rmrel,1); renderSandboxTab(body); });
+  const discardBtn=body.querySelector('#sandboxDiscardBtn');
+  if(!discardBtn.disabled)discardBtn.onclick=()=>{
+    if(!confirm('Discard this sandbox group? Everything in it will be lost.'))return;
+    sandbox={name:'',members:[],rels:[]}; renderSandboxTab(body); toast('Sandbox cleared');
+  };
+  const commitBtn=body.querySelector('#sandboxCommitBtn');
+  if(!commitBtn.disabled)commitBtn.onclick=()=>commitSandbox(body);
+}
+function buildSandboxSVG(){
+  const W=560,H=340,cx=W/2,cy=H/2;
+  const members=sandbox.members, N=members.length;
+  const rad=Math.min(140,55+N*9);
+  const positions=members.map((m,i)=>{ const ang=(i/N)*Math.PI*2-Math.PI/2; return {m,x:cx+Math.cos(ang)*rad,y:cy+Math.sin(ang)*rad}; });
+  const posByKey=Object.fromEntries(positions.map(p=>[p.m.key,p]));
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;max-height:360px">`;
+  sandbox.rels.forEach(r=>{
+    const a=posByKey[r.source], b=posByKey[r.target]; if(!a||!b)return;
+    const midx=(a.x+b.x)/2, midy=(a.y+b.y)/2;
+    svg+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${relColor(r.relation)}" stroke-width="1.6" opacity=".65"/>`;
+    svg+=`<text x="${midx}" y="${midy}" text-anchor="middle" font-size="8" fill="#8a93ad" font-family="monospace">${escapeHtml(r.relation)}</text>`;
+  });
+  positions.forEach(({m,x,y})=>{ svg+=svgNodeMarkup(x,y,18,{id:m.key,label:m.label,type:m.type,severity:m.severity,images:[]},y>cy,'#E7ECFF'); });
+  svg+='</svg>';
+  return svg;
+}
+function commitSandbox(body){
+  const name=sandbox.name.trim();
+  if(!name){toast('Name the group first');return;}
+  if(!sandbox.members.length){toast('Add at least one member first');return;}
+  const slug=sandboxSlug(name);
+  const campaignId='campaign:'+slug;
+  if(state.entities.some(e=>e.id===campaignId)){toast('A campaign with that name already exists — pick a different name');return;}
+  const keyToRealId={};
+  const newEntities=[{id:campaignId,type:'campaign',label:name,severity:'high',meta:{summary:'Created in the Investigators sandbox.',status:'Active'},classification:null,tags:['sandbox-built'],images:[]}];
+  sandbox.members.forEach(m=>{
+    if(m.ref){ keyToRealId[m.key]=m.key; return; }
+    const realId='actor:'+sandboxSlug(m.label)+'-'+m.key.split(':')[1];
+    keyToRealId[m.key]=realId;
+    newEntities.push({id:realId,type:'actor',label:m.label,severity:m.severity,meta:m.meta||{},classification:null,tags:[],images:[]});
+  });
+  const newLinks=sandbox.members.map(m=>({source:campaignId,target:keyToRealId[m.key],relation:'attributed_to'}));
+  sandbox.rels.forEach(r=>newLinks.push({source:keyToRealId[r.source],target:keyToRealId[r.target],relation:r.relation}));
+  newEntities.forEach(e=>seedPos(e));
+  state.entities.push(...newEntities);
+  state.links.push(...newLinks);
+  sandbox={name:'',members:[],rels:[]};
+  render(); switchView('actors'); selectActorProfile(campaignId);
+  toast(`Committed "${name}" — ${newEntities.length} entities, ${newLinks.length} links`);
 }
 
 const TACTICS=['Initial Access','Execution','Persistence','Privilege Escalation','Credential Access','Command & Control','Exfiltration'];
@@ -2214,6 +2739,7 @@ function switchView(v){
   if(v==='alerts'){ renderSearchResults(); renderSearches(); renderAlertsLog(); }
   if(v==='pipes'){ renderPipelines(); }
   if(v==='actors'){ renderActorsView(); renderActorProfile(); }
+  if(v==='investigators'){ renderInvestigators(); }
 }
 document.querySelectorAll('.navbtn[data-view]').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
 
@@ -2232,7 +2758,10 @@ document.getElementById('exportJson').onclick=()=>{
     links:state.links,
     events:state.events,
     searches:state.searches,
-    pipelines:state.pipelines.map(({id,name,src,url,interval,classification,tags,translate,enabled})=>({id,name,src,url,interval,classification,tags,translate,enabled}))
+    pipelines:state.pipelines.map(({id,name,src,url,interval,classification,tags,translate,enabled})=>({id,name,src,url,interval,classification,tags,translate,enabled})),
+    cases:state.cases,
+    flags:state.flags,
+    analysts:state.analysts
   };
   download('nightglass-export.json',JSON.stringify(clean,null,2),'application/json');
   toast('Exported constellation as JSON');
@@ -2263,6 +2792,13 @@ function buildMarkdown(){
   const techs=by('technique');
   if(techs.length){ md+=`## Observed ATT&CK techniques\n\n`; techs.forEach(t=>md+=`- **${t.meta.ttp||''} ${t.label}** — ${t.meta.tactic||''}\n`); md+=`\n`; }
   if(state.events.length){ md+=`## Timeline\n\n`; [...state.events].sort((a,b)=>(a.ts||'').localeCompare(b.ts||'')).forEach(ev=>md+=`- \`${ev.ts}\` **[${(ev.severity||'').toUpperCase()}]** ${ev.text.replace(/<\/?b>/g,'')}\n`); md+=`\n`; }
+  if(state.cases.length){ md+=`## Cases\n\n`; state.cases.forEach(cs=>{
+    md+=`### ${cs.id} — ${cs.title}\n\n- **Status:** ${cs.status}\n- **Organization:** ${cs.org||'—'}\n`;
+    const agentNames=(cs.agents||[]).map(aid=>{const a=state.analysts.find(x=>x.id===aid);return a?a.name:aid;}).join(', ');
+    md+=`- **Agents:** ${agentNames||'unassigned'}\n- **Linked entities:** ${(cs.linkedEntityIds||[]).length}\n`;
+    if(cs.notes)md+=`- **Notes:** ${cs.notes}\n`;
+    md+=`\n`;
+  }); }
   md+=`---\n\n_Data model: entities[{id,type,label,severity,meta}], links[{source,target,relation}], events[{ts,severity,entityId,text}]. Re-import the JSON export into NIGHTGLASS to reconstruct this constellation._\n`;
   return md;
 }
@@ -2274,7 +2810,8 @@ function buildMarkdown(){
    browser's native print dialog ("Save as PDF" is a print destination
    on every major browser/OS), rather than dumping the app chrome.
    ============================================================ */
-function svgNodeMarkup(cx,cy,r,entity,labelBelow){
+function svgNodeMarkup(cx,cy,r,entity,labelBelow,labelColor){
+  labelColor=labelColor||'#222';
   const red=isRedacted(entity);
   const meta=TYPES[entity.type]||TYPES.ioc;
   const col=red?'#9aa0b4':meta.color;
@@ -2291,7 +2828,7 @@ function svgNodeMarkup(cx,cy,r,entity,labelBelow){
   }
   const lbl=red?'REDACTED':(entity.label.length>26?entity.label.slice(0,24)+'…':entity.label);
   const ly=labelBelow?cy+r+16:cy-r-8;
-  inner+=`<text x="${cx}" y="${ly}" text-anchor="middle" font-size="12" font-weight="600" fill="#222" font-family="monospace">${escapeHtml(lbl)}</text>`;
+  inner+=`<text x="${cx}" y="${ly}" text-anchor="middle" font-size="12" font-weight="600" fill="${labelColor}" font-family="monospace">${escapeHtml(lbl)}</text>`;
   return inner;
 }
 function buildProfileMindMapSVG(center){
@@ -2449,22 +2986,30 @@ function renderAlertBadge(){ const d=document.getElementById('alertDot'); if(!d)
 
 /* ---- query engine ---- */
 function parseQuery(q){
-  const f={text:[],type:null,sev:null,tag:null,cls:null,iotype:null};
+  const f={text:[],type:null,sev:null,tag:null,cls:null,iotype:null,caseq:null,agent:null,org:null,flagged:null};
   (q||'').trim().split(/\s+/).filter(Boolean).forEach(tok=>{
-    const m=tok.match(/^(type|sev|severity|tag|class|iotype):(.+)$/i);
+    const m=tok.match(/^(type|sev|severity|tag|class|iotype|case|agent|org|flagged):(.+)$/i);
     if(m){ const k=m[1].toLowerCase(), v=m[2].toLowerCase();
       if(k==='type')f.type=v; else if(k==='sev'||k==='severity')f.sev=v;
-      else if(k==='tag')f.tag=v; else if(k==='class')f.cls=v.toUpperCase(); else f.iotype=v;
+      else if(k==='tag')f.tag=v; else if(k==='class')f.cls=v.toUpperCase(); else if(k==='iotype')f.iotype=v;
+      else if(k==='case')f.caseq=v; else if(k==='agent')f.agent=v; else if(k==='org')f.org=v;
+      else if(k==='flagged')f.flagged=(v==='true'||v==='yes'||v==='1');
     } else f.text.push(tok.toLowerCase());
   });
   return f;
 }
+function casesForEntity(id){ return state.cases.filter(c=>(c.linkedEntityIds||[]).includes(id)); }
+function isFlagged(targetType,id){ return state.flags.some(fl=>fl.targetType===targetType&&fl.targetId===id&&!fl.resolved); }
 function matchesQuery(e,f){
   if(f.type&&e.type!==f.type)return false;
   if(f.sev&&e.severity!==f.sev)return false;
   if(f.tag&&!(e.tags||[]).some(t=>t.toLowerCase().includes(f.tag)))return false;
   if(f.cls&&(e.classification||'')!==f.cls)return false;
   if(f.iotype&&(e.meta.iotype||'')!==f.iotype)return false;
+  if(f.caseq&&!casesForEntity(e.id).some(c=>c.id.toLowerCase().includes(f.caseq)||c.title.toLowerCase().includes(f.caseq)))return false;
+  if(f.agent&&!casesForEntity(e.id).some(c=>(c.agents||[]).some(aid=>{ const a=state.analysts.find(x=>x.id===aid); return a&&(a.id.toLowerCase().includes(f.agent)||a.name.toLowerCase().includes(f.agent)); })))return false;
+  if(f.org&&!casesForEntity(e.id).some(c=>(c.org||'').toLowerCase().includes(f.org)))return false;
+  if(f.flagged!==null&&isFlagged('entity',e.id)!==f.flagged)return false;
   return f.text.every(t=>e.label.toLowerCase().includes(t)||e.type.includes(t)||JSON.stringify(e.meta).toLowerCase().includes(t));
 }
 
@@ -2575,9 +3120,13 @@ async function translateText(t,lang){
 }
 
 /* ---- init ---- */
+function renderUserSelect(){
+  const us=document.getElementById('userSel'); if(!us)return;
+  us.innerHTML=USERS.map((u,i)=>`<option value="${i}">${u.name} · ${u.clearance}</option>`).join('');
+}
 function initV2(){
   const us=document.getElementById('userSel');
-  us.innerHTML=USERS.map((u,i)=>`<option value="${i}">${u.name} · ${u.clearance}</option>`).join('');
+  renderUserSelect();
   const applyUser=()=>{
     activeUser=USERS[+us.value||0];
     const chip=document.getElementById('userClr');
@@ -2619,6 +3168,12 @@ function initV2(){
   state.searches.push({id:'s0',name:'High-sev indicators',query:'type:ioc sev:high',alert:true});
   state.pipelines.push({id:'p0',name:'demo-simulator',src:'sim',url:'',interval:20,classification:null,tags:[],translate:false,enabled:false,lastRun:0,count:0,lastStatus:'paused'});
   setInterval(pipeTick,5000);
+
+  // starter case, so the Investigators segment has something to look at on first load
+  state.cases.push({id:'CASE-2026-0001',title:'Operation Nightjar Intrusion',status:'open',org:'NIGHTGLASS HQ',
+    agents:['AN-001','AN-002'],classification:null,tags:[],notes:'Initial access via CVE-2024-3400 on the perimeter VPN appliance. RookDoor backdoor confirmed on the domain controller; SledgeKey credential theft observed shortly after. Tracking exfil to cdn-telemetry.io.',
+    linkedEntityIds:['campaign:harvest','actor:nightjar','malware:rookdoor','malware:sledgekey'],createdAt:new Date().toISOString()});
+  state.flags.push({id:genFlagId(),targetType:'entity',targetId:'ioc:dom2',analystId:'AN-002',reason:'Confirm exfil destination with threat intel vendor before blocking',createdAt:new Date().toISOString(),resolved:false});
 }
 
 /* ============================================================

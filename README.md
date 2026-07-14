@@ -35,7 +35,8 @@ And [`docs/samples/solarwinds-network.json`](docs/samples/solarwinds-network.jso
 - **Classification & redaction (opt-in advanced mode)** — off by default; one toggle in Pipelines & Settings reveals U / CUI / SECRET / TOP SECRET markings with a proper banner bar, set per instance, per ingest batch, or per item, plus the custom tag editor. Content above the active analyst's clearance renders blurred/redacted everywhere (graph, feed, timeline, matrix, search, inspector).
 - **Custom tagging** — free-form tags on any entity, editable in the inspector, queryable everywhere, part of the same advanced-mode toggle as classification.
 - **Search & alerts** — query syntax (`type:` `sev:` `tag:` `class:` `iotype:` + free text), saved searches, and alert flags that fire whenever newly ingested data matches.
-- **Exports** — re-importable JSON of the full constellation and an analyst-style Markdown report with classification header.
+- **Investigators segment** — a case-management layer on top of the constellation: Cases (Case ID, status, organization, Case Agents, linked entities), an analyst roster (ID, org, clearance, tags), flagging any entity or case for follow-up, bulk search (paste a list, get every match at once), an advanced query builder, and a Sandbox where you can combine existing actors with brand-new ones, wire up relationships, preview it as a mind-map, and commit it as a real new APT group — or discard it without touching your data.
+- **Exports** — re-importable JSON of the full constellation (cases, flags, and the analyst roster included), an analyst-style Markdown report, and a real PDF export (print-to-PDF with an SVG mind-map, not a menu dump).
 
 ## Screenshots
 

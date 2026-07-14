@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.11.0 — 2026-07-10
+- **New "Investigators" segment** — a case-management layer wrapping the constellation, with its own top-level nav item and five sub-tabs:
+  - **Cases** — Case ID, title, status (open/pending/closed), organization, one or more Case Agents, classification, notes, and a set of linked entities pulled straight from the graph. Full create/edit/delete.
+  - **Analysts** — the previously-thin `USERS` (name + clearance only, used for the redaction demo) is now a full roster: analyst ID, org, clearance, and tags, editable in place. Adding/removing analysts here stays in sync with the existing "active analyst" selector in the top bar for free, since it's the same underlying array.
+  - **Flagging** — any entity (from the inspector drawer or a Threat Actors profile) or any case can be flagged for follow-up with a reason, attributed to the active analyst. Unresolved flags surface as a badge count on the Investigators nav icon.
+  - **Bulk search** — paste a list of IOCs, entity IDs/labels, or case IDs/titles (one per line); each line is matched independently against the whole constellation and case roster, with jump-to links.
+  - **Advanced search** — a field/value condition builder (type, severity, tag, classification, IOC type, plus new `case:`/`agent:`/`org:`/`flagged:` operators) that ANDs conditions together and reuses the existing search-matching engine rather than a parallel implementation.
+  - **Sandbox / Threat Group Builder** — a scratch workspace, deliberately kept outside the live `state` so nothing touches the real constellation until you commit: pull in existing actors by reference (never duplicated), create brand-new draft actors, wire relationships between any of them, see a live SVG mind-map preview, then either commit as a real new campaign (creates the campaign + new actor entities + all the relationships in one shot) or discard the whole thing.
+  - Cases, flags, and the analyst roster round-trip losslessly through JSON export/import, and cases get their own section in the Markdown report.
+  - Boots with one seeded demo case (linked to Operation Nightjar) and one seeded flag, so the segment isn't empty on first load.
+
 ## v0.10.7 — 2026-07-10
 - The other graph controls (Recenter, Freeze, Organize, Unhide all) got the same gradient+glow+hover-lift treatment as "Back to profile" — each its own accent pulled from the existing palette (blue, ice-cyan, violet, green) so they're distinguishable from each other at a glance instead of four identical gray buttons, plus a shared icon scale/rotate on hover for a snappier feel across the whole control bar.
 
