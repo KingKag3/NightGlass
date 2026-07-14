@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.10.5 — 2026-07-10
+- "Back to [entity]" graph control was styled identically to the neutral utility buttons next to it (Recenter/Freeze/Organize/Unhide all) — all muted gray, so it didn't read as a distinct, more important action. Gave it the app's signal-cyan accent color so it actually stands out from the "just adjust the view" buttons around it.
+
 ## v0.10.4 — 2026-07-10
 - "Show only X in constellation" (from a Threat Actors profile) was a one-way trip — once filtered to that entity's graph, there was no way back to the profile short of manually renavigating the Threat Actors view and re-finding it. Added a "Back to [entity]" button to the graph controls bar, shown whenever the graph has an active focus filter (from the profile button, the HUD's Actors tab, or anywhere else `focusActor()` is called) — takes you straight back to that entity's profile.
 
