@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.10.4 — 2026-07-10
+- "Show only X in constellation" (from a Threat Actors profile) was a one-way trip — once filtered to that entity's graph, there was no way back to the profile short of manually renavigating the Threat Actors view and re-finding it. Added a "Back to [entity]" button to the graph controls bar, shown whenever the graph has an active focus filter (from the profile button, the HUD's Actors tab, or anywhere else `focusActor()` is called) — takes you straight back to that entity's profile.
+
 ## v0.10.3 — 2026-07-10
 - Graph HUD didn't default to the Actors tab like intended — the built-in demo data only has 1 actor, so the very first render fell back to "Types" (the Actors tab requires 2+ actors to even appear) and then got stuck there for the rest of the session, even after loading a dataset with dozens of actors. Now it keeps auto-following "prefer Actors whenever it's available" right up until the analyst manually picks a tab themselves — after that, their choice sticks.
 - Tightened-up spacing was actually too tight: panel widened (210px → 260px) so all three tabs fit on one row instead of "Relationships" wrapping to its own line, tab button padding increased, and row/dropdown spacing loosened a notch. Shortened "Entity Types"/"Relationships" tab labels to "Types"/"Relations" to help them fit comfortably.

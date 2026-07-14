@@ -658,6 +658,8 @@ body:not(.marked) .advonly{display:none}
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M6 8v4a2 2 0 0 0 2 2h1M18 8v4a2 2 0 0 0-2 2h-1"/></svg>Organize</button>
           <button class="gc-btn" id="gcUnhide" hidden>
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>Unhide all</button>
+          <button class="gc-btn" id="gcBackToProfile" hidden>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span id="gcBackToProfileLabel">Back to profile</span></button>
         </div>
       </div>
     </section>
@@ -1411,6 +1413,13 @@ document.getElementById('gcFreeze').onclick=(e)=>{ frozen=!frozen; e.currentTarg
 document.getElementById('gcOrganize').onclick=organizeLayout;
 document.getElementById('gcUnhide').onclick=()=>{ state.entities.forEach(e=>e.hidden=false); focusedActorId=null; render(); toast('All hidden nodes restored'); };
 function updateUnhideBtn(){ document.getElementById('gcUnhide').hidden=!state.entities.some(e=>e.hidden); }
+document.getElementById('gcBackToProfile').onclick=()=>{ if(focusedActorId){ switchView('actors'); selectActorProfile(focusedActorId); } };
+function updateBackToProfileBtn(){
+  const btn=document.getElementById('gcBackToProfile');
+  const ent=focusedActorId?state.entities.find(e=>e.id===focusedActorId):null;
+  btn.hidden=!ent;
+  if(ent)document.getElementById('gcBackToProfileLabel').textContent=`Back to ${ent.label.length>22?ent.label.slice(0,20)+'…':ent.label}`;
+}
 document.getElementById('graphSearch').oninput=()=>{};
 
 /* ============================================================
@@ -1559,7 +1568,7 @@ function render(){
     `<div class="toplist__item"><span style="min-width:110px;text-transform:uppercase;font-family:var(--mono);font-size:12px">${t}</span><div class="toplist__bar"><div class="toplist__fill" style="width:${n/imax*100}%;background:linear-gradient(90deg,var(--signal),var(--blue))"></div></div><span class="toplist__n">${n}</span></div>`
   ).join(''):'<div style="color:var(--muted-2);font-size:12px">No indicators</div>';
 
-  renderGraphHud(); renderActorsView(); renderMatrix(); renderTimeline(); updateUnhideBtn();
+  renderGraphHud(); renderActorsView(); renderMatrix(); renderTimeline(); updateUnhideBtn(); updateBackToProfileBtn();
   renderBanner(); renderAlertBadge(); renderAlertsLog(); renderSearches(); renderPipelines(); renderCritWatch();
   if(state.entities.length && (view.x===0&&view.y===0)) centerView();
 }
