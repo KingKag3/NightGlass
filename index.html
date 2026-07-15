@@ -403,6 +403,12 @@ button{font-family:inherit;color:inherit;cursor:pointer}
   border-radius:10px;padding:5px;box-shadow:0 12px 30px rgba(0,0,0,.5);display:none}
 .sandbox-ctxmenu__item{padding:8px 14px;border-radius:7px;cursor:pointer;white-space:nowrap;font-size:12px;color:var(--ink)}
 .sandbox-ctxmenu__item:hover{background:rgba(59,232,222,.12)}
+.sandbox-relmodal{position:fixed;inset:0;z-index:300;background:rgba(5,7,14,.6);backdrop-filter:blur(2px);
+  display:none;align-items:center;justify-content:center}
+.sandbox-relmodal__panel{background:var(--panel);border:1px solid var(--line-strong);border-radius:14px;
+  padding:20px;min-width:340px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.sandbox-relmodal__title{font-size:13px;color:var(--muted);margin-bottom:12px;font-weight:600}
+.sandbox-relmodal__actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 .profile{max-width:760px;flex:1;min-width:0}
 .profile__previewPanel{flex:1;min-width:280px;position:sticky;top:0;align-self:flex-start;
   height:calc(100vh - 200px);min-height:280px;border:1px solid var(--line);border-radius:14px;
@@ -2653,8 +2659,7 @@ function closestRelationMatch(typed,known){
   const threshold=Math.max(2,Math.ceil(bestLen*0.35));
   return (best&&bestDist>0&&bestDist<=threshold) ? best : null;
 }
-function wireRelationAutocomplete(body,id){
-  const input=body.querySelector('#'+id), resultsEl=body.querySelector('#'+id+'Results');
+function wireRelationAutocompleteEls(input,resultsEl){
   if(!input||!resultsEl)return;
   const known=[...new Set([...state.links.map(l=>l.relation),...sandbox.rels.map(r=>r.relation)].filter(Boolean))].sort();
   let highlight=-1, current=[];
@@ -2682,6 +2687,62 @@ function wireRelationAutocomplete(body,id){
     else if(ev.key==='Escape'){ resultsEl.style.display='none'; }
   };
   input.onblur=()=>{ setTimeout(()=>{ resultsEl.style.display='none'; },150); };
+}
+function wireRelationAutocomplete(body,id){
+  wireRelationAutocompleteEls(body.querySelector('#'+id), body.querySelector('#'+id+'Results'));
+}
+// Replaces the plain browser prompt() used by the mind-map's drag-to-link, right-click
+// link, and drag-a-search-result-onto-a-member flows — prompt() can't show suggestions,
+// so those three paths had zero lookup of existing relation types even though the main
+// picker row below the canvas already did. onConfirm(verb) fires only on a real confirm;
+// cancelling (Escape / Cancel / clicking the overlay) never calls it.
+function showRelationPrompt(sourceKey,targetKey,onConfirm){
+  let modal=document.getElementById('sandboxRelModal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='sandboxRelModal'; modal.className='sandbox-relmodal';
+    modal.innerHTML=`<div class="sandbox-relmodal__panel">
+      <div class="sandbox-relmodal__title" id="sandboxRelModalTitle"></div>
+      <div class="sandbox-picker" style="width:100%">
+        <input class="taginput" id="sandboxRelModalInput" placeholder="relation, e.g. reports_to" autocomplete="off" style="width:100%">
+        <div class="sandbox-picker__results" id="sandboxRelModalResults"></div>
+      </div>
+      <div class="sandbox-relmodal__actions">
+        <button class="btn" id="sandboxRelModalCancel">Cancel</button>
+        <button class="btn btn--primary" id="sandboxRelModalOk">Link</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+  }
+  const labelFor=(key)=>{
+    const m=sandbox.members.find(x=>x.key===key); if(m)return m.label;
+    const e=state.entities.find(x=>x.id===key); if(e)return e.label;
+    return key;
+  };
+  modal.querySelector('#sandboxRelModalTitle').textContent=labelFor(sourceKey)+' → '+labelFor(targetKey);
+  const input=modal.querySelector('#sandboxRelModalInput'), resultsEl=modal.querySelector('#sandboxRelModalResults');
+  input.value=''; resultsEl.style.display='none'; resultsEl.innerHTML='';
+  modal.style.display='flex';
+  wireRelationAutocompleteEls(input,resultsEl);
+  setTimeout(()=>input.focus(),0);
+  const cleanup=()=>{ modal.style.display='none'; modal.onclick=null; document.removeEventListener('keydown',onEsc); };
+  const cancel=()=>cleanup();
+  const ok=()=>{
+    let verb=input.value.trim()||'related_to';
+    const known=[...new Set([...state.links.map(l=>l.relation),...sandbox.rels.map(r=>r.relation)].filter(Boolean))];
+    const closeMatch=closestRelationMatch(verb,known);
+    if(closeMatch){
+      const useExisting=window.confirm(`"${verb}" looks like it might be a typo of the existing relation "${closeMatch}".\n\nOK = use "${closeMatch}" instead\nCancel = keep "${verb}" as a new, separate relation type`);
+      if(useExisting)verb=closeMatch;
+    }
+    cleanup(); onConfirm(verb);
+  };
+  const onEsc=(ev)=>{ if(ev.key==='Escape')cancel(); };
+  modal.querySelector('#sandboxRelModalOk').onclick=ok;
+  modal.querySelector('#sandboxRelModalCancel').onclick=cancel;
+  modal.onclick=(ev)=>{ if(ev.target===modal)cancel(); };
+  input.addEventListener('keydown',(ev)=>{ if(ev.key==='Enter'&&!ev.defaultPrevented)ok(); });
+  document.addEventListener('keydown',onEsc);
 }
 function sandboxSlug(s){ return String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'group'; }
 function addSandboxMember(entityId){
@@ -2788,12 +2849,12 @@ function renderSandboxTab(body){
       if(entId===targetKey)return;
       const alreadyMember=sandbox.members.some(m=>m.key===entId);
       if(!alreadyMember&&!state.entities.some(x=>x.id===entId))return; // dropped entity doesn't exist and isn't already a member
-      // ask BEFORE mutating anything — cancelling the prompt must be a true no-op, not "keep the member, skip the link"
-      const verb=prompt('Relationship label connecting the dropped entity to this member?','related_to');
-      if(verb===null)return;
-      if(!alreadyMember)addSandboxMember(entId);
-      sandbox.rels.push({source:entId,target:targetKey,relation:verb.trim()||'related_to'});
-      renderSandboxTab(body);
+      // ask BEFORE mutating anything — cancelling must be a true no-op, not "keep the member, skip the link"
+      showRelationPrompt(entId,targetKey,(verb)=>{
+        if(!alreadyMember)addSandboxMember(entId);
+        sandbox.rels.push({source:entId,target:targetKey,relation:verb});
+        renderSandboxTab(body);
+      });
     };
   });
   [body.querySelector('#sandboxMembersList'),body.querySelector('#sandboxSvgWrap')].forEach(zone=>{
@@ -2941,10 +3002,14 @@ function wireSandboxSvgInteractions(body){
   const finishLinkDrag=(target)=>{
     linkLine.remove(); linkLine=null;
     if(target&&target.key!==dragMember.key){
-      const verb=prompt('Relationship label connecting these two members?','related_to');
-      if(verb!==null)sandbox.rels.push({source:dragMember.key,target:target.key,relation:verb.trim()||'related_to'});
+      const sourceKey=dragMember.key;
+      showRelationPrompt(sourceKey,target.key,(verb)=>{
+        sandbox.rels.push({source:sourceKey,target:target.key,relation:verb});
+        renderSandboxTab(body);
+      });
+    } else {
+      renderSandboxTab(body);
     }
-    renderSandboxTab(body);
   };
   svg.querySelectorAll('.sandbox-node').forEach(g=>{
     const key=g.dataset.key;
@@ -2958,11 +3023,11 @@ function wireSandboxSvgInteractions(body){
     g.onclick=()=>{
       if(!sandboxArmedLinkKey||sandboxArmedLinkKey===key)return;
       const source=sandboxArmedLinkKey;
-      const verb=prompt('Relationship label connecting these two members?','related_to');
       disarmSandboxLink(body);
-      if(verb===null)return;
-      sandbox.rels.push({source,target:key,relation:verb.trim()||'related_to'});
-      renderSandboxTab(body);
+      showRelationPrompt(source,key,(verb)=>{
+        sandbox.rels.push({source,target:key,relation:verb});
+        renderSandboxTab(body);
+      });
     };
   });
   svg.querySelectorAll('[data-linkhandle]').forEach(handle=>{

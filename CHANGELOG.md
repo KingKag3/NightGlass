@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.11.6 — 2026-07-15
+- **Sandbox mind-map relationship labeling now uses a real autocomplete modal, not a native `prompt()`.** All three ways to draw a relationship directly on the canvas (the "+" drag-to-link handle, right-click "Link to another entity", and dropping a search result onto an existing member) used to fall back to the browser's plain `prompt()` dialog for the relationship label — a bare text box with no suggestions, unlike the search-driven picker below the mind-map which already autocompleted. `showRelationPrompt(sourceKey,targetKey,onConfirm)` replaces all three call sites with a custom modal showing "Source → Target", the same live-filtered suggestion dropdown (`wireRelationAutocompleteEls`, refactored out of the picker-only `wireRelationAutocomplete` so both share one implementation), Cancel/Link buttons, Escape and click-outside-to-cancel, and the same typo-similarity guard as the "+ Link" button — cancelling any way is a true no-op.
+
 ## v0.11.5 — 2026-07-10
 - **Sandbox mind-map nodes are now truly draggable.** Positions used to be recomputed from scratch on every render (a fixed radial layout), so dragging a node visually "snapped back" the moment anything else changed. Each member now keeps its own `x`/`y` that only gets a default radial position the first time it appears — drag it anywhere and it stays put, including across full re-renders, with connected relationship lines following live during the drag (no full re-render mid-drag, so it stays smooth).
 - **Two new ways to draw a relationship directly on the mind-map**, instead of only through the search pickers below it:
