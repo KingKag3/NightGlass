@@ -395,6 +395,14 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 [data-addexisting][draggable]:active{cursor:grabbing}
 .sandbox-dragover{border-color:var(--signal)!important;background:rgba(59,232,222,.1)!important;box-shadow:0 0 0 2px rgba(59,232,222,.3) inset}
 #sandboxMembersList.sandbox-dragover{border-radius:10px}
+.sandbox-node{cursor:grab}
+.sandbox-node__linkhandle{opacity:0;transition:opacity .12s;cursor:crosshair}
+.sandbox-node:hover .sandbox-node__linkhandle{opacity:1}
+.sandbox-node.is-armed circle:first-of-type{stroke:var(--signal);stroke-width:2.5px;filter:drop-shadow(0 0 6px rgba(59,232,222,.7))}
+.sandbox-ctxmenu{position:fixed;z-index:200;background:var(--panel);border:1px solid var(--line-strong);
+  border-radius:10px;padding:5px;box-shadow:0 12px 30px rgba(0,0,0,.5);display:none}
+.sandbox-ctxmenu__item{padding:8px 14px;border-radius:7px;cursor:pointer;white-space:nowrap;font-size:12px;color:var(--ink)}
+.sandbox-ctxmenu__item:hover{background:rgba(59,232,222,.12)}
 .profile{max-width:760px;flex:1;min-width:0}
 .profile__previewPanel{flex:1;min-width:280px;position:sticky;top:0;align-self:flex-start;
   height:calc(100vh - 200px);min-height:280px;border:1px solid var(--line);border-radius:14px;
@@ -2597,6 +2605,7 @@ function runAdvancedSearch(body){
 let sandbox={name:'',members:[],rels:[]};
 let sandboxDraftCounter=0;
 let sandboxRelASelected=null, sandboxRelBSelected=null;
+let sandboxArmedLinkKey=null;
 function wireSandboxPicker(body,id,onSelect){
   const input=body.querySelector('#'+id+'Search'), resultsEl=body.querySelector('#'+id+'Results');
   if(!input||!resultsEl)return;
@@ -2823,23 +2832,168 @@ function renderSandboxTab(body){
   };
   const commitBtn=body.querySelector('#sandboxCommitBtn');
   if(!commitBtn.disabled)commitBtn.onclick=()=>commitSandbox(body);
+  wireSandboxSvgInteractions(body);
 }
-function buildSandboxSVG(){
-  const W=560,H=340,cx=W/2,cy=H/2;
+document.addEventListener('keydown',(ev)=>{
+  if(ev.key==='Escape'&&sandboxArmedLinkKey){
+    const body=document.getElementById('invBody');
+    if(body)disarmSandboxLink(body);
+  }
+});
+const SANDBOX_SVG_W=560, SANDBOX_SVG_H=340;
+// Members keep whatever position they were last dragged to (m.x/m.y persist on the
+// member object itself, not recomputed). A member only gets a fresh radial position
+// the first time it shows up (no x/y yet) — existing members are never disturbed by
+// later members being added or removed, so a manually-arranged layout stays put.
+function assignSandboxPositions(){
+  const cx=SANDBOX_SVG_W/2, cy=SANDBOX_SVG_H/2;
   const members=sandbox.members, N=members.length;
   const rad=Math.min(140,55+N*9);
-  const positions=members.map((m,i)=>{ const ang=(i/N)*Math.PI*2-Math.PI/2; return {m,x:cx+Math.cos(ang)*rad,y:cy+Math.sin(ang)*rad}; });
-  const posByKey=Object.fromEntries(positions.map(p=>[p.m.key,p]));
-  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;max-height:360px">`;
-  sandbox.rels.forEach(r=>{
-    const a=posByKey[r.source], b=posByKey[r.target]; if(!a||!b)return;
-    const midx=(a.x+b.x)/2, midy=(a.y+b.y)/2;
-    svg+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${relColor(r.relation)}" stroke-width="1.6" opacity=".65"/>`;
-    svg+=`<text x="${midx}" y="${midy}" text-anchor="middle" font-size="8" fill="#8a93ad" font-family="monospace">${escapeHtml(r.relation)}</text>`;
+  members.forEach((m,i)=>{
+    if(typeof m.x!=='number'||typeof m.y!=='number'){
+      const ang=(i/Math.max(1,N))*Math.PI*2-Math.PI/2;
+      m.x=cx+Math.cos(ang)*rad; m.y=cy+Math.sin(ang)*rad;
+    }
   });
-  positions.forEach(({m,x,y})=>{ svg+=svgNodeMarkup(x,y,18,{id:m.key,label:m.label,type:m.type,severity:m.severity,images:[]},y>cy,'#E7ECFF'); });
-  svg+='</svg>';
+}
+function sandboxNodeGroup(m,labelBelow){
+  const meta=TYPES[m.type]||TYPES.ioc;
+  const r=18;
+  const lbl=m.label.length>26?m.label.slice(0,24)+'…':m.label;
+  const ly=labelBelow?r+16:-r-8;
+  return `<g class="sandbox-node" data-key="${m.key}" transform="translate(${m.x},${m.y})">
+    <circle r="${r}" fill="${meta.color}"/>
+    <text y="${r*0.35}" text-anchor="middle" font-size="${r}" font-weight="700" fill="#fff" font-family="sans-serif" style="pointer-events:none">${escapeHtml((m.label||'?').slice(0,1).toUpperCase())}</text>
+    <text y="${ly}" text-anchor="middle" font-size="12" font-weight="600" fill="#E7ECFF" font-family="monospace" style="pointer-events:none">${escapeHtml(lbl)}</text>
+    <g class="sandbox-node__linkhandle" data-linkhandle="${m.key}" transform="translate(${r+7},${-r-7})">
+      <circle r="9" fill="var(--signal)" stroke="#0B1020" stroke-width="1.5"/>
+      <text text-anchor="middle" y="4" font-size="13" font-weight="700" fill="#0B1020" font-family="sans-serif" style="pointer-events:none">+</text>
+    </g>
+  </g>`;
+}
+function buildSandboxSVG(){
+  assignSandboxPositions();
+  const members=sandbox.members, cy=SANDBOX_SVG_H/2;
+  let svg=`<svg id="sandboxSvgEl" viewBox="0 0 ${SANDBOX_SVG_W} ${SANDBOX_SVG_H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;max-height:360px">`;
+  svg+='<g id="sandboxEdgesLayer">';
+  sandbox.rels.forEach(r=>{
+    const a=members.find(m=>m.key===r.source), b=members.find(m=>m.key===r.target); if(!a||!b)return;
+    const midx=(a.x+b.x)/2, midy=(a.y+b.y)/2;
+    svg+=`<line data-edge-a="${r.source}" data-edge-b="${r.target}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${relColor(r.relation)}" stroke-width="1.6" opacity=".65"/>`;
+    svg+=`<text data-edgelabel-a="${r.source}" data-edgelabel-b="${r.target}" x="${midx}" y="${midy}" text-anchor="middle" font-size="8" fill="#8a93ad" font-family="monospace">${escapeHtml(r.relation)}</text>`;
+  });
+  svg+='</g><g id="sandboxNodesLayer">';
+  members.forEach(m=>{ svg+=sandboxNodeGroup(m,m.y>cy); });
+  svg+='</g></svg>';
   return svg;
+}
+function armSandboxLink(body,key){
+  sandboxArmedLinkKey=key;
+  const svg=body.querySelector('#sandboxSvgEl');
+  if(svg){
+    svg.querySelectorAll('.sandbox-node').forEach(g=>g.classList.toggle('is-armed',g.dataset.key===key));
+  }
+  const m=sandbox.members.find(x=>x.key===key);
+  toast(`Click another member to link it to ${m?m.label:'this entity'} (Esc to cancel)`);
+}
+function disarmSandboxLink(body){
+  sandboxArmedLinkKey=null;
+  const svg=body.querySelector('#sandboxSvgEl');
+  if(svg)svg.querySelectorAll('.sandbox-node.is-armed').forEach(g=>g.classList.remove('is-armed'));
+}
+function showSandboxCtxMenu(body,x,y,key){
+  let menu=document.getElementById('sandboxCtxMenu');
+  if(!menu){ menu=document.createElement('div'); menu.id='sandboxCtxMenu'; menu.className='sandbox-ctxmenu'; document.body.appendChild(menu); }
+  const vw=window.innerWidth, vh=window.innerHeight;
+  menu.style.left=Math.min(x,vw-200)+'px'; menu.style.top=Math.min(y,vh-60)+'px'; menu.style.display='block';
+  menu.innerHTML='<div class="sandbox-ctxmenu__item" id="sandboxCtxLinkItem">🔗 Link to another entity…</div>';
+  menu.querySelector('#sandboxCtxLinkItem').onclick=(ev)=>{ ev.stopPropagation(); menu.style.display='none'; armSandboxLink(body,key); };
+  const dismiss=(ev)=>{ if(!menu.contains(ev.target)){ menu.style.display='none'; document.removeEventListener('mousedown',dismiss); } };
+  setTimeout(()=>document.addEventListener('mousedown',dismiss),0);
+}
+// Two ways to connect two members directly on the mind-map, alongside the search
+// pickers below it: (1) drag a node's hover-revealed "+" handle onto another node,
+// or (2) right-click a node → "Link to another entity" → click the target node.
+// Node *repositioning* (plain drag on the node body, not the handle) never triggers
+// a full re-render mid-drag — it mutates member.x/y and moves the SVG elements
+// directly, otherwise the layout would jump/reset on every frame.
+function wireSandboxSvgInteractions(body){
+  const svg=body.querySelector('#sandboxSvgEl'); if(!svg)return;
+  const toSvgPoint=(evt)=>{
+    const pt=svg.createSVGPoint(); pt.x=evt.clientX; pt.y=evt.clientY;
+    const ctm=svg.getScreenCTM(); if(!ctm)return {x:0,y:0};
+    const loc=pt.matrixTransform(ctm.inverse());
+    return {x:loc.x,y:loc.y};
+  };
+  const moveNodeTo=(m,g,x,y)=>{
+    m.x=x; m.y=y;
+    g.setAttribute('transform',`translate(${x},${y})`);
+    svg.querySelectorAll(`[data-edge-a="${m.key}"]`).forEach(line=>{ line.setAttribute('x1',x); line.setAttribute('y1',y); });
+    svg.querySelectorAll(`[data-edge-b="${m.key}"]`).forEach(line=>{ line.setAttribute('x2',x); line.setAttribute('y2',y); });
+    sandbox.rels.forEach(r=>{
+      if(r.source!==m.key&&r.target!==m.key)return;
+      const a=sandbox.members.find(x=>x.key===r.source), b=sandbox.members.find(x=>x.key===r.target); if(!a||!b)return;
+      const midx=(a.x+b.x)/2, midy=(a.y+b.y)/2;
+      svg.querySelectorAll(`[data-edgelabel-a="${r.source}"][data-edgelabel-b="${r.target}"]`).forEach(t=>{ t.setAttribute('x',midx); t.setAttribute('y',midy); });
+    });
+  };
+  let dragMode=null, dragMember=null, dragGroup=null, linkLine=null;
+  const finishLinkDrag=(target)=>{
+    linkLine.remove(); linkLine=null;
+    if(target&&target.key!==dragMember.key){
+      const verb=prompt('Relationship label connecting these two members?','related_to');
+      if(verb!==null)sandbox.rels.push({source:dragMember.key,target:target.key,relation:verb.trim()||'related_to'});
+    }
+    renderSandboxTab(body);
+  };
+  svg.querySelectorAll('.sandbox-node').forEach(g=>{
+    const key=g.dataset.key;
+    g.onmousedown=(ev)=>{
+      if(ev.button!==0||ev.target.closest('.sandbox-node__linkhandle'))return;
+      ev.preventDefault();
+      const m=sandbox.members.find(x=>x.key===key); if(!m)return;
+      dragMode='move'; dragMember=m; dragGroup=g; g.style.cursor='grabbing';
+    };
+    g.oncontextmenu=(ev)=>{ ev.preventDefault(); showSandboxCtxMenu(body,ev.clientX,ev.clientY,key); };
+    g.onclick=()=>{
+      if(!sandboxArmedLinkKey||sandboxArmedLinkKey===key)return;
+      const source=sandboxArmedLinkKey;
+      const verb=prompt('Relationship label connecting these two members?','related_to');
+      disarmSandboxLink(body);
+      if(verb===null)return;
+      sandbox.rels.push({source,target:key,relation:verb.trim()||'related_to'});
+      renderSandboxTab(body);
+    };
+  });
+  svg.querySelectorAll('[data-linkhandle]').forEach(handle=>{
+    handle.onmousedown=(ev)=>{
+      ev.preventDefault(); ev.stopPropagation();
+      const key=handle.dataset.linkhandle, m=sandbox.members.find(x=>x.key===key); if(!m)return;
+      dragMode='link'; dragMember=m;
+      linkLine=document.createElementNS('http://www.w3.org/2000/svg','line');
+      linkLine.setAttribute('x1',m.x); linkLine.setAttribute('y1',m.y);
+      linkLine.setAttribute('x2',m.x); linkLine.setAttribute('y2',m.y);
+      linkLine.setAttribute('stroke','#3BE8DE'); linkLine.setAttribute('stroke-width','2'); linkLine.setAttribute('stroke-dasharray','4,3');
+      svg.appendChild(linkLine);
+    };
+  });
+  svg.onmousemove=(ev)=>{
+    if(!dragMode)return;
+    const p=toSvgPoint(ev);
+    if(dragMode==='move')moveNodeTo(dragMember,dragGroup,p.x,p.y);
+    else if(dragMode==='link'&&linkLine){ linkLine.setAttribute('x2',p.x); linkLine.setAttribute('y2',p.y); }
+  };
+  const endDrag=(ev)=>{
+    if(dragMode==='move'&&dragGroup)dragGroup.style.cursor='grab';
+    if(dragMode==='link'&&linkLine){
+      const p=toSvgPoint(ev);
+      const target=sandbox.members.find(m=>m.key!==dragMember.key&&Math.hypot(m.x-p.x,m.y-p.y)<22);
+      finishLinkDrag(target);
+    }
+    dragMode=null; dragMember=null; dragGroup=null;
+  };
+  svg.onmouseup=endDrag;
+  svg.onmouseleave=(ev)=>{ if(dragMode)endDrag(ev); };
 }
 function commitSandbox(body){
   const name=sandbox.name.trim();

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.11.5 — 2026-07-10
+- **Sandbox mind-map nodes are now truly draggable.** Positions used to be recomputed from scratch on every render (a fixed radial layout), so dragging a node visually "snapped back" the moment anything else changed. Each member now keeps its own `x`/`y` that only gets a default radial position the first time it appears — drag it anywhere and it stays put, including across full re-renders, with connected relationship lines following live during the drag (no full re-render mid-drag, so it stays smooth).
+- **Two new ways to draw a relationship directly on the mind-map**, instead of only through the search pickers below it:
+  - Hover a node to reveal a small "+" handle; drag it onto another node to add the relationship (prompts for the label on drop).
+  - Right-click a node → "Link to another entity" → click the target node to complete it (Escape cancels). A simpler, non-drag alternative to the same thing.
+
 ## v0.11.4 — 2026-07-10
 - **Threat Actors profile now shows a "Cases" section** — any case with this entity in its linked-entities list shows up right on the profile (title, Case ID, status, unresolved-flag count), clicking one jumps straight to that case's detail. Previously the only way to know "is this actor part of an active case" was to go dig through the Investigators view case-by-case.
 - **Sandbox relationship-label typo guard.** Suggestions alone didn't stop a genuine typo ("repooerrr to") from getting silently added as a brand-new, separate relation type — over time that fragments what should be one consistent vocabulary into near-duplicates. Adding a relationship now runs a similarity check against every relation label already in use; a close-but-not-exact match ("repooerrr to" vs. the existing "reports_to") prompts to use the existing one instead, while a genuinely new label (not close to anything) is still added with zero friction. The relation-label field also gained real keyboard navigation (arrow keys + Enter to accept a suggestion), matching how the two member-picker fields next to it already behaved.
