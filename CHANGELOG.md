@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.11.4 — 2026-07-10
+- **Threat Actors profile now shows a "Cases" section** — any case with this entity in its linked-entities list shows up right on the profile (title, Case ID, status, unresolved-flag count), clicking one jumps straight to that case's detail. Previously the only way to know "is this actor part of an active case" was to go dig through the Investigators view case-by-case.
+- **Sandbox relationship-label typo guard.** Suggestions alone didn't stop a genuine typo ("repooerrr to") from getting silently added as a brand-new, separate relation type — over time that fragments what should be one consistent vocabulary into near-duplicates. Adding a relationship now runs a similarity check against every relation label already in use; a close-but-not-exact match ("repooerrr to" vs. the existing "reports_to") prompts to use the existing one instead, while a genuinely new label (not close to anything) is still added with zero friction. The relation-label field also gained real keyboard navigation (arrow keys + Enter to accept a suggestion), matching how the two member-picker fields next to it already behaved.
+
 ## v0.11.3 — 2026-07-10
 - The sandbox relationship builder's label field (what to call the connection — "reports_to", "exploits", etc.) was the last plain free-text input with no suggestions, right next to two fields that now both autocomplete. It now suggests relation labels already used anywhere in the loaded data (plus anything already added in this sandbox session) as you type — still completely free text, the suggestions are a convenience, not a restriction, so a brand-new relation label works exactly as before.
 

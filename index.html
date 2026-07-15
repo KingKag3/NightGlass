@@ -388,6 +388,7 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .sandbox-picker__results{position:absolute;top:100%;left:0;right:0;z-index:20;margin-top:4px;
   background:var(--panel);border:1px solid var(--line-strong);border-radius:10px;padding:6px;
   max-height:220px;overflow-y:auto;display:none;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.sandbox-picker__results .rel.is-active{background:rgba(59,232,222,.14);outline:1px solid rgba(59,232,222,.4)}
 .sandbox-svg-wrap{border:1px solid var(--line);border-radius:14px;background:rgba(11,16,32,.5);min-height:360px;
   display:flex;align-items:center;justify-content:center;overflow:hidden;transition:border-color .15s,background .15s}
 [data-addexisting][draggable]{cursor:grab}
@@ -2096,6 +2097,21 @@ function renderActorProfile(){
     });
     html+='</div>';
   }
+  const memberCases=state.cases.filter(cs=>(cs.linkedEntityIds||[]).includes(e.id));
+  if(memberCases.length){
+    html+=`<div class="profile__section"><h5>Cases (${memberCases.length})</h5>`;
+    memberCases.forEach(cs=>{
+      const flagCount=state.flags.filter(f=>f.targetType==='case'&&f.targetId===cs.id&&!f.resolved).length;
+      html+=`<div class="rel" data-goto-case="${cs.id}">
+        <span class="rel__dot" style="background:${SEV.info}"></span>
+        <div style="flex:1">
+          <div>${escapeHtml(cs.title)}${flagCount?` <span class="flag-badge">⚑ ${flagCount}</span>`:''}</div>
+          <div class="rel__verb">${escapeHtml(cs.id)} · ${escapeHtml(cs.status)}</div>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  }
   html+=`<div class="profile__section advonly"><h5>Classification</h5><select id="profileClass"><option value="">Unmarked</option>${Object.keys(CLASSIF).map(k=>`<option value="${k}" ${e.classification===k?'selected':''}>${CLASSIF[k].label}</option>`).join('')}</select></div>`;
   html+=`<div class="profile__section advonly"><h5>Tags</h5><div class="tagrow">${(e.tags||[]).map(t=>`<span class="tagchip">${escapeHtml(t)}<span class="tagx" data-t="${escapeHtml(t)}">×</span></span>`).join('')||'<span style="color:var(--muted-2);font-size:12px">none</span>'}</div><div style="display:flex;gap:6px;margin-top:8px"><input class="taginput" id="profileTagIn" placeholder="add tag…" style="flex:1"><button class="btn" id="profileTagAdd" style="padding:6px 12px">Add</button></div></div>`;
   const profileAttrColors=attrColorsForKeys(Object.keys(meta));
@@ -2213,6 +2229,7 @@ function renderActorProfile(){
 
   panel.querySelectorAll('[data-goto-actor]').forEach(el=>el.onclick=()=>selectActorProfile(el.dataset.gotoActor));
   panel.querySelectorAll('[data-goto-entity]').forEach(el=>el.onclick=()=>{ switchView('graph'); selectEntity(el.dataset.gotoEntity); });
+  panel.querySelectorAll('[data-goto-case]').forEach(el=>el.onclick=()=>{ invTab='cases'; selectedCaseId=el.dataset.gotoCase; switchView('investigators'); });
 }
 
 /* ============================================================
@@ -2603,15 +2620,44 @@ function wireSandboxPicker(body,id,onSelect){
 }
 // suggests relation labels already used anywhere in the loaded data (plus whatever's
 // already in this sandbox) — free text either way, this is a convenience, not an enum.
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  if(!m)return n; if(!n)return m;
+  const d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+  for(let j=0;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    d[i][j]=a[i-1]===b[j-1] ? d[i-1][j-1] : 1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+// finds an existing relation label that's suspiciously close to a freshly-typed one
+// ("repooerrr to" vs "reports_to") without blocking genuinely new relation types —
+// only flags near-misses, never exact matches or clearly-unrelated strings.
+function closestRelationMatch(typed,known){
+  const norm=s=>s.toLowerCase().trim().replace(/[_\s-]+/g,' ');
+  const t=norm(typed);
+  let best=null,bestDist=Infinity,bestLen=0;
+  known.forEach(k=>{
+    const kn=norm(k); if(kn===t)return;
+    const dist=levenshtein(t,kn);
+    if(dist<bestDist){ bestDist=dist; best=k; bestLen=Math.max(t.length,kn.length); }
+  });
+  const threshold=Math.max(2,Math.ceil(bestLen*0.35));
+  return (best&&bestDist>0&&bestDist<=threshold) ? best : null;
+}
 function wireRelationAutocomplete(body,id){
   const input=body.querySelector('#'+id), resultsEl=body.querySelector('#'+id+'Results');
   if(!input||!resultsEl)return;
   const known=[...new Set([...state.links.map(l=>l.relation),...sandbox.rels.map(r=>r.relation)].filter(Boolean))].sort();
+  let highlight=-1, current=[];
+  const paint=()=>{
+    resultsEl.querySelectorAll('[data-pickrel]').forEach((row,i)=>row.classList.toggle('is-active',i===highlight));
+  };
   const showList=(q)=>{
     const ql=(q||'').toLowerCase().trim();
-    const matches=(ql?known.filter(r=>r.toLowerCase().includes(ql)):known).slice(0,10);
-    if(!matches.length){ resultsEl.style.display='none'; return; }
-    resultsEl.innerHTML=matches.map(r=>`<div class="rel" data-pickrel="${escapeHtml(r)}"><span class="rel__dot" style="background:${relColor(r)}"></span><div style="flex:1">${escapeHtml(r)}</div></div>`).join('');
+    current=(ql?known.filter(r=>r.toLowerCase().includes(ql)):known).slice(0,10);
+    highlight=-1;
+    if(!current.length){ resultsEl.style.display='none'; return; }
+    resultsEl.innerHTML=current.map(r=>`<div class="rel" data-pickrel="${escapeHtml(r)}"><span class="rel__dot" style="background:${relColor(r)}"></span><div style="flex:1">${escapeHtml(r)}</div></div>`).join('');
     resultsEl.style.display='block';
     resultsEl.querySelectorAll('[data-pickrel]').forEach(row=>row.onclick=()=>{
       input.value=row.dataset.pickrel; resultsEl.style.display='none'; input.focus();
@@ -2619,6 +2665,13 @@ function wireRelationAutocomplete(body,id){
   };
   input.onfocus=()=>showList(input.value);
   input.oninput=()=>showList(input.value);
+  input.onkeydown=(ev)=>{
+    if(resultsEl.style.display!=='block'||!current.length)return;
+    if(ev.key==='ArrowDown'){ ev.preventDefault(); highlight=(highlight+1)%current.length; paint(); }
+    else if(ev.key==='ArrowUp'){ ev.preventDefault(); highlight=(highlight-1+current.length)%current.length; paint(); }
+    else if(ev.key==='Enter'&&highlight>=0){ ev.preventDefault(); input.value=current[highlight]; resultsEl.style.display='none'; }
+    else if(ev.key==='Escape'){ resultsEl.style.display='none'; }
+  };
   input.onblur=()=>{ setTimeout(()=>{ resultsEl.style.display='none'; },150); };
 }
 function sandboxSlug(s){ return String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'group'; }
@@ -2749,10 +2802,16 @@ function renderSandboxTab(body){
   wireSandboxPicker(body,'sandboxRelB',(key)=>{ sandboxRelBSelected=key; updateRelBtnState(); });
   wireRelationAutocomplete(body,'sandboxRelVerb');
   if(addRelBtn)addRelBtn.onclick=()=>{
-    const verb=body.querySelector('#sandboxRelVerb').value.trim();
+    let verb=body.querySelector('#sandboxRelVerb').value.trim();
     if(!sandboxRelASelected||!sandboxRelBSelected){toast('Pick both members first');return;}
     if(!verb){toast('Enter a relation label first');return;}
     if(sandboxRelASelected===sandboxRelBSelected){toast('Pick two different members');return;}
+    const known=[...new Set([...state.links.map(l=>l.relation),...sandbox.rels.map(r=>r.relation)].filter(Boolean))];
+    const closeMatch=closestRelationMatch(verb,known);
+    if(closeMatch){
+      const useExisting=confirm(`"${verb}" looks like it might be a typo of the existing relation "${closeMatch}".\n\nOK = use "${closeMatch}" instead\nCancel = keep "${verb}" as a new, separate relation type`);
+      if(useExisting)verb=closeMatch;
+    }
     sandbox.rels.push({source:sandboxRelASelected,target:sandboxRelBSelected,relation:verb});
     renderSandboxTab(body);
   };
