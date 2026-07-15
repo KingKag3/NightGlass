@@ -390,7 +390,17 @@ button{font-family:inherit;color:inherit;cursor:pointer}
   max-height:220px;overflow-y:auto;display:none;box-shadow:0 12px 30px rgba(0,0,0,.4)}
 .sandbox-picker__results .rel.is-active{background:rgba(59,232,222,.14);outline:1px solid rgba(59,232,222,.4)}
 .sandbox-svg-wrap{border:1px solid var(--line);border-radius:14px;background:rgba(11,16,32,.5);min-height:360px;
-  display:flex;align-items:center;justify-content:center;overflow:hidden;transition:border-color .15s,background .15s}
+  display:flex;align-items:center;justify-content:center;overflow:hidden;transition:border-color .15s,background .15s,height .15s;position:relative}
+.sandbox-svg-wrap.is-expanded{height:72vh;min-height:72vh}
+.sandbox-svg-wrap svg{cursor:grab}
+.sandbox-svg-wrap svg.is-panning{cursor:grabbing}
+.sandbox-svg-toolbar{position:absolute;top:8px;right:8px;z-index:5;display:flex;align-items:center;gap:4px;
+  background:rgba(11,16,32,.75);border:1px solid var(--line);border-radius:9px;padding:3px;backdrop-filter:blur(4px)}
+.sandbox-svg-btn{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:none;
+  background:transparent;color:var(--ink);border-radius:6px;cursor:pointer;font-size:14px;font-family:var(--sans);line-height:1}
+.sandbox-svg-btn:hover{background:rgba(59,232,222,.14);color:var(--signal)}
+.sandbox-svg-zoomlabel{font-size:10.5px;color:var(--muted);width:36px;text-align:center;font-family:var(--mono)}
+.sandbox-svg-hint{position:absolute;bottom:8px;left:10px;font-size:10.5px;color:var(--muted-2);pointer-events:none;z-index:4}
 [data-addexisting][draggable]{cursor:grab}
 [data-addexisting][draggable]:active{cursor:grabbing}
 .sandbox-dragover{border-color:var(--signal)!important;background:rgba(59,232,222,.1)!important;box-shadow:0 0 0 2px rgba(59,232,222,.3) inset}
@@ -2612,6 +2622,14 @@ let sandbox={name:'',members:[],rels:[]};
 let sandboxDraftCounter=0;
 let sandboxRelASelected=null, sandboxRelBSelected=null;
 let sandboxArmedLinkKey=null;
+let sandboxExpanded=false;
+// Pan/zoom camera for the mind-map, independent of member x/y (which stay in a fixed
+// "world" coordinate space). Mirrors the main constellation's view{x,y,k}/toScreen/toWorld
+// pattern: tx/ty are a viewBox-space offset, k is scale. Reset alongside the sandbox itself
+// (discard/commit) so a fresh draft always starts centered at 100%.
+let sandboxView={tx:0,ty:0,k:1};
+const SANDBOX_ZOOM_MIN=0.2, SANDBOX_ZOOM_MAX=4;
+function resetSandboxView(){ sandboxView={tx:0,ty:0,k:1}; }
 function wireSandboxPicker(body,id,onSelect){
   const input=body.querySelector('#'+id+'Search'), resultsEl=body.querySelector('#'+id+'Results');
   if(!input||!resultsEl)return;
@@ -2782,7 +2800,17 @@ function renderSandboxTab(body){
           }).join(''):'<div class="empty" style="font-size:12px">No members yet — search above, or drag a result into the mind map.</div>'}</div>
         </div>
         <div>
-          <div class="sandbox-svg-wrap" id="sandboxSvgWrap">${sandbox.members.length?buildSandboxSVG():'<div class="empty" style="font-size:12px">Add members to see a preview.</div>'}</div>
+          <div class="sandbox-svg-wrap ${sandboxExpanded?'is-expanded':''}" id="sandboxSvgWrap">
+            ${sandbox.members.length?buildSandboxSVG():'<div class="empty" style="font-size:12px">Add members to see a preview.</div>'}
+            ${sandbox.members.length?`<div class="sandbox-svg-hint">Scroll to zoom · drag empty space to pan</div>`:''}
+            <div class="sandbox-svg-toolbar">
+              <button class="sandbox-svg-btn" id="sandboxZoomOut" title="Zoom out">−</button>
+              <span class="sandbox-svg-zoomlabel" id="sandboxZoomLabel">${Math.round(sandboxView.k*100)}%</span>
+              <button class="sandbox-svg-btn" id="sandboxZoomIn" title="Zoom in">+</button>
+              <button class="sandbox-svg-btn" id="sandboxZoomReset" title="Reset view">⤾</button>
+              <button class="sandbox-svg-btn" id="sandboxExpandToggle" title="${sandboxExpanded?'Collapse':'Expand'}">${sandboxExpanded?'⤡':'⤢'}</button>
+            </div>
+          </div>
           <h5 style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 10px">Relationships (${sandbox.rels.length})</h5>
           <div class="sandbox-rel-row">
             <div class="sandbox-picker">
@@ -2889,10 +2917,21 @@ function renderSandboxTab(body){
   const discardBtn=body.querySelector('#sandboxDiscardBtn');
   if(!discardBtn.disabled)discardBtn.onclick=()=>{
     if(!confirm('Discard this sandbox group? Everything in it will be lost.'))return;
-    sandbox={name:'',members:[],rels:[]}; renderSandboxTab(body); toast('Sandbox cleared');
+    sandbox={name:'',members:[],rels:[]}; resetSandboxView(); renderSandboxTab(body); toast('Sandbox cleared');
   };
   const commitBtn=body.querySelector('#sandboxCommitBtn');
   if(!commitBtn.disabled)commitBtn.onclick=()=>commitSandbox(body);
+  body.querySelector('#sandboxZoomIn')?.addEventListener('click',()=>{ zoomSandboxCentered(1.25); applySandboxView(body); });
+  body.querySelector('#sandboxZoomOut')?.addEventListener('click',()=>{ zoomSandboxCentered(0.8); applySandboxView(body); });
+  body.querySelector('#sandboxZoomReset')?.addEventListener('click',()=>{ resetSandboxView(); applySandboxView(body); });
+  body.querySelector('#sandboxExpandToggle')?.addEventListener('click',()=>{
+    sandboxExpanded=!sandboxExpanded; renderSandboxTab(body);
+    // The wrap's CSS box just changed size (is-expanded toggled). getBoundingClientRect
+    // forces a synchronous layout, so the new box is already measurable right here —
+    // no rAF/setTimeout wait needed. Only re-render again if the aspect actually moved
+    // enough to matter (measureSandboxAspect no-ops on a negligible/zero delta).
+    if(measureSandboxAspect(body))renderSandboxTab(body);
+  });
   wireSandboxSvgInteractions(body);
 }
 document.addEventListener('keydown',(ev)=>{
@@ -2902,14 +2941,33 @@ document.addEventListener('keydown',(ev)=>{
   }
 });
 const SANDBOX_SVG_W=560, SANDBOX_SVG_H=340;
+// Expanding the panel doesn't just grow the CSS box — it should grow the logical
+// canvas (viewBox height) to match, so the extra screen space shows more diagram
+// instead of sitting empty (SVG's default preserveAspectRatio="meet" fits by
+// whichever dimension is more constrained, so a mismatched viewBox aspect wastes
+// the other axis as letterbox margin). The wrap's actual on-screen aspect ratio
+// depends on the flex layout and viewport height, neither of which is worth
+// hardcoding a guess for — sandboxMeasuredAspect is refreshed by measuring the
+// real element (measureSandboxAspect) right after anything that can change the
+// wrap's box size: the expand toggle and window resize.
+let sandboxMeasuredAspect=SANDBOX_SVG_W/SANDBOX_SVG_H;
+function sandboxCanvasH(){ return Math.round(SANDBOX_SVG_W/sandboxMeasuredAspect); }
+function measureSandboxAspect(body){
+  const wrap=body&&body.querySelector('#sandboxSvgWrap'); if(!wrap)return false;
+  const r=wrap.getBoundingClientRect(); if(!r.width||!r.height)return false;
+  const aspect=r.width/r.height;
+  if(Math.abs(aspect-sandboxMeasuredAspect)<0.03)return false; // no meaningful change
+  sandboxMeasuredAspect=aspect;
+  return true;
+}
 // Members keep whatever position they were last dragged to (m.x/m.y persist on the
 // member object itself, not recomputed). A member only gets a fresh radial position
 // the first time it shows up (no x/y yet) — existing members are never disturbed by
 // later members being added or removed, so a manually-arranged layout stays put.
 function assignSandboxPositions(){
-  const cx=SANDBOX_SVG_W/2, cy=SANDBOX_SVG_H/2;
+  const cx=SANDBOX_SVG_W/2, cy=sandboxCanvasH()/2;
   const members=sandbox.members, N=members.length;
-  const rad=Math.min(140,55+N*9);
+  const rad=Math.min(sandboxExpanded?260:140,55+N*9);
   members.forEach((m,i)=>{
     if(typeof m.x!=='number'||typeof m.y!=='number'){
       const ang=(i/Math.max(1,N))*Math.PI*2-Math.PI/2;
@@ -2934,8 +2992,12 @@ function sandboxNodeGroup(m,labelBelow){
 }
 function buildSandboxSVG(){
   assignSandboxPositions();
-  const members=sandbox.members, cy=SANDBOX_SVG_H/2;
-  let svg=`<svg id="sandboxSvgEl" viewBox="0 0 ${SANDBOX_SVG_W} ${SANDBOX_SVG_H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;max-height:360px">`;
+  const members=sandbox.members, canvasH=sandboxCanvasH(), cy=canvasH/2;
+  let svg=`<svg id="sandboxSvgEl" viewBox="0 0 ${SANDBOX_SVG_W} ${canvasH}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">`;
+  // sandboxView{tx,ty,k} lives on this one wrapping <g> — member x/y (and therefore
+  // everything derived from them below) stay in a fixed "world" space untouched by
+  // pan/zoom, exactly like the main constellation's camera wraps the canvas draw.
+  svg+=`<g id="sandboxViewport" transform="translate(${sandboxView.tx},${sandboxView.ty}) scale(${sandboxView.k})">`;
   svg+='<g id="sandboxEdgesLayer">';
   sandbox.rels.forEach(r=>{
     const a=members.find(m=>m.key===r.source), b=members.find(m=>m.key===r.target); if(!a||!b)return;
@@ -2945,8 +3007,31 @@ function buildSandboxSVG(){
   });
   svg+='</g><g id="sandboxNodesLayer">';
   members.forEach(m=>{ svg+=sandboxNodeGroup(m,m.y>cy); });
-  svg+='</g></svg>';
+  svg+='</g></g></svg>';
   return svg;
+}
+// sandboxView maps "world" node coordinates (member.x/.y) onto the fixed
+// SANDBOX_SVG_W×SANDBOX_SVG_H viewBox — same toScreen/toWorld shape as the main
+// constellation's view{x,y,k}, just renamed tx/ty since it offsets viewBox units
+// rather than raw screen pixels.
+function sandboxToScreen(wx,wy){ return {x:wx*sandboxView.k+sandboxView.tx, y:wy*sandboxView.k+sandboxView.ty}; }
+function sandboxToWorld(vx,vy){ return {x:(vx-sandboxView.tx)/sandboxView.k, y:(vy-sandboxView.ty)/sandboxView.k}; }
+function zoomSandboxAt(vx,vy,factor){
+  const before=sandboxToWorld(vx,vy);
+  const newK=Math.max(SANDBOX_ZOOM_MIN,Math.min(SANDBOX_ZOOM_MAX,sandboxView.k*factor));
+  if(newK===sandboxView.k)return;
+  sandboxView.k=newK;
+  sandboxView.tx=vx-before.x*newK;
+  sandboxView.ty=vy-before.y*newK;
+}
+// Toolbar +/- buttons have no cursor position tied to the canvas, so they zoom
+// around the current viewBox center instead of a cursor point.
+function zoomSandboxCentered(factor){ zoomSandboxAt(SANDBOX_SVG_W/2,sandboxCanvasH()/2,factor); }
+function applySandboxView(body){
+  const g=body.querySelector('#sandboxViewport');
+  if(g)g.setAttribute('transform',`translate(${sandboxView.tx},${sandboxView.ty}) scale(${sandboxView.k})`);
+  const label=body.querySelector('#sandboxZoomLabel');
+  if(label)label.textContent=Math.round(sandboxView.k*100)+'%';
 }
 function armSandboxLink(body,key){
   sandboxArmedLinkKey=key;
@@ -2980,6 +3065,11 @@ function showSandboxCtxMenu(body,x,y,key){
 // directly, otherwise the layout would jump/reset on every frame.
 function wireSandboxSvgInteractions(body){
   const svg=body.querySelector('#sandboxSvgEl'); if(!svg)return;
+  const viewport=svg.querySelector('#sandboxViewport');
+  // Client px -> viewBox units (accounts for the width:100%/height:100% CSS scaling
+  // via the SVG's own CTM). Node/link math then goes one step further through
+  // sandboxToWorld() to land in the same fixed coordinate space member.x/y live in,
+  // so hit-testing and dragging stay correct at any zoom level.
   const toSvgPoint=(evt)=>{
     const pt=svg.createSVGPoint(); pt.x=evt.clientX; pt.y=evt.clientY;
     const ctm=svg.getScreenCTM(); if(!ctm)return {x:0,y:0};
@@ -2998,7 +3088,7 @@ function wireSandboxSvgInteractions(body){
       svg.querySelectorAll(`[data-edgelabel-a="${r.source}"][data-edgelabel-b="${r.target}"]`).forEach(t=>{ t.setAttribute('x',midx); t.setAttribute('y',midy); });
     });
   };
-  let dragMode=null, dragMember=null, dragGroup=null, linkLine=null;
+  let dragMode=null, dragMember=null, dragGroup=null, linkLine=null, panStart=null;
   const finishLinkDrag=(target)=>{
     linkLine.remove(); linkLine=null;
     if(target&&target.key!==dragMember.key){
@@ -3039,23 +3129,50 @@ function wireSandboxSvgInteractions(body){
       linkLine.setAttribute('x1',m.x); linkLine.setAttribute('y1',m.y);
       linkLine.setAttribute('x2',m.x); linkLine.setAttribute('y2',m.y);
       linkLine.setAttribute('stroke','#3BE8DE'); linkLine.setAttribute('stroke-width','2'); linkLine.setAttribute('stroke-dasharray','4,3');
-      svg.appendChild(linkLine);
+      // lives inside the viewport <g>, in the same world space as m.x/m.y, so it
+      // pans/zooms with everything else instead of needing its own conversion.
+      (viewport||svg).appendChild(linkLine);
     };
   });
+  // Background pan: mousedown on empty canvas (not a node or its link-handle, both
+  // of which already set dragMode synchronously in their own mousedown handler —
+  // since mousedown bubbles child-first, dragMode is already non-null by the time
+  // this fires for a node/handle click, so it's a no-op there).
+  svg.onmousedown=(ev)=>{
+    if(ev.button!==0||dragMode)return;
+    const start=toSvgPoint(ev);
+    dragMode='pan'; panStart={vx:start.x,vy:start.y,tx:sandboxView.tx,ty:sandboxView.ty};
+    svg.classList.add('is-panning');
+  };
+  svg.onwheel=(ev)=>{
+    if(!viewport)return;
+    ev.preventDefault();
+    const p=toSvgPoint(ev);
+    zoomSandboxAt(p.x,p.y,ev.deltaY<0?1.12:0.89);
+    applySandboxView(body);
+  };
   svg.onmousemove=(ev)=>{
     if(!dragMode)return;
-    const p=toSvgPoint(ev);
+    if(dragMode==='pan'&&panStart){
+      const p=toSvgPoint(ev);
+      sandboxView.tx=panStart.tx+(p.x-panStart.vx);
+      sandboxView.ty=panStart.ty+(p.y-panStart.vy);
+      applySandboxView(body);
+      return;
+    }
+    const p=sandboxToWorld(toSvgPoint(ev).x,toSvgPoint(ev).y);
     if(dragMode==='move')moveNodeTo(dragMember,dragGroup,p.x,p.y);
     else if(dragMode==='link'&&linkLine){ linkLine.setAttribute('x2',p.x); linkLine.setAttribute('y2',p.y); }
   };
   const endDrag=(ev)=>{
     if(dragMode==='move'&&dragGroup)dragGroup.style.cursor='grab';
+    if(dragMode==='pan')svg.classList.remove('is-panning');
     if(dragMode==='link'&&linkLine){
-      const p=toSvgPoint(ev);
+      const p=sandboxToWorld(toSvgPoint(ev).x,toSvgPoint(ev).y);
       const target=sandbox.members.find(m=>m.key!==dragMember.key&&Math.hypot(m.x-p.x,m.y-p.y)<22);
       finishLinkDrag(target);
     }
-    dragMode=null; dragMember=null; dragGroup=null;
+    dragMode=null; dragMember=null; dragGroup=null; panStart=null;
   };
   svg.onmouseup=endDrag;
   svg.onmouseleave=(ev)=>{ if(dragMode)endDrag(ev); };
@@ -3080,7 +3197,7 @@ function commitSandbox(body){
   newEntities.forEach(e=>seedPos(e));
   state.entities.push(...newEntities);
   state.links.push(...newLinks);
-  sandbox={name:'',members:[],rels:[]};
+  sandbox={name:'',members:[],rels:[]}; resetSandboxView();
   render(); switchView('actors'); selectActorProfile(campaignId);
   toast(`Committed "${name}" — ${newEntities.length} entities, ${newLinks.length} links`);
 }
@@ -3409,7 +3526,11 @@ function toast(msg){ const t=document.getElementById('toast'); set('toastMsg',ms
 function updateClock(){ const d=new Date(); set('clock',d.toISOString().slice(11,19)+' UTC'); }
 setInterval(updateClock,1000); updateClock();
 
-window.addEventListener('resize',()=>{ dpr=Math.max(1,window.devicePixelRatio||1); resizeCanvas(); resizeProfilePreview(); });
+window.addEventListener('resize',()=>{
+  dpr=Math.max(1,window.devicePixelRatio||1); resizeCanvas(); resizeProfilePreview();
+  const invBody=document.getElementById('invBody');
+  if(invBody&&invTab==='sandbox'&&measureSandboxAspect(invBody))renderSandboxTab(invBody);
+});
 
 /* ============================================================
    V2 — classification, redaction, tags, search/alerts, pipelines
