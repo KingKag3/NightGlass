@@ -47,6 +47,7 @@ And [`docs/samples/solarwinds-network.json`](docs/samples/solarwinds-network.jso
 | <img src="docs/screenshots/threat-actor-profile.png" width="440" alt="Threat Actors profile view"> | <img src="docs/screenshots/attack-matrix.webp" width="440" alt="ATT&CK matrix"> |
 | <img src="docs/screenshots/timeline.webp" width="440" alt="Timeline"> | <img src="docs/screenshots/search-alerts.webp" width="440" alt="Search & alerts"> |
 | <img src="docs/screenshots/pipelines-settings.webp" width="440" alt="Pipelines & settings"> | <img src="docs/screenshots/redaction-guest-view.png" width="440" alt="Redacted guest view"> |
+| <img src="docs/screenshots/investigators-case-detail.png" width="440" alt="Investigators case detail, with editable Case ID, agent lookup, and linked entities"> | <img src="docs/screenshots/investigators-sandbox.png" width="440" alt="Sandbox / Threat Group Builder, with a draft mind-map of members and relationships"> |
 
 Hovering a relationship line surfaces what it is:
 
