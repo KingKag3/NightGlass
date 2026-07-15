@@ -11,4 +11,6 @@
 9. **Time scrubber** — window-filter the constellation, animate campaign progression
 10. **Report polish** — PDF export, per-actor sub-reports, TLP mapping alongside classification
 11. **Tauri packaging** — desktop build once the backend lands
-12. **Custom threat-group sandbox** (backlog, captured 2026-07-09) — analysts create their own named threat-group/campaign and assign existing or new actors into it. Builds on item 3's still-unbuilt quick-add entity/relationship forms rather than needing separate creation logic.
+12. **[[AI-Assisted Analysis]]** (backlog, captured 2026-07-15) — assistive, opt-in recommendations layered onto the existing graph: local pattern/similarity suggestions first (no model call needed), natural-language relationship suggestions and narrative synthesis later, behind the same pluggable-provider pattern translation already uses. Suggestions are always analyst-approved before becoming real data, never auto-applied. Independent of the backend, pure frontend to start.
+
+~~12. Custom threat-group sandbox~~ **Shipped 2026-07-10** as the Investigators segment's Sandbox / Threat Group Builder — see [[Architecture]] and `CLAUDE.md` "Where things live" (Investigators view).

@@ -108,7 +108,9 @@ Classification markings and tagging are gated behind a single opt-in "advanced" 
 7. **Enrichment providers** — WHOIS / GeoIP / hash-reputation behind a provider interface; add an "Enrichment" section to `selectEntity`.
 8. **Correlation** — flag cross-source indicator overlap; N-hop pivot queries.
 9. **Time scrubber**; **PDF report export**; **Tauri packaging** (after backend).
-10. **Custom threat-group sandbox** (backlog, captured 2026-07-09, not scoped in detail) — let an analyst create their own named threat-group/campaign entity and assign existing or newly-created actors into it, independent of ingested data. Naturally builds on top of item 2's still-unbuilt quick-add entity/relationship forms (a sandbox group is really just "create a campaign entity" + "create attributed-to links into it" using those same primitives) rather than needing its own creation mechanism. Revisit once item 2's quick-add UI exists.
+10. **[[AI-Assisted Analysis]]** (backlog, captured 2026-07-15, not scoped in detail) — assistive, opt-in recommendations on top of the existing graph. Start with local pattern/similarity suggestions (shared neighbors, relation-type overlap — no model call needed); natural-language relationship suggestions and narrative/report synthesis are later tiers, behind the same pluggable-provider pattern translation already uses (`DEMO_DICT`/offline default, real endpoint as an opt-in add-in). Suggestions are always analyst-approved before becoming real `state` data — never auto-applied, and never a separate "AI-created" data shape from a human-authored one. Open question deliberately left unresolved until tier 2 is actually scoped: what data would leave the browser for a hosted (non-local) provider, and how that interacts with clearance/classification.
+
+~~**Custom threat-group sandbox**~~ — shipped 2026-07-10 as the Investigators segment's Sandbox / Threat Group Builder (see "Where things live" above).
 
 ## Workflow expectations
 
